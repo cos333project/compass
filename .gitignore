@@ -12,6 +12,15 @@
 /.next/
 /out/
 
+# django
+__pycache__/
+*.sqlite3
+*.py[co]
+db.sqlite3
+.env
+# Virtual environment
+env/
+
 # production
 /build
 
