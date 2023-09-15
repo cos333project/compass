@@ -1,5 +1,5 @@
 """
-WSGI config for Roomies project.
+WSGI config for the Compass project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
