@@ -1,5 +1,5 @@
 """
-ASGI config for Roomies project.
+ASGI config for the Compass project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
