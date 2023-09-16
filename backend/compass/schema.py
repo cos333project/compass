@@ -146,3 +146,5 @@ class Query(graphene.ObjectType):
         Equivalent to Course.objects.all().
         """
         return Course.objects.all()
+
+schema = graphene.Schema(query=Query)
