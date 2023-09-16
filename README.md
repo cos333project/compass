@@ -82,8 +82,32 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 
 ## Tech Stack
 
-- Frontend: Next.js, TypeScript, Tailwind CSS
-- Backend: Django, GraphQL, PostgreSQL
+Frontend
+* UI Library: Next.js (React-based)
+* Programming Language: TypeScript
+* CSS Framework: Tailwind CSS
+* State Management: Redux
+
+Backend
+* Web Framework: Django
+* API Paradigm: GraphQL, Apollo Client
+* Database: PostgreSQL
+* ORM: Django’s ORM
+
+Auth
+* Authentication: CAS Authentication
+
+Testing
+* Frontend Testing: Jest
+* Backend Testing: pytest, Django’s tests.py
+
+DevOps
+* Hosting/Cloud: Heroku
+* CI/CD: Github Actions for Next.js and for Django
+
+Database: 
+* PostgresSQL
+* Management: DataGrip
 
 ## Setup Instructions
 
