@@ -15,10 +15,20 @@ class CASClient:
         logger: Logger for the CASClient.
     """
 
-    def __init__(self):
+    def __init__(self, get_response):
+        self.get_response = get_response
         self.cas_url = settings.CAS_URL
         self.logger = logging.getLogger(__name__)
 
+    def __call__(self, request):
+        response = self.authenticate(request)
+        if response:
+            return response  # Authentication failed, so we're redirecting to the login page
+        
+        # Authentication was successful, or not required
+        response = self.get_response(request)
+        return response
+    
     def strip_ticket(self, request) -> str:
         """Strips ticket parameter from the URL."""
         url = request.build_absolute_uri()
@@ -29,6 +39,14 @@ class CASClient:
     def validate(self, ticket: str, service_url: str) -> Optional[str]:
         """Validates the CAS ticket.
 
+        Args:
+            ticket: CAS ticket string.
+            service_url: Service URL string.
+            timeout: Timeout in seconds.
+        
+        Returns:
+            str if successful, None otherwise.
+            
         Returns:
             The username if validation is successful, otherwise None.
         """
@@ -36,6 +54,7 @@ class CASClient:
             val_url = f"{self.cas_url}validate?service={quote(service_url)}&ticket={quote(ticket)}"
             response = urlopen(val_url, timeout=5).readlines()
             if len(response) != 2:
+                self.logger.warning("Validation failed: Unexpected response length.")
                 return None
 
             first_line, second_line = response[0].decode('utf-8'), response[1].decode('utf-8')
@@ -45,7 +64,7 @@ class CASClient:
             return second_line.strip()
         
         except (HTTPError, URLError) as e:
-            self.logger.error(f"Validation failed. Exception: {e}")
+            self.logger.error(f"Validation failed due to network error: {e}")
             return None
 
     def authenticate(self, request) -> Optional[HttpResponseRedirect]:
@@ -70,4 +89,4 @@ class CASClient:
     def logout(self, request) -> HttpResponseRedirect:
         """Logs out the user and redirects to the landing page."""
         request.session.pop('username', None)
-        return HttpResponseRedirect('landing')  # Replace with your landing page URL
+        return HttpResponseRedirect('landing')  # Replace with our landing page URL (main non-Hero page, probably dashboard)
