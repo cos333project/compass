@@ -3,7 +3,8 @@ from urllib.parse import quote
 from re import sub
 from typing import Optional
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.contrib.auth import get_user_model
+from django.http import HttpResponseRedirect
 from urllib.error import URLError, HTTPError
 import logging
 
@@ -73,6 +74,7 @@ class CASClient:
         Returns:
             A redirect response object if authentication fails, otherwise None.
         """
+
         ticket = request.GET.get('ticket')
         service_url = self.strip_ticket(request)
         
@@ -80,6 +82,11 @@ class CASClient:
             username = self.validate(ticket, service_url)
             if username:
                 request.session['username'] = username
+                user, created = get_user_model().objects.get_or_create(
+                    username=username, 
+                    defaults={'role': 'student'})
+                if created:
+                    user.save()
                 return None  # Authentication successful
 
         # Redirect to CAS login if authentication fails
@@ -89,4 +96,4 @@ class CASClient:
     def logout(self, request) -> HttpResponseRedirect:
         """Logs out the user and redirects to the landing page."""
         request.session.pop('username', None)
-        return HttpResponseRedirect('landing')  # Replace with our landing page URL (main non-Hero page, probably dashboard)
+        return HttpResponseRedirect('landing')  # Replace with our landing page URL
