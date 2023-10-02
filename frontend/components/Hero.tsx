@@ -119,7 +119,7 @@ export default function Example() {
                 Welcome to Compass.
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-300">
-                Plan your course, manage your schedule, and collaborate with your peers.
+                Plan your courses, manage your schedule, and collaborate with your peers.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <a
