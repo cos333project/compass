@@ -1,0 +1,59 @@
+---
+type: Certificate
+name: European Cultural Studies
+code: ECS
+degree:
+urls:
+- https://ua.princeton.edu/fields-study/certificate-programs/european-cultural-studies
+contacts:
+- type: Director
+  name: Efthymia Rentzou
+  email: erentzou@princeton.edu
+req_list:
+- name: ECS core course requirement
+  min_needed: 1
+  explanation: "Students must complete two interdisciplinary courses during the first
+    two years: \nHUM 216-217 or 218-219, Interdisciplinary Approaches to Western Culture;
+    or HUM 233-234, East Asian Humanities; or two other equivalent courses that provide
+    a rigorous interdisciplinary approach to the arts and culture over a span of historical
+    time."
+  double_counting_allowed: false
+  pdfs_allowed: 0
+  completed_by_semester: 4
+  course_list:
+  - HUM 216
+  - HUM 218
+  - HUM 219
+  - ECS 301
+  - ECS 302
+  - HUM 234
+- name: Elective Courses
+  min_needed: 2
+  explanation: Must complete a total of two or more elective courses in ECS; 
+    these ECS elective courses may be taken at either the 300- or the 400 level.
+  double_counting_allowed: false
+- name: ECS Excursion, 
+  max_counted: 1
+  min_needed: 1
+  explanation: ECS excursion typically takes place on a Friday or a Saturday, and always includes a discussion over a group meal.
+    Participation in both parts of the ECS excursion (the cultural event and the mealtime discussion) is required of all ECS certificate students.
+  double_counting_allowed: false
+- name: ECS Faber Lecture and Colloquium
+  max_counted: 1
+  min_needed: 1
+  explanation: To complete the ECS Faber Lecture and Colloquium requirement, students attend the ECS Faber lecture, which is given annually by a 
+    distinguished visiting scholar. Held in connection with the annual ECS Faber lecture, the ECS Faber Colloquium offers certificate students 
+    the opportunity to join in a mealtime discussion with the ECS Faber lecturer. Participation in both parts of the ECS Faber Lecture and Colloquium 
+    is required of all ECS certificate students.
+  double_counting_allowed: false
+- name: ECS Senior Thesis Colloquium 
+  max_counted: 1
+  min_needed: 1
+  explanation: In their senior year, ECS students participate in the Senior Thesis Colloquium. Although ECS certificate students complete their 
+    theses under the direction of their home departments, over the course of the spring term of senior year, all ECS seniors join the 
+    ECS director to meet one day a week, over a meal, for discussion of common challenges of research, conceptualization, organization and 
+    writing. Each student shares an excerpt from the senior thesis with the group during one of the colloquium's meetings. Senior thesis excerpts 
+    are circulated in advance, and active participation in the weekly senior thesis colloquium discussions is required of all ECS seniors. 
+    Though most ECS students address European topics in their theses, this is not a requirement of the program. For the purposes of the senior thesis 
+    colloquium, certificate students from the sciences or engineering may circulate a paper written for an ECS course in place of an excerpt from the senior thesis.
+  double_counting_allowed: false
