@@ -63,7 +63,7 @@ class CourseBucket(models.Model):
     description = models.TextField()
     courses = models.ManyToManyField('Course')
     category = models.CharField(max_length=50, null=True, blank=True)
-    # dept/program
+    # add dept/program
 
 class IndependentWork(models.Model):
     """
@@ -89,27 +89,104 @@ class IndependentWork(models.Model):
 
 #----------------------------------------------------------------------#
 
-class Course(models.Model):
+class AcademicTerm(models.Model):
     """
-    Represents a course that can be used to fulfill various academic requirements.
+    Represents a unique academic term (semester) at the university.
 
     Fields:
-    - course_code: The code of the course, e.g., 'COS 333'.
-    - course_name: The name of the course, e.g., 'Advanced Programming Techniques'.
+    - term_code: A unique identifier for the term (e.g., 'F2023' for Fall 2023).
+    - start_date: Start date of the academic term.
+    - end_date: End date of the academic term.
+
+    This table serves two primary purposes:
+    1. Track specific semesters when a course is offered.
+    2. Provide a reference for 'completed_by_semester' in the Requirement table.
     """
-    course_code = models.CharField(max_length=10, unique=True)
-    course_name = models.CharField(max_length=100)
+    term_code = models.CharField(max_length=10, unique=True)
+    suffix = models.CharField(max_length=10)  # e.g., "F2023"
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return self.term_code
+
+class Course(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    guid = models.CharField(max_length=50)
+    course_id = models.CharField(max_length=10)
+    catalog_number = models.CharField(max_length=10)
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    drop_consent = models.CharField(max_length=1, blank=True, null=True)
+    add_consent = models.CharField(max_length=1, blank=True, null=True)
+    web_address = models.URLField(max_length=255, blank=True, null=True)
+    pu_flag = models.CharField(max_length=1, blank=True, null=True)
+    transcript_title = models.CharField(max_length=150, blank=True, null=True)
+    long_title = models.CharField(max_length=250, blank=True, null=True)
+    distribution_area_long = models.CharField(max_length=150, blank=True, null=True)
+    distribution_area_short = models.CharField(max_length=10, blank=True, null=True)
+    reading_writing_assignment = models.TextField(blank=True, null=True)
+    grading_basis = models.CharField(max_length=5, blank=True, null=True)
+    reading_list = models.TextField(blank=True, null=True)
+    drop_consent = models.CharField(max_length=1, blank=True, null=True)
+    add_consent = models.CharField(max_length=1, blank=True, null=True)
+    web_address = models.URLField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 class CourseEquivalent(models.Model):
-    """
-    Represents a set of courses that are considered equivalents.
-    
-    Fields:
-    - primary_course: The main course that other courses are equivalent to.
-    - equivalent_courses: Other courses that are equivalent to the primary course.
-    """
+    EQUIVALENCE_TYPES = (
+        ('CROSS_LIST', 'Cross-Listing'),
+        ('REQUIREMENT', 'Requirement Fulfillment'),
+    )
+
     primary_course = models.ForeignKey('Course', related_name='primary_equivalents', on_delete=models.CASCADE)
-    equivalent_courses = models.ManyToManyField('Course', related_name='equivalent_to')
+    equivalent_course = models.ForeignKey('Course', related_name='equivalents', on_delete=models.CASCADE)
+    equivalence_type = models.CharField(max_length=12, choices=EQUIVALENCE_TYPES, default='REQUIREMENT')
+
+    def __str__(self):
+        return f"{self.primary_course.title} is equivalent to {self.equivalent_course.title}"
+
+class Instructor(models.Model):
+    emplid = models.CharField(max_length=50, unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=255)  # Optional, provided by API.
+
+    def __str__(self):
+        return self.full_name
+
+class Section(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE)
+    track = models.CharField(max_length=5)  # e.g. UGRD/Grad
+    seat_reservations = models.CharField(max_length=1)
+    instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)  # Changed to ForeignKey
+    class_number = models.IntegerField(unique=True)
+    capacity = models.IntegerField()
+    enrollment = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.course.title} - {self.term.term_code}"
+
+class ClassMeeting(models.Model):
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    meeting_number = models.PositiveIntegerField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    room = models.CharField(max_length=50)
+    days = models.CharField(max_length=20) 
+    building_code = models.CharField(max_length=50) 
+    building_name = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return f"{self.section} - {self.start_time} to {self.end_time}"
+
+class ClassYearEnrollment(models.Model):
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    class_year = models.IntegerField()
+    enrl_seats = models.IntegerField()
 
 #----------------------------------------------------------------------#
 
@@ -121,7 +198,7 @@ class Requirement(models.Model):
     - degree: Foreign key to the associated degree.
     - description: Detailed description of the requirement.
     - min_needed: Minimum number of courses/credits needed to fulfill this requirement.
-    - completed_by_semester: When this requirement should ideally be completed.
+    - deadline: When this requirement should ideally be completed.
     - double_counting_allowed: Whether a course can count for multiple requirements.
     - pdfs_allowed: Whether courses taken as pass/D/fail can fulfill the requirement.
     """
@@ -136,8 +213,7 @@ class Requirement(models.Model):
     min_needed = models.IntegerField()
     deadline = models.IntegerField(choices=TIMELINE_CHOICES, null=True, blank=True)
     double_counting_allowed = models.BooleanField()
-    # max counted
-    # between minors, majors
+    # max counted between minors, majors
     pdfs_allowed = models.BooleanField()
     courses = models.ManyToManyField('Course')
     operator = models.CharField(max_length=3, choices=OPERATOR_CHOICES, default='AND')
@@ -193,11 +269,14 @@ class Minor(models.Model):
     - code: The short code for the minor.
     - name: The full name of the minor.
     - compatible_with: The type of degree this minor is compatible with ('AB', 'BSE', or 'Both').
+    - max_courses_double_dipped: Max number of courses that can be counted toward other minors.
     """
     id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     compatible_with = models.CharField(max_length=10)  # "AB", "BSE", or "Both"
+    max_courses_double_dipped = models.IntegerField(null=True, blank=True)
+    max_courses_from_major = models.IntegerField(default=2)
 
 class MinorRequirement(Requirement):
     """
@@ -208,9 +287,10 @@ class MinorRequirement(Requirement):
     - minor: Foreign key to the associated minor.
     - description: Detailed description of the requirement.
     - min_needed: Minimum number of courses or credits needed to fulfill this requirement.
+    - max_courses_from_major: Max number of courses from a major that can be counted towards this minor.
     """
     id = models.AutoField(primary_key=True)
-    minor = models.ForeignKey(Minor, on_delete=models.CASCADE)
+    minor = models.ForeignKey(Minor, related_name="requirements", on_delete=models.CASCADE)
     description = models.TextField()
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
@@ -269,7 +349,7 @@ class CustomUser(AbstractUser):
     
     role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
     major = models.ForeignKey(Major, on_delete=models.CASCADE)
-    minor = models.ForeignKey(Minor, on_delete=models.CASCADE)
+    minors = models.ManyToManyField(Minor)
     # take in more than one minor
     class_year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -296,5 +376,3 @@ class UserCourses(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planned')
 
 #----------------------------------------------------------------------#
-
-# make courses table to store all courses to query from
