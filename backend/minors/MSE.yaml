@@ -1,0 +1,75 @@
+Minor:
+  code: MSE
+  name: Materials Science and Engineering
+  description: >
+    Princeton's minor in materials science and engineering emphasizes the multidisciplinary nature of the study of materials and the engineering applications of their properties. Program participants learn about the breadth of materials, their synthesis and processing, and the structure-property relationships that make materials the foundation of all “hard” technologies — past, present and future. In addition to lecture courses inside and outside the student's home department, all program participants take a core course in experimental methods, designed to give students experience in both making and characterizing materials. All program participants also engage in significant independent research, culminating in a senior thesis with substantial materials content. The aim of these experiences is to develop critical thinking skills, to apply these to the solutions of current problems and to identify important areas for future work. The program serves as solid preparation for students planning post-Princeton careers in materials-intensive industries, as well as those intending to study materials science and engineering in graduate school.
+
+  degree_type: "BOTH"
+  excluded_majors: 
+  excluded_minors:
+  max_courses_double_dipped:
+  max_courses_from_major: 4
+  
+  courses_required: 11
+  pdfs_allowed: 0
+
+  intro:
+    physics:
+      choose: 2
+      options:
+        - PHY103 OR PHY105 OR AP_CREDIT
+        - PHY104 OR PHY106 OR AP_CREDIT
+    chemistry:
+      choose: 1
+      options: 
+        - CHM207 OR CHM215 OR CHM201 AND CHM202 OR AP_CREDIT
+    math:
+      choose: 2
+      options:
+        - MAT103
+        - MAT104
+        - MAT201
+        - MAT202
+        - MAT203
+        - MAT204 
+        
+  areas:
+    thermo:
+      choose: 1
+      options:
+        - CBE246
+        - CHM306
+        - CHM406
+        - ECE342
+        - MAE221
+        - PHY301
+    materials:
+      choose: 1
+      options:
+        - MSE301
+        - CEE364
+        - MAE324
+    methods:
+      choose: 1
+      options:
+        - MSE302
+        - CHM371
+        - ECE308
+        - GEO369
+
+  extra:
+    choose: 3
+    options:
+      - MSE3**
+      - MSE4**
+    special_conditions: 1_DIFFERENT_FROM_STUDENT_MAJOR
+
+  independent_work:
+    choose: 1
+    options:
+      - SENIOR_THESIS
+
+  application_deadline:
+    urls:
+    - https://ua.princeton.edu/fields-study/minors/materials-science-and-engineering
+    contacts:
