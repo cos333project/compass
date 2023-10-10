@@ -1,0 +1,88 @@
+---
+type: Minor
+name: Asian American Studies
+code: ASA
+degree:
+urls:
+- https://effroncenter.princeton.edu/areas-study/asian-american-studies
+description: The Program in Asian American Studies, administered by the 
+  Effron Center for the Study of America, provides students with the 
+  opportunity to gain an interdisciplinary perspective on the diversity 
+  of Asian American and Pacific Islander histories, cultures and 
+  contemporary experiences. The course of study focuses on the formative 
+  emergence of this pan-ethnic group in the United States. It also 
+  highlights Asian America’s transnational connections and contexts, 
+  including the dynamics of globalization, migration, imperialism and 
+  postcoloniality.
+contacts:
+- type: Program Director
+  name: Beth Lew-Williams
+  email: bethlw@princeton.edu
+req_list:
+- name: Core
+  max_counted: 1
+  min_needed: 1
+  explanation: Students are normally encouraged to take the gateway 
+    course AMS 101 prior to declaring the minor, however students may 
+    also do so at any time during their studies, including after 
+    enrollment in the minor.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 1
+  course_list:
+  - AMS 101
+  deadline:
+- name: Electives
+  max_counted: 1
+  min_needed: 3
+  explanation: Three courses in Asian American studies, either 
+    originating in the program or cross-listed, and preferably 
+    representing disciplinary breadth in the social sciences, arts and 
+    humanities. With the approval of the associate director, a student 
+    may substitute a comparative race and ethnicity course that contains 
+    substantial Asian American studies content for one of these courses.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 3
+  course_list:
+  - ASA 201
+  - ASA 224
+  - ASA 238
+  - ASA 293
+  - ASA 314
+  - ASA 315
+  - ASA 320
+  - ASA 314
+  - ASA 316
+  - ASA 324
+  - ASA 328
+  - ASA 329
+  - ASA 332
+  - ASA 336
+  - ASA 343
+  - ASA 361
+  - ASA 370
+  - ASA 381
+  - ASA 389
+  - ASA 390
+  - ASA 430
+  - ASA 444
+  - ASA 482
+  deadline:
+- name: Advanced Seminar
+  max_counted: 1
+  min_needed: 1
+  explanation: With the approval of the associate director, a student 
+    may substitute an advanced seminar with additional ASA elective to 
+    further their scholarship in this field.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 1
+  course_list:
+  - AMS 403
+  - AMS 404
+  - AMS 406
+  deadline:
+
+# Notes: No more than one course taken in fulfillment of the student’s
+# major may be counted toward the minor.
