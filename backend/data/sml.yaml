@@ -1,0 +1,80 @@
+type: Minor
+name: Statistics and Machine Learning
+code: SML
+degree:
+description: |
+  This minor, under the guidance of the Center for Statistics and Machine Learning (CSML), enables students to grasp the core principles of statistics, coding, and machine learning. It prepares them to apply these skills across various domains. Students are encouraged to enroll by spring of sophomore year, but no later than the start of senior year, with a declared major.
+
+urls:
+- [CSML URL]
+contacts:
+- type: Program Coordinator
+  name: [Program Coordinator's Name]
+  email: [Program Coordinator's Email]
+
+req_list:
+- name: Coding
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Completion of COS 126, POL 345, or SML 201 for coding principles.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - COS 126
+  - POL 345
+  - SML 201
+
+- name: Mathematics
+  max_counted: 2
+  min_needed: 2
+  explanation: |
+    Completion of Linear Algebra (MAT 202/EGR 154/SML 305) and Calculus (MAT 201 or MAT 103 then SML 305). 
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - MAT 202
+  - EGR 154
+  - SML 305
+  - MAT 201
+  - MAT 103
+
+- name: Probability
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Completion of one core statistics course for basic understanding of probability. Additional course from ORF 309/SML 305 recommended for advanced machine learning courses.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - ORF 309
+  - SML 305
+  - [Core statistics course]
+
+- name: Required Course Work
+  max_counted: 5
+  min_needed: 5
+  explanation: |
+    One statistics course, one machine learning course, and three additional electives from approved lists or non-cognate courses with approval. Maximum of two courses from major may count toward the minor.
+  double_counting_allowed: true
+  max_common_with_major: 2
+  pdfs_allowed: 0
+  course_list:
+  - [List of approved courses]
+
+- name: Independent Work
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    At least one semester of independent work in junior or senior year on a topic applying or investigating SML methods. This work may satisfy the IW requirement of the SML minor and the student's major, subject to review by the SML Minor committee. 
+  double_counting_allowed: true
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - [Details of independent work]
+
+courses:
+- [List of courses as provided, each on a new line]
