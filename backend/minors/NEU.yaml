@@ -1,0 +1,121 @@
+Minor:
+  code: NEU
+  name: Neuroscience
+  description: >
+    The neuroscience minor provides a basic foundation in the scientific study of the brain and biology of behavior through introductory and advanced undergraduate courses. Students learn about different levels of analysis, from the molecular mechanisms of intercellular signaling to the formation and function of neural circuits to the generation of thought and movements via large-scale neural systems. As neuroscience is highly interdisciplinary, this knowledge can be used to generate new ideas and new perspectives in the student’s major.
+
+    Neuroscience minor learning goals include the following:
+
+    Students gain knowledge of the fundamental principles of neuroscience and the nature of the discipline’s challenges and possible solutions.
+    Students develop skills in critical thinking and scientific problem-solving.
+    Students develop relationships with classmates across disciplines.
+  
+  degree_type: "BOTH"
+  excluded_majors: 
+  excluded_minors:
+  max_courses_double_dipped:
+  max_courses_from_major: 2
+
+  courses_required: 6
+  pdfs_allowed:
+
+  prerequisites:
+    fundamentals:
+      choose: 1
+      options:
+        - NEU200
+        - NEU201
+    intro:
+      choose: 1
+      options:
+        - NEU202
+
+  electives:
+    molecular_cellular_disease:
+      options:
+        - NEU301
+        - NEU331
+        - NEU385
+        - NEU400 
+        - NEU403
+        - NEU413
+        - NEU428
+        - NEU430
+        - NEU443
+        - NEU447
+        - NEU460
+        - NEU475
+        - NEU490
+        - NEU501A
+        - ECE452
+        - MOL250
+        - MOL433
+        - MOL259
+        - MOL460
+        - PHY562
+        - PSY207
+        - PSY317
+        - QCB515
+    circuits_systems:
+      options:
+        - NEU200
+        - NEU260
+        - NEU301
+        - NEU316
+        - NEU325
+        - NEU336
+        - NEU385
+        - NEU413
+        - NEU420
+        - NEU422
+        - NEU427
+        - NEU428
+        - NEU460
+        - NEU457
+        - NEU501A
+        - NEU502A
+        - PHY562
+    neural_computation:
+      options:
+        - NEU330
+        - NEU338
+        - NEU340
+        - NEU437
+        - NEU443
+        - NEU457
+        - NEU499
+        - COS226
+        - COS343
+        - COS402
+        - COS429
+        - COS324
+        - COS302
+        - COS424
+        - COS485
+        - ECE364
+        - ECE452
+        - MAT323
+        - PSY360
+        - QCB515
+    cognitive_social_neuroscience:
+      options:
+        - NEU200
+        - NEU306
+        - NEU316
+        - NEU330
+        - NEU331
+        - NEU337
+        - NEU338
+        - NEU340
+        - NEU422
+        - NEU499
+        - NEU502A
+        - ECE480
+        - PSY248
+        - PSY409
+    special_conditions: 4_FROM_3_AREAS
+
+  application_deadline:
+    urls:
+    - https://ua.princeton.edu/fields-study/departmental-majors-degree-bachelor-arts/neuroscience
+    contacts:
