@@ -1,0 +1,52 @@
+type: Minor
+name: Slavic Languages and Cultures
+code: SLA
+degree:
+description: |
+  The Slavic department at Princeton invites students to delve into the literature and culture of Russia and the Slavic world, aiming to provide a critically informed appreciation. Majors achieve a high level of proficiency enabling them to work with both primary and secondary sources in target languages like BCS, Czech, Polish, Russian, and Ukrainian. The minor is structured to augment the knowledge of students majoring in other departments, increasing their competitiveness in various career paths including law, medicine, business, government, nonprofits, consulting, and humanities fields like theater, art, and curatorial work.
+
+urls:
+- [Department URL]
+contacts:
+- type: Undergraduate Coordinator
+  name: Jessica Heslin
+  email: heslin@princeton.edu
+
+req_list:
+- name: Prerequisite
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    RUS 107 (or RUS 108 for heritage speakers of Russian).
+    RUS 207 (or a 300-level course for heritage speakers of Russian).
+    Three Slavic department courses beyond RUS 207, with at least one conducted in Russian.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - RUS 107
+  - RUS 108
+  - RUS 207
+  - SLA [300-level courses]
+  - SLA [additional courses]
+
+- name: Program of Study
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Minor in Slavic Languages and Literatures requires five courses:
+    RUS 107 (or RUS 108 for heritage speakers of Russian).
+    RUS 207 (or a 300-level course for heritage speakers of Russian).
+    Three Slavic department courses beyond RUS 207, with at least one conducted in Russian.
+    No independent work is required. Substitutions allowed for students focusing on other Slavic languages or substituting a Center for Digital Humanities’ course, provided Slavic traditions are examined.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - RUS 107
+  - RUS 108
+  - RUS 207
+  - SLA [300-level courses]
+  - SLA [additional courses]
+  - CDH [Introduction to Data and Culture]
+

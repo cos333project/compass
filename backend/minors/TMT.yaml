@@ -1,0 +1,66 @@
+type: Minor
+name: Translation and Intercultural Communication
+code: PTIC
+degree:
+description: |
+  The Program in Translation and Intercultural Communication (PTIC) fosters a deep understanding of linguistic translation across various fields, including humanities, social sciences, hard sciences, arts, and engineering. Recognizing translation as a critical component in global communication, PTIC facilitates engagement with real-world translation needs, connecting academic insights with broader community services. The program extends beyond theoretical discussions, with a minor designed for undergraduates keen on mastering language use and navigating the complexities of intercultural communication. PTIC does not offer translator training but provides a rich platform for exploring translation in its manifold dimensions.
+
+urls:
+- [Program URL]
+contacts:
+- type: Program Director
+  name: Prof. Karen Emmerich
+  email: karene@princeton.edu
+- type: Program Administrator
+  name: Yolanda Sullivan
+  email: ysullivan@princeton.edu
+
+req_list:
+- name: Pre-requisites
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Before entering the minor, students should have satisfied the University’s language requirement or demonstrated proficiency in a language through the 107/108 sequence. Native or near-native fluency in a language not offered by the University can also be counted toward the language prerequisite of PTIC.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [Language sequence through 107/108 or demonstrated proficiency]
+
+- name: Core Coursework
+  max_counted: 1
+  min_needed: 5
+  explanation: |
+    The program entails two core courses - TRA 200 and TRA 400, along with three additional courses at the 200 level or above from at least two of the three categories provided, focusing on various aspects of translation and related fields.
+  double_counting_allowed: true
+  max_common_with_major: 2
+  pdfs_allowed: 0
+  course_list:
+  - TRA 200
+  - TRA 400
+  - [Three additional courses as described]
+
+- name: Language Requirements
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Although only required to satisfy the University's language requirement, students are urged to continue their language study at the 200 level and above, and immerse in environments conducive to linguistic and cultural understanding.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [Continued language study at the 200 level and above]
+
+- name: Independent Work
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Students must undertake a substantial project in translation, interpretation, or translation studies, which could be a part of their coursework or independent departmental work, but must be submitted separately to the program director for approval.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [Independent project as described]
+
+courses:
+- [List of courses as provided, each on a new line]

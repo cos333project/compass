@@ -1,0 +1,54 @@
+type: Minor
+name: Visual Arts
+code: VIS
+degree:
+description: |
+  The Visual Arts minor under the Lewis Center for the Arts, promotes an environment where students are urged to explore visual art and media through hands-on creative engagement. The curriculum spans drawing, filmmaking, graphic design, media, painting, photography, and sculpture, mentored by contemporary practicing artists. The program opens its doors to all Princeton students with a few courses reserved for VIS minors and Practice of Art track students. The minor provides two pathways for those inclined towards a thesis in studio arts or film production.
+
+urls:
+- [Program URL]
+contacts:
+- type: Program Director
+  email: [Program Director's Email]
+
+req_list:
+- name: Admission Prerequisites
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Admission is through a selective process where sophomores submit an application and a creative portfolio post spring break. At least one visual arts studio or film production course must be completed prior to application. A course from the Department of Art and Archaeology is highly recommended.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [One VIS studio or film production course]
+  - [One ART course (recommended)]
+
+- name: Core Coursework
+  max_counted: 1
+  min_needed: 7
+  explanation: |
+    The core curriculum mandates seven courses including two required seminars, three visual arts studio or film production courses covering at least two different media, one 300- or 400-level course, and one course from Art and Archaeology in the modern period (19th century to the present). VIS 392 and VIS 416 are required seminars with provisions for film students.
+  double_counting_allowed: true
+  max_common_with_major: 2
+  pdfs_allowed: 0
+  course_list:
+  - VIS 392
+  - VIS 416
+  - [Three VIS studio or film production courses]
+  - [One ART course in modern period]
+  - [One additional VIS studio or any ART course]
+
+- name: Independent Work
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Independent work is tailored to allow for creative exploration, mentored by faculty advisers. Juniors produce a 32-page artist's book in the fall and work on a studio project in the spring culminating in a group show. Seniors are assigned semi-private studios working closely with a primary adviser, culminating their study with a thesis show exhibited at the Lewis Center galleries.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [Independent Work under VIS faculty advisement]
+
+courses:
+- [List of courses as provided, each on a new line]
