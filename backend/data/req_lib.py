@@ -1,63 +1,33 @@
-#!/usr/bin/env python3
-import requests
-import json
+from typing import Dict, Any
 from configs import Configs
-
+import requests
 
 class ReqLib:
 
     def __init__(self):
         self.configs = Configs()
 
-    '''
-    This function allows a user to make a request to 
-    a certain endpoint, with the BASE_URL of 
-    https://api.princeton.edu:443/mobile-app
-
-    The parameters kwargs are keyword arguments. It
-    symbolizes a variable number of arguments 
-    '''
-    def getJSON(self, endpoint, **kwargs):
+    def _make_request(self, endpoint: str, **kwargs: Any) -> requests.Response:
         req = requests.get(
-            self.configs.BASE_URL + endpoint, 
-            params=kwargs if "kwargs" not in kwargs else kwargs["kwargs"], 
-            headers={
-                "Authorization": "Bearer " + self.configs.ACCESS_TOKEN
-            },
+            f"{self.configs.BASE_URL}{endpoint}", 
+            params=kwargs, 
+            headers={"Authorization": f"Bearer {self.configs.ACCESS_TOKEN}"}
         )
-        text = req.text
-
-        # Check to see if the response failed due to invalid
-        # credentials
-        text = self._updateConfigs(text, endpoint, **kwargs)
-
-        return json.loads(text)
-
-    def _updateConfigs(self, text, endpoint, **kwargs):
-        if text.startswith("<ams:fault"):
+        
+        if req.status_code != 200:
             self.configs._refreshToken(grant_type="client_credentials")
-
-            # Redo the request with the new access token
             req = requests.get(
-                self.configs.BASE_URL + endpoint, 
-                params=kwargs if "kwargs" not in kwargs else kwargs["kwargs"], 
-                headers={
-                    "Authorization": "Bearer " + self.configs.ACCESS_TOKEN
-                },
+                f"{self.configs.BASE_URL}{endpoint}", 
+                params=kwargs, 
+                headers={"Authorization": f"Bearer {self.configs.ACCESS_TOKEN}"}
             )
-            text = req.text
 
-        return text
+        return req
 
-    def getXMLorTXT(self, endpoint, **kwargs):
-        req = requests.get(
-                self.configs.BASE_URL + endpoint, 
-                params=kwargs if "kwargs" not in kwargs else kwargs["kwargs"], 
-                headers={
-                    "Authorization": "Bearer " + self.configs.ACCESS_TOKEN
-                },
-            )
-        # Check to see if the response failed due to invalid
-        # credentials
-        text = self._updateConfigs(req.text, endpoint, **kwargs)
-        return text
+    def getJSON(self, endpoint: str, **kwargs: Any) -> Dict:
+        req = self._make_request(endpoint, **kwargs)
+        return req.json()
+
+    def getXMLorTXT(self, endpoint: str, **kwargs: Any) -> str:
+        req = self._make_request(endpoint, **kwargs)
+        return req.text

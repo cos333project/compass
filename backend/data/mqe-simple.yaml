@@ -1,0 +1,37 @@
+Minors:
+  - Minor:
+      code: "MQE"
+      name: "Quantitative Economics"
+      application_deadline: "2023-09-30"
+      max_courses_from_major: 2
+      max_courses_from_other: 2
+    MinorRequirements:
+      - RequirementType: "Prerequisite"
+        description: "Prerequisites for MQE"
+        courses_required: 3
+        pdfs_allowed: 0
+        deadline: 5
+        min_grade: "C"
+        Courses:
+          - course_code: "MAT201"
+          - course_code: "MAT202"
+      - RequirementType: "Core"
+        description: "Core Courses for MQE"
+        courses_required: 2
+        Courses:
+          - course_code: "ECO310"
+          - course_code: "ECO311"
+      - RequirementType: "Elective"
+        description: "Elective Courses for MQE"
+        courses_required: 3
+        Courses:
+          - course_code: "ECO313"
+          - course_code: "ECO315"
+    ExcludedMajors:
+      - "ECO"
+    ExcludedMinors:
+      - "FIN"
+    URLs:
+      - "https://economics.princeton.edu/undergraduate-program/minors/minor-in-quantitative-economics/"
+    Contacts:
+      - "eco-mqe@princeton.edu"
