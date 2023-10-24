@@ -1,0 +1,71 @@
+type: Minor
+name: South Asian Studies
+code: SAS
+degree:
+description: |
+  The minor in South Asian Studies, facilitated by the Princeton Institute for International and Regional Studies, equips students with the methodological and theoretical tools to delve into the political, economic, social, cultural, and religious facets of the South Asian region, encompassing India, Pakistan, Bangladesh, Sri Lanka, and Nepal. The minor offers a four-term language sequence in Hindi, Urdu, and Sanskrit, emphasizing the cultural context of South Asia, with diverse focuses on speaking, reading, writing, and interpretation. It encourages students to explore intensive summer language programs and opportunities to study or travel in South Asia.
+
+urls:
+- [Office of International Programs URL]
+contacts:
+- type: Program Director
+  name: [Program Director's Name]
+  email: [Program Director's Email]
+- type: SAS Program Manager
+  name: [Program Manager's Name]
+  email: [Program Manager's Email]
+
+req_list:
+- name: Language Requirement
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Completion of HIN, URD, or SAN 107 (usually four semesters of study). Substitutions with higher-level language courses or another course in South Asian studies are permissible with program director's approval.
+  double_counting_allowed: false
+  max_common_with_major: 2
+  pdfs_allowed: 0
+  course_list:
+  - HIN 107
+  - URD 107
+  - SAN 107
+  - HIN-URD [300-level or higher]
+  - SAN [300-level or higher]
+
+- name: Core Course
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    Successful completion of the Introduction to South Asian Studies core course, typically taken in junior year.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - SAS [Introduction to South Asian Studies]
+
+- name: Elective Courses
+  max_counted: 3
+  min_needed: 3
+  explanation: |
+    Three elective courses on South Asia from specified departments, with a limit of two courses from any one department. Advanced language courses may count towards this requirement.
+  double_counting_allowed: true
+  max_common_with_major: 2
+  pdfs_allowed: 0
+  course_list:
+  - [List of approved elective courses]
+
+- name: Independent Work
+  max_counted: 1
+  min_needed: 1
+  explanation: |
+    A senior thesis or junior independent project with a significant South Asian component, within the student's major department. A separate piece of independent work on South Asia is required if the departmental senior thesis lacks South Asian content.
+  double_counting_allowed: false
+  max_common_with_major: 0
+  pdfs_allowed: 0
+  course_list:
+  - [Details of independent work]
+
+courses:
+- HIN 303 - Topics in Hindi/Urdu (also COM 395/URD 303) Fall LA
+- HIN 304 - Topics in Hindi-Urdu (also COM 378/TRA 302/URD 304) LA
+- HIN 305 - Topics in Hindi/Urdu (also COM 248/URD 305) LA
+- SAS 317 - The Making of Modern India and Pakistan (also HIS 317) Fall HA

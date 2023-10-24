@@ -1,7 +1,7 @@
 import graphene
 import compass.schema
 
-# The roject-level schema.py where we stitch together the app-level schemas.
+# The project-level schema.py where we stitch together the app-level schemas.
 
 class Query(compass.schema.Query, graphene.ObjectType):
     """

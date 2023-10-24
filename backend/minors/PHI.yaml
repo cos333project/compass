@@ -1,0 +1,34 @@
+Minor:
+  code: PHI
+  name: Philosophy
+  description: >
+    Philosophy is of substantial relevance to work in a great variety of other academic subjects, many of which historically emerged originally as branches of philosophy before achieving the status of separate disciplines. The qualities of mind which the study of philosophy aims to cultivate, and which are most often cited by our alumni as their greatest benefit from majoring in the subject, including especially the ability to think and write in a clear and concise, organized and informed and disciplined way about contentious and often confusing issues, are likely to be of value in some way for virtually all students. The option of minoring in philosophy is intended to offer an opportunity to learn such lessons in a structured way, while leaving the student free to pursue virtually any major academic interest. 
+  
+  degree_type: "BOTH"
+  excluded_majors: 
+  excluded_minors:
+  max_courses_double_dipped:
+  max_courses_from_major: 2
+
+  courses_required: 6
+  pdfs_allowed: 0
+
+  prerequisites:
+    choose: 1
+    options:
+      - PHI2**
+      - PHI3**
+      - PHI4**
+
+  core:
+    choose: 5
+    options:
+      - PHI2**
+      - PHI3**
+      - PHI4**
+    special_conditions: 1_OR_FEWER_COGNATE, 2_OR_FEWER_LOWER_LEVEL, 3_OR_FEWER_PER_AREA
+
+  application_deadline:
+    urls:
+    - https://ua.princeton.edu/fields-study/departmental-majors-degree-bachelor-arts/philosophy
+    contacts:

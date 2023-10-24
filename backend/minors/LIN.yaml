@@ -1,0 +1,73 @@
+Minor:
+  code: LIN
+  name: Linguistics
+  description: >
+    Students at Princeton develop the skills of a linguist through 
+    hands-on engagement with gathering and interpreting data from many different 
+    languages, the employment of diverse methodologies, and the investigation of 
+    language through a variety of lenses, including;
+
+    Working with native speakers of an unfamiliar language (Field Methods).
+    Engaging with descriptive grammars and large-scale statistical correlations to investigate 
+    similarities and differences across languages (Linguistic Typology).
+    Analyzing texts to elucidate how language changes over time (Historical Linguistics).
+    Modeling linguistic differences across dialects and social contexts (Sociolinguistics).
+    Measuring linguistic behaviors in controlled experimental contexts (Psycholinguistics).
+    Observing how languages develop/coexist within speakers (Language Acquisition, Bilingualism).
+
+    Beyond the linguistic knowledge mastered through such coursework, students of 
+    linguistics will gain a number of valuable skills that extend to nearly every domain, 
+    including; logical problem-solving, gathering and organizing large data sets, 
+    recognizing patterns, making and testing hypotheses, and 
+    identifying problems in and prospects for analytical approaches.
+
+  degree_type: "BOTH"
+  excluded_majors: 
+  - LIN
+  excluded_minors:
+  max_courses_double_dipped:
+  max_courses_from_major: 1
+  
+  courses_required: 5
+
+  intro:
+    pdfs_allowed: 1
+    choose: 1
+    options:
+      - LIN201
+
+  electives:
+    pdfs_allowed: 1
+    core:
+      choose: 1
+      options:
+        - LIN301
+        - LIN302
+        - LIN303 OR PHI334
+        - LIN306
+
+    methods:
+      choose: 1
+      options:
+        - LIN210
+        - LIN310
+        - LIN355
+        - LIN356
+
+    extra:
+      choose: 2
+      options: 
+        - LIN2**
+        - LIN3**
+        - LIN4**
+
+  independent_work:
+    choose: 1
+    options:
+      - INDEPENDENT_WORK
+      - SENIOR_THESIS
+
+  application_deadline:
+    urls:
+    - https://ua.princeton.edu/fields-study/minors/linguistics
+    contacts:
