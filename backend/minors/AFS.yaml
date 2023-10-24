@@ -1,0 +1,162 @@
+---
+type: Minor
+name: African Studies
+code: AFS
+degree:
+urls:
+- https://afs.princeton.edu
+description: Africa is the continent where humanity began and where its 
+  future will be determined. Princeton’s minor in African Studies 
+  provides opportunities to all Princeton students, regardless of major, 
+  to learn about the continent. Students will learn a variety of 
+  methods, interdisciplinary approaches and perspectives that will 
+  enrich them with critical and analytical tools for engaging with 
+  Africa.
+contacts:
+- type: Program Director
+  name: Chika O. Okeke-Agulu
+  email: cokekeag@princeton.edu
+req_list:
+- name: Core
+  max_counted: 1
+  min_needed: 1
+  explanation: Students should have at least one core course completed 
+    by the spring of their junior year. One 200- or 300-level course 
+    administered or cross-listed by the Program in African Studies will 
+    serve to fulfill this requirement.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - AFS 200
+  - AFS 206
+  - AFS 239
+  - AFS 258
+  - AFS 312
+  - AFS 313
+  - AFS 314
+  - AFS 316
+  - AFS 330
+  - AFS 366
+  deadline: Junior Spring
+- name: Language
+  max_counted: 1
+  min_needed: 1
+  explanation: One semester of an African language course is required 
+    for the minor. The requirement can be fulfilled by one semester of 
+    an African language on campus or intense study with a summer 
+    program.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - TWI 101
+  - TWI 102
+  - TWI 103G
+  - TWI 105
+  - TWI 107
+  - GEZ 101
+  - SWA 101
+  - SWA 102
+  - SWA 103K
+  - SWA 105
+  - SWA 107
+  deadline:
+- name: Humanities
+  max_counted: 1
+  min_needed: 1
+  explanation: Students are expected to take one course in the 
+    humanities. Any courses cross-listed with the Program in African 
+    Studies are preapproved to count toward fulfillment of the minor. 
+    Courses not cross-listed with African Studies, but devoting 
+    significant course time to issues on the continent, may be submitted 
+    for review by the program director for credit.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - AFS 200
+  - AFS 239
+  - AFS 258
+  - AFS 312
+  - AFS 330
+  - AFS 400
+  - AFS 411
+  - AFS 415
+  - AFS 416
+  deadline:
+- name: Social Sciences
+  max_counted: 1
+  min_needed: 1
+  explanation: Students are expected to take one course in the social 
+    sciences (History, Politics, Sociology or Anthropology). Any courses 
+    cross-listed with the Program in African Studies are preapproved to 
+    count toward fulfillment of the minor. Courses not cross-listed with 
+    African Studies, but devoting significant course time to issues on 
+    the continent, may be submitted for review by the program director 
+    for credit.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - AFS 206
+  - AFS 313
+  - AFS 314
+  - AFS 316
+  - AFS 366
+  - AFS 405
+  deadline:
+- name: Elective
+  max_counted: 1
+  min_needed: 1
+  explanation: Any courses cross-listed with the Program in African 
+    Studies are preapproved to count toward fulfillment of the minor. 
+    Courses not cross-listed with African Studies, but devoting 
+    significant course time to issues on the continent, may be submitted 
+    for review by the program director for credit.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 0
+  course_list:
+  - AFS 200
+  - AFS 206
+  - AFS 239
+  - AFS 258
+  - AFS 312
+  - AFS 313
+  - AFS 314
+  - AFS 316
+  - AFS 330
+  - AFS 366
+  - AFS 400
+  - AFS 405
+  - AFS 411
+  - AFS 415
+  - AFS 416
+  - TWI 101
+  - TWI 102
+  - TWI 103G
+  - TWI 105
+  - TWI 107
+  - GEZ 101
+  - SWA 101
+  - SWA 102
+  - SWA 103K
+  - SWA 105
+  - SWA 107
+  deadline:
+- name: Independent Work
+  max_counted:
+  min_needed:
+  explanation: In addition to the coursework, the student will submit a 
+    paper dealing with Africa. The student may submit the senior thesis 
+    or junior paper or another substantial piece of original research 
+    that meets the same standards of relevance to Africa.
+  double_counting_allowed:
+  max_common_with_major:
+  pdfs_allowed:
+  course_list:
+  deadline:
+
+# Notes: a maximum of 2 courses in total may be double-counted towards
+# the major

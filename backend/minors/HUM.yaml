@@ -1,0 +1,49 @@
+---
+type: Minor
+name: Humanistic Studies
+code: HUM
+degree:
+urls:
+  - https://humstudies.princeton.edu/
+description: The minor in humanistic studies is open to students
+  from all majors who wish to pursue their intellectual interests
+  and commitments within an interdisciplinary curriculum. HUM
+  minors are encouraged to reflect on the presuppositions of
+  their major field and to become versatile thinkers and
+  researchers. Some HUM minors prefer to connect disciplines
+  across and within the scholarly humanities (e.g., literature
+  with philosophy); others are drawn to connect the humanities
+  to the creative arts, engineering, or social or natural sciences.
+  Still others engage with such interdisciplinary fields of study
+  as medical, environmental, urban and digital humanities.
+contacts:
+  - type: Director
+    name: Esther Schor
+    email: eschor@princeton.edu
+req_list:
+  - name: Humanities Sequence
+    min_needed: 1
+    explanation: At least one semester of a 200-level Humanities Sequence
+      course, whether double-credit (Western Humanities) or single credit
+      (East Asian and Near Eastern Humanities), normally taken in the first
+      or second year.
+    course_list:
+    - HUM 216-217
+    - HUM 218-219
+    - HUM 233-234
+    - HUM 247-248
+  - name: Interdisciplinary Courses
+    min_needed: 4
+    explanation: At least two of the four courses must be HUM courses,
+      originating in the Program in Humanistic Studies. Two of the four courses
+      must be taken at the 300 or 400 level.The four courses must also be drawn from
+      at least two of the following clusters, which demonstrate the broad reach of
+      the humanities - Tradition and Transformation, Global or Comparative Humanities,
+      Engaged or Public Humanities, Humanities and Sciences in Dialogue,
+      Data and Culture. Each semester, students will be furnished with a list of
+      preapproved courses for each cluster and the specific HUM courses and HUM
+      cross-lists included in each; some courses will appear in more than one cluster.
+      Up to two courses may be double-counted with permission of the home department’s
+      director of undergraduate studies and the humanistic studies program adviser.
+
+  

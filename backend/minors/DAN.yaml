@@ -1,0 +1,107 @@
+---
+type: Minor
+name: Dance
+code: DAN
+degree:
+urls:
+- https://arts.princeton.edu/academics/dance/
+description: The Program in Dance, part of the Lewis Center for the 
+  Arts, welcomes all students to engage and experiment with dance. At 
+  the core of the program is the belief that dance fosters an 
+  integration of mind and body that allows for a greater connection to 
+  ourselves and our communities. To that end, the dance minor offers 
+  students deep exposure to and appreciation of dance through practice, 
+  performance and critical conversation.
+contacts:
+- type: Program Director
+  name: Susan S. Marshall
+  email: sm9@princeton.edu
+req_list:
+- name: Prerequisites
+  max_counted: 1
+  min_needed: 2
+  explanation:
+  double_counting_allowed: false
+  max_common_with_major: 2
+  pdfs_allowed: 2
+  course_list:
+  - DAN *
+  deadline: Sophomore Spring
+- name: Studio Course
+  max_counted: 1
+  min_needed: 1
+  explanation:
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 1
+  course_list:
+  - DAN 204
+  - DAN 207
+  - DAN 208
+  - DAN 211
+  - DAN 215
+  - DAN 216
+  - DAN 221
+  - DAN 229
+  - DAN 301
+  - DAN 303
+  - DAN 305
+  - DAN 324
+  - DAN 326
+  - DAN 348
+  - DAN 351
+  - DAN 354
+  - DAN 401
+  - DAN 402
+  - DAN 408
+  - DAN 419A
+  - DAN 420A
+  - DAN 431
+  - DAN 432
+- name: Seminar
+  max_counted: 1
+  min_needed: 1
+  explanation: Complete at least one seminar course in dance studies, 
+    for example, DAN 215, 321 or another research-based scholarly course 
+    with approval of the director of dance.
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 1
+  course_list:
+    - DAN 215
+    - DAN 305
+    - DAN 308
+    - DAN 312
+    - DAN 314
+    - DAN 316
+    - DAN 317
+    - DAN 321
+    - DAN 325
+    - DAN 329
+    - DAN 348
+    - DAN 393
+    - DAN 406
+- name: Elective
+  max_counted: 1
+  min_needed: 1
+  explanation:
+  double_counting_allowed: false
+  max_common_with_major: 1
+  pdfs_allowed: 1
+  course_list:
+    - DAN *
+- name: Show Support
+  max_counted:
+  min_needed:
+  explanation: All students planning to earn the minor in dance must 
+    complete the show support requirement (formerly referred to as 
+    “tech hours”) by supporting one dance program show in a 
+    nonperforming capacity. Students who will propose an independent 
+    choreographic or performance project during their senior year must 
+    have completed the show support requirement by the end of their 
+    junior year.
+  double_counting_allowed:
+  max_common_with_major:
+  pdfs_allowed:
+  course_list:
+  deadline:
