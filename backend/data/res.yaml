@@ -1,0 +1,69 @@
+# NOT DONE
+Minor:
+  code: RES
+  name: Russian, East European, and Eurasian Studies
+  description: >
+    The minor in Russian, East European, and Eurasian Studies at Princeton 
+    provides a multidisciplinary approach, engaging students in the study of 
+    Eastern Europe, Russia and Eurasia alongside their major studies. T
+    he minor aims to equip students with linguistic expertise and a scholarly 
+    understanding of the region, preparing them for diverse global careers 
+    including government, international business, law, and academia among others.
+
+  degree_type: "BOTH"
+  excluded_majors: []
+  excluded_minors: []
+  max_courses_from_other: 0
+  max_courses_from_major: 0
+  
+  courses_required: 4
+  pdfs_allowed: 0
+
+  prerequisites:
+    deadline: 4
+    min_grade: None
+
+    requirements:
+      - course: Language Requirement
+        equivalent: []
+        special_conditions: []
+
+  core:
+    description: "Division I: History and Social Sciences"
+    choose: 2
+    requirements:
+      - course: ECO 310
+        prerequisites: [MAT 201, ECO 201]
+        special_conditions:
+          - class_year: 2025
+            equivalent: MAT 175
+            min_grade: instructor_permission
+      
+      - course: Division II - Literature, Arts and Culture
+        prerequisites: []
+        special_conditions: []
+    
+  core:
+    description: "Division II: Literature, Arts and Culture"
+    choose: 2
+    requirements:
+      - course: ECO 310
+        prerequisites: [MAT 201, ECO 201]
+        special_conditions:
+          - class_year: 2025
+            equivalent: MAT 175
+            min_grade: instructor_permission
+      
+      - course: Division II - Literature, Arts and Culture
+        prerequisites: []
+        special_conditions: []
+
+  language: 
+    choose: 0
+    options: []
+
+  application_deadline: None
+  urls:
+    - https://ua.princeton.edu/fields-study/minors/russian-east-european-and-eurasian-studies
+  contacts:
+    - To be written

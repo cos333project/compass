@@ -1,62 +1,88 @@
-type: Minor
-name: Values and Public Life
-code: VPL
-degree:
-description: |
-  The Values and Public Life minor, orchestrated by the University Center for Human Values, integrates ethical inquiry into public life concerns. It steers students towards proficiently examining ethical issues and applying these analytical skills to explore one or more correlated topics. The minor aims to capacitate students with the ability to invoke informed discussions on values in the public domain, and assimilate a critical value viewpoint in their future scholarly and professional endeavors. The program is open to rising juniors from all disciplines.
+# BASICALLY DONE
+Minor:
+  code: VPL
+  name: Values and Public Life
+  description: >
+    The interdisciplinary minor in values and public life, offered by the 
+    University Center for Human Values, aims to equip students to bring 
+    informed discussion of values into the public sphere. Open to rising 
+    juniors in any discipline.
 
-urls:
-- [Program URL]
-contacts:
-- type: Program Director
-  email: [Program Director's Email]
+  degree_type: "BOTH"
+  excluded_majors: []
+  excluded_minors: []
+  max_courses_from_other: 0
+  max_courses_from_major: 2
 
-req_list:
-- name: Admission Prerequisites
-  max_counted: 1
-  min_needed: 1
-  explanation: |
-    Admission necessitates an enrollment essay, an academic referee's name submission, and a minimum GPA of 3.0. A core course completion by sophomore year's end is recommended. Applications are typically accepted in the sophomore year's second semester, with exceptions for juniors at the director's discretion.
-  double_counting_allowed: false
-  max_common_with_major: 0
+  courses_required: 5
   pdfs_allowed: 0
-  course_list:
-  - [Core course (recommended)]
 
-- name: Core Coursework
-  max_counted: 1
-  min_needed: 3
-  explanation: |
-    The core curriculum mandates one course each from three distinct categories: Introduction to Moral Philosophy, a political theory course, and a junior/senior seminar in values and public life or another normative issues seminar approved by the program director.
-  double_counting_allowed: true
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - PHI 202/CHV 202
-  - [One Political Theory Course]
-  - [One Junior/Senior Seminar in Values and Public Life or approved alternative]
+  prerequisites:
+    deadline: Announced each spring
+    min_grade: 3.0 GPA
 
-- name: Thematic Courses
-  max_counted: 1
-  min_needed: 2
-  explanation: |
-    Students must delineate their thematic focus within the minor, selecting two courses with explicit values components related to this focus, in consultation with the program director.
-  double_counting_allowed: true
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - [Two courses in chosen thematic focus]
+    requirements:
+      - course: Enrollment essay
+        equivalent: []
+        special_conditions: []
 
-- name: Independent Work
-  max_counted: 1
-  min_needed: 1
-  explanation: |
-    A senior thesis or a portion thereof on a normative topic, approved by both the program and the student's major department, constitutes the independent work. Participation in non-credit-bearing senior thesis workshops convened by the minor is expected.
-  double_counting_allowed: false
-  max_common_with_major: 0
-  pdfs_allowed: 0
-  course_list:
-  - [Senior thesis or approved substantial piece of independent work]
+      - course: Academic referee
+        equivalent: []
+        special_conditions: []
 
-courses:
-- [List of courses as provided, each on a new line]
+  core:
+    choose: 3
+
+    requirements:
+      - course: PHI 202/CHV 202
+        prerequisites: []
+        special_conditions: []
+
+      - course: Political Theory Course
+        prerequisites: []
+        options:
+          - POL 210
+          - SPI 370/CHV 301/POL 308
+          - POL 301/CLA 301/HLS 303
+          - POL 302
+          - POL 303
+          - POL 305
+          - POL 306/CHV 306/PHI 360
+          - POL 307/CHV 307
+          - POL 309/REL 309
+          - POL 313/CHV 313
+
+      - course: Junior/Senior Seminar in VPL
+        prerequisites: []
+        special_conditions: []
+
+  electives:
+    choose: 2
+    options: 
+      - Bioethics
+      - Poverty, Incarceration, and Freedom
+      - Race, Social Justice, and Public Life
+      - Gender and Leadership
+      - Environmental Ethics
+      - Cognitive Psychology, Ethics, and Public Policy
+      - Democracy in Theory and Practice
+      - Global Justice and Human Rights
+      - Constitutionalism and the Rule of Law
+      - History and Theory of Human Rights
+      - Public Dilemmas in Literature
+      - Ethics, Religion, and Theology
+    equivalent: None
+
+  application_deadline: "Second semester of sophomore year"
+  urls:
+    - None
+  contacts:
+    - Program Director
+    - None
+
+  additional_info:
+    goals: >
+      The program focuses on ethics and public affairs, offering students an opportunity to deepen their understanding of a particular area of focus.
+    independent_work: >
+      Students will write a senior thesis or another substantial piece of independent work on a normative topic.
+      
