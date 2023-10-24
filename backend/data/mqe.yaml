@@ -1,70 +1,94 @@
-type: Minor
-name: Quantitative Economics
-code: MQE
-degree:
-description: The Minor in Quantitative Economics is designed for undergraduates from the natural sciences, mathematics, or engineering departments who have an interest in economics. This minor equips students to apply their mathematical knowledge to economic analysis, serving as a gateway to graduate school for non-economics majors. It introduces students to key economic concepts through a mathematically rigorous curriculum, beginning with intermediate-level courses, followed by upper-level core Economics courses, tailored to the mathematical aptitude of the students.
+# BASICALLY DONE
+Minor:
+  code: MQE
+  name: Quantitative Economics
+  description: >
+    The Minor in Quantitative Economics offers a course of study for undergraduates whose home 
+    department is in the natural sciences, mathematics, or engineering and who are interested in 
+    economics. The minor provides students with a plan of study and a selection of courses to apply 
+    their mathematical training to economic anaalysis. The minor also provides a path to graduate 
+    school for students who do not major in economics.
+    
+    Students will develop a good understanding of key economic concepts and will be able to apply 
+    these concepts to new problems. The prerequisites and the two required courses provide a 
+    methodological foundation, while the elective courses apply those methods in applications.
+    
+    Open for the Class of 2025 and later, this new minor begins students with the mathematical 
+    versions of intermediate courses and then steers them to the more mathematical upper-level core 
+    Economics courses.
 
-urls:
-- [Application URL]
-contacts:
-- type: Program Coordinator
-  name: [Coordinator's Name]
-  email: [Coordinator's Email]
-req_list:
-- name: Prerequisite
-  max_counted: 1
-  min_needed: 1
-  explanation: Prerequisite courses to be completed before Junior year with a minimum grade of 'C'.
-  double_counting_allowed: false
-  max_common_with_major: 2
+  degree_type: "BOTH"
+  excluded_majors: 
+  - ECO
+  excluded_minors:
+  - FIN
+  max_courses_from_other: 2
+  max_courses_from_major: 2
+  
+  courses_required: 8
   pdfs_allowed: 0
-  course_list:
-  - MAT 201
-  - ECO 201
-  - EGR 156
-  - MAT 203
-  - MAT 202
-  - EGR 154
-  - MAT 204
-  - ECO 202
-  - ORF 245
 
-- name: Required Courses
-  max_counted: 2
-  min_needed: 2
-  explanation: 'Two of the three math-track intermediate courses. Students do not need to take introductory economics courses. Pre-requirements: For ECO 310 and ECO 311, MAT 201 or ECO 201, or instructor permission is required. For ECO 312, ECO 201 or MAT 201 and ECO 202 or ORF 245, or instructor permission is required.'
-  double_counting_allowed: false
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - ECO 310
-  - ECO 311
-  - ECO 312
+  prerequisites:
+    deadline: 5
+    min_grade: C
 
-- name: Elective Courses
-  max_counted: 3
-  min_needed: 3
-  explanation: 'Three elective courses from the specified group. Advanced (graduate) courses can be substituted for any of the listed courses.'
-  double_counting_allowed: true
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - ECO 313
-  - ECO 315
-  - ECO 317
-  - ECO 323
-  - ECO 327
-  - ECO 416
-  - ECO 418
-  - COS 445
-  - ORF 405
+    requirements:
+      - course: MAT 201
+        or: [ECO 201]
+        equivalent: [EGR 156, MAT 203]
+        special_conditions:
+          - class_year: 2025
+            equivalent: MAT 175
+            min_grade: A-
 
-- name: Timing and Restrictions
-  max_counted: 1
-  min_needed: 1
-  explanation: 'Complete at least one required course by the end of Junior year. Economics majors are ineligible. Only a maximum of two courses can count towards both the Minor in Quantitative Economics and the major, or another minor.'
-  double_counting_allowed: false
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - [Further details regarding timing and restrictions can be listed here if necessary]
+      - course: MAT 202
+        equivalent: [EGR 154, MAT 204]
+
+      - course: ECO 202
+        or: [ORF 245]
+
+  core:
+    choose: 2
+
+    requirements:
+      - course: ECO 310
+        prerequisites: [MAT 201, ECO 201]
+        special_conditions:
+          - class_year: 2025
+            equivalent: MAT 175
+            min_grade: instructor_permission
+
+      - course: ECO 311
+        prerequisites: [MAT 201, ECO 201]
+        special_conditions:
+          - class_year: 2025
+            equivalent: MAT 175
+            min_grade: instructor_permission
+
+      - course: ECO 312
+        prerequisites:
+          single_course: [ECO 201]
+          multiple_courses: 
+            - [MAT 201, ECO 202]
+            - [MAT 201, ORF 245]
+          instructor_permission: true
+
+  electives:
+    choose: 3
+    options: 
+      - ECO 313
+      - ECO 315
+      - ECO 317
+      - ECO 323
+      - ECO 327
+      - ECO 416
+      - ECO 418
+      - COS 445
+      - ORF 405
+    equivalent: grad_course # Should be checked by advisor or program directory
+
+  application_deadline: "September 30, 2023"
+    urls:
+    - https://economics.princeton.edu/undergraduate-program/minors/minor-in-quantitative-economics/
+    contacts:
+    - eco-mqe@princeton.edu
