@@ -5,9 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const navigation = [
   { name: 'About', href: '#' },
-  { name: 'Planner', href: '#' },
-  { name: 'Courses', href: '#' },
-  { name: 'Schedule', href: '#' },
+  { name: 'Dashboard', href: '/dashboard' },
   { name: 'Contact Us', href: '#' },
 ];
 

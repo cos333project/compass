@@ -104,7 +104,7 @@ const navigation = {
                 alt="Company name"
               />
               <p className="text-sm leading-6 text-gray-300">
-                Making the world a better place through constructing elegant hierarchies.
+                Insert our future slogan here. Also, ignore stuff on the right - just boilerplate
               </p>
               <div className="flex space-x-6">
                 {navigation.social.map((item) => (
@@ -177,4 +177,3 @@ const navigation = {
       </footer>
     )
   }
-  
