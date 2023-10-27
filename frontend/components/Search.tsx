@@ -74,14 +74,24 @@ const Search: React.FC = () => {
       </ul>   
 
       <ul>
-        {/* Track of recent searches */}
-        {recent.map((past: string) => (
-            <li key={`Recent Search`}
-            className="absolute top-0 right-0 flex-col w-1/2 justify-end items-end hover:bg-gray-200 p-2">
-            <span className="font-semibold">{past}</span>
-            <span className="ml-2 text-sm"> {past}</span>
-            </li>
-        ))}
+        
+        <div> Recent Searches </div>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[0]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[1]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[2]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[3]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[4]}
+        </button>
+        
       </ul>
     </div>
   )
