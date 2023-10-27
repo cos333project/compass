@@ -50,24 +50,28 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'utils.cas_client.CASClient',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
+    # 'utils.cas_client.CASClient',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", # Frontend server
-]
 
 CAS_URL = os.environ.get('CAS_URL')
-
+LANDING_PAGE_URL = 'http://localhost:3000' # CHANGE FOR PRODUCTION
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds
+
+CORS_ALLOWED_ORIGINS = [
+    "https://fed.princeton.edu", # Change for production (hide it)
+    os.environ.get('COMPASS'),     
+    # "http://127.0.0.1:8000",     # Change for production (hide it)
+]
+# CORS_ALLOW_ALL_ORIGINS = True
 
 LOGGING = {
     'version': 1,
@@ -113,6 +117,13 @@ DATABASES = {
     )
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db_test.sqlite3',
+#     }
+# }
+
 GRAPHENE = {
     'SCHEMA': 'compass.schema.schema',
 }
@@ -143,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 

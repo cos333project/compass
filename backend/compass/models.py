@@ -31,10 +31,13 @@ class Department(models.Model):
     - code: The department's short code (e.g., 'COS' for Computer Science).
     - name: The full name of the department (e.g., 'Computer Science').
     """
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=4, unique=True)
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'Department'
 
 class Degree(models.Model):
     """
@@ -131,6 +134,9 @@ class Course(models.Model):
     drop_consent = models.CharField(max_length=1, blank=True, null=True)
     add_consent = models.CharField(max_length=1, blank=True, null=True)
     web_address = models.URLField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'Course'
 
     def __str__(self):
         return self.title
@@ -274,7 +280,7 @@ class Minor(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
-    compatible_with = models.CharField(max_length=10)  # "AB", "BSE", or "Both"
+    compatible_with = models.CharField(max_length=10, null=True)  # "AB", "BSE", or "Both"
     max_courses_double_dipped = models.IntegerField(null=True, blank=True)
     max_courses_from_major = models.IntegerField(default=2)
 
@@ -308,12 +314,15 @@ class Certificate(models.Model):
     - departments: The departments offering this certificate.
     """
     id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=4)
     name = models.CharField(max_length=100)
     departments = models.ManyToManyField(Department)
     # to help with phasing out certificates
     # filter out for new users, keep for existing users pursuing it
     active_until = models.DateField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'Certificate'
 
 class CertificateRequirement(Requirement):
     """
