@@ -15,7 +15,6 @@ class CASClient:
         cas_url: The CAS server URL.
         logger: Logger for the CASClient.
     """
-
     def __init__(self, get_response):
         self.get_response = get_response
         self.cas_url = settings.CAS_URL
@@ -23,8 +22,9 @@ class CASClient:
 
     def __call__(self, request):
         response = self.authenticate(request)
+        # Authentication failed, so we're redirecting to the login page
         if response:
-            return response  # Authentication failed, so we're redirecting to the login page
+            return response
         
         # Authentication was successful, or not required
         response = self.get_response(request)
@@ -82,11 +82,10 @@ class CASClient:
             username = self.validate(ticket, service_url)
             if username:
                 request.session['username'] = username
-                user, created = get_user_model().objects.get_or_create(
+                user, _ = get_user_model().objects.get_or_create(
                     username=username, 
+                    # See what else we should store, e.g. class year, major, etc.
                     defaults={'role': 'student'})
-                if created:
-                    user.save()
                 return None  # Authentication successful
 
         # Redirect to CAS login if authentication fails
@@ -95,5 +94,5 @@ class CASClient:
 
     def logout(self, request) -> HttpResponseRedirect:
         """Logs out the user and redirects to the landing page."""
-        request.session.pop('username', None)
-        return HttpResponseRedirect('landing')  # Replace with our landing page URL
+        request.session.flush()
+        return HttpResponseRedirect(settings.LANDING_PAGE_URL)

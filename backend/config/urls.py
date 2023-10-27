@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
     path('login/', views.login, name='login'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('is_authenticated/', views.is_authenticated, name='is_authenticated'),
+    path('search/', views.SearchCourses.as_view(), name='search'),
 ]
