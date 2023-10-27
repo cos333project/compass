@@ -1,6 +1,9 @@
 'use client';
 
-import { ApolloProvider } from '@apollo/client';
+let ApolloProvider: any;
+import('@apollo/client').then(module => {
+  ApolloProvider = module.ApolloProvider;
+});
 import { Provider as ReduxProvider } from 'react-redux';
 import { useState, useEffect } from 'react';
 import store from '../store/store';

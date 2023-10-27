@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dialog } from '@headlessui/react'
+import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -15,7 +15,7 @@ export default function Hero() {
 
   return (
     // <div className="bg-gray-900">
-    <div style={{ backgroundColor: '#2C2C2C' }}>
+    <div className='compass-gray'>
       {/* <header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1">
