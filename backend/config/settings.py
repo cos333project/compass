@@ -66,12 +66,12 @@ LANDING_PAGE_URL = 'http://localhost:3000' # CHANGE FOR PRODUCTION
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds
 
-CORS_ALLOWED_ORIGINS = [
-    "https://fed.princeton.edu", # Change for production (hide it)
-    os.environ.get('COMPASS'),     
-    # "http://127.0.0.1:8000",     # Change for production (hide it)
-]
-# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "https://fed.princeton.edu", # Change for production (hide it)
+#     os.environ.get('COMPASS')
+#     # "http://127.0.0.1:8000"     # Change for production (hide it)
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 LOGGING = {
     'version': 1,

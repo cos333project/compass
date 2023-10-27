@@ -11,7 +11,7 @@ const Dashboard = () => {
     <>
         {/* <Navbar auth={auth} /> */}
         <Navbar />
-        <div className="flex flex-col h-screen pt-20 p-8 rounded">
+        <div className="flex flex-col h-screen pt-20 p-8 bg-[#0F1E2F]">
             <main className="flex p-5 flex-grow bg-[#FAFAFA] rounded">
                 {/* Search Section (Left) */}
                 <div className="w-4/12 bg-[#FAFAFA] p-8 mr-8 rounded">

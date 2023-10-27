@@ -17,7 +17,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8000/is_authenticated') // Change once this goes to production
+    fetch('http://localhost:9000/is_authenticated') // Change once this goes to production
       .then((res) => res.json())
       .then((data) => setAuth({ isAuthenticated: data.authenticated, username: data.username }))
       .catch((err) => console.error(`Auth check failed: ${err}`));

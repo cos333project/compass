@@ -20,7 +20,7 @@ const Search: React.FC = () => {
 
   const searchCourses = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/search/?course=${query}`);
+      const response = await fetch(`http://localhost:9000/search/?course=${query}`);
       if (response.ok) {
         const { courses }: { courses: Course[] } = await response.json();
         console.log(courses.map(course => `${course.subjectCode} ${course.catalogNumber}, ${course.title}`));
