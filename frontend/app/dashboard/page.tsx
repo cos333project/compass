@@ -9,12 +9,13 @@ const Dashboard = () => {
   const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
   return (
     <>
-        <Navbar auth={auth} />
+        {/* <Navbar auth={auth} /> */}
+        <Navbar />
         <div className="flex flex-col h-screen pt-20 p-8 rounded">
             <main className="flex p-5 flex-grow bg-[#FAFAFA] rounded">
                 {/* Search Section (Left) */}
-                <div className="w-3/12 bg-[#FAFAFA] p-5 mr-5 rounded">
-                    <select aria-label="Upload transcript" className="w-full mb-2  p-2 rounded text-[#0F1E2F]">
+                <div className="w-4/12 bg-[#FAFAFA] p-8 mr-8 rounded">
+                    <select aria-label="Upload transcript" className="w-full mb-2  p-2 rounded text-[#FAFAFA]">
                       <option>Upload transcript</option>
                     </select>
                     <Search />

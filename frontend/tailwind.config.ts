@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      textColor: {
+        'compass-blue': '#0F1E2F',
+        'compass-black': '#2C2C2C',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -15,6 +19,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("daisyui")
+  ],
 }
+
 export default config
