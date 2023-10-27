@@ -17,6 +17,7 @@ interface Course {
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [courses, setCourses] = useState<Course[]>([]);
+  const [recent, setPast] = useState<string[]>([]);
 
   const searchCourses = async () => {
     try {
@@ -30,6 +31,10 @@ const Search: React.FC = () => {
       }
     } catch (error) {
       console.error("There was an error fetching courses:", error)
+    }
+    recent.push(query)
+    if (recent.length > 5) {
+        recent.shift()
     }
   };
 
@@ -66,19 +71,22 @@ const Search: React.FC = () => {
             <span className="ml-2 text-sm"> {course.title}</span>
           </li>
         ))}
+      </ul>   
 
-        {/* Faster way to do it :)) (not working): */}
-        {/* <For each={courses}>
-          {(course, _) => (
-            <li key={`${course.subjectCode} ${course.catalogNumber}`} className="text-compass-blue p-2 hover:bg-gray-200">
-              <span className="font-semibold">{course.subjectCode} {course.catalogNumber}</span>
-              <span className="ml-2 text-sm"> {course.title}</span>
+      <ul>
+        {/* Track of recent searches */}
+        {recent.map((past: string) => (
+            <li key={`Recent Search`}
+            className="absolute top-0 right-0 flex-col w-1/2 justify-end items-end hover:bg-gray-200 p-2">
+            <span className="font-semibold">{past}</span>
+            <span className="ml-2 text-sm"> {past}</span>
             </li>
-          )}
-        </For> */}
+        ))}
       </ul>
     </div>
   )
 }
+
+
 
 export default Search;
