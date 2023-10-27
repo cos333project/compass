@@ -1,5 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
+import { Settings } from 'react-native';
+import * as dotenv from 'dotenv';
+
+dotenv.config()
 
 // Styling for the login button
 const StyledButton = styled.button`
@@ -24,10 +29,13 @@ const StyledButton = styled.button`
   }
 `;
 
+// Assume handleLogin is the function we use to trigger the CAS authentication
 const Login: React.FC = () => {
-  // Assume handleLogin is the function we use to trigger the CAS authentication
   const handleLogin = () => {
-  // Logic here
+    // const CAS_URL = process.env.CAS_URL;
+    // console.log(`${CAS_URL}`);
+    const CAS_URL = process.env.NEXT_PUBLIC_CAS_URL;
+    window.location.href = CAS_URL!;
   };
 
   return (

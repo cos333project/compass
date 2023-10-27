@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const navigation = [
   { name: 'About', href: '#' },
-  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Planner', href: '#' },
+  { name: 'Courses', href: '#' },
+  { name: 'Schedule', href: '#' },
   { name: 'Contact Us', href: '#' },
 ];
 
@@ -16,7 +18,9 @@ const Navbar = () => {
 
   // Check if the user is already logged in when the component mounts
   useEffect(() => {
-    fetch("http://localhost:8000/is_authenticated")
+    fetch("http://localhost:8000/is_authenticated", {
+      credentials: 'include' 
+    })
       .then((response) => response.json())
       .then((data) => {
         if (data.authenticated) {
