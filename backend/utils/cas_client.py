@@ -82,7 +82,7 @@ class CASClient:
             username = self.validate(ticket, service_url)
             if username:
                 request.session['username'] = username
-                user, _ = get_user_model().objects.get_or_create(
+                user, created = get_user_model().objects.get_or_create(
                     username=username, 
                     # See what else we should store, e.g. class year, major, etc.
                     defaults={'role': 'student'})
