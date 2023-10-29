@@ -1,16 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/rootReducer';
+import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
 
 const Dashboard = () => {
-  const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
+  const isLoggedIn = useSelector((state: RootState) => state?.auth?.isLoggedIn ?? false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login');
+    }
+  }, [isLoggedIn, router]);
+
   return (
     <>
-        {/* <Navbar auth={auth} /> */}
-        <Navbar />
+        <Navbar/>
         <div className="flex flex-col h-screen pt-20 p-8 bg-[#0F1E2F]">
             <main className="flex p-5 flex-grow bg-[#FAFAFA] rounded">
                 {/* Search Section (Left) */}

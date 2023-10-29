@@ -3,6 +3,10 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { GeistSans, GeistMono } from 'geist/font'
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Compass',
@@ -15,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={inter.className}>
       <body>{children}</body>
     </html>
   )
