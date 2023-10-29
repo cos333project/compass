@@ -47,7 +47,7 @@ class Degree(models.Model):
     - department: Foreign key to the associated department.
     - degree_type: Type of degree, either 'AB' (Bachelor of Arts) or 'BSE' (Bachelor of Science in Engineering).
     """
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     degree_type = models.CharField(choices=DEGREE_TYPE_CHOICES, max_length=10)
 
 #----------------------------------------------------------------------#
@@ -63,7 +63,7 @@ class CourseBucket(models.Model):
     - category: Optional field to further categorize the bucket, e.g., 'Theory', 'Application'.
     """
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(default="")
     courses = models.ManyToManyField('Course')
     category = models.CharField(max_length=50, null=True, blank=True)
     # add dept/program
@@ -86,7 +86,7 @@ class IndependentWork(models.Model):
     )
 
     degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     type = models.CharField(max_length=2, choices=TYPE_CHOICES)
     completed_by_semester = models.IntegerField(choices=TIMELINE_CHOICES)
 
@@ -114,12 +114,12 @@ class AcademicTerm(models.Model):
         return self.term_code
 
 class Course(models.Model):
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    guid = models.CharField(max_length=50)
-    course_id = models.CharField(max_length=10)
-    catalog_number = models.CharField(max_length=10)
-    title = models.CharField(max_length=150)
-    description = models.TextField()
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    guid = models.CharField(max_length=50, default=None)
+    course_id = models.CharField(max_length=10, null=True)
+    catalog_number = models.CharField(max_length=10, null=True)
+    title = models.CharField(max_length=150, default="")
+    description = models.TextField(default="")
     drop_consent = models.CharField(max_length=1, blank=True, null=True)
     add_consent = models.CharField(max_length=1, blank=True, null=True)
     web_address = models.URLField(max_length=255, blank=True, null=True)
@@ -214,13 +214,13 @@ class Requirement(models.Model):
         ('OR', 'Or'),
     )
     
-    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
-    description = models.TextField()
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE, default=None)
+    description = models.TextField(default="")
     min_needed = models.IntegerField()
     deadline = models.IntegerField(choices=TIMELINE_CHOICES, null=True, blank=True)
-    double_counting_allowed = models.BooleanField()
+    double_counting_allowed = models.BooleanField(default=False)
     # max counted between minors, majors
-    pdfs_allowed = models.BooleanField()
+    pdfs_allowed = models.BooleanField(default=True)
     courses = models.ManyToManyField('Course')
     operator = models.CharField(max_length=3, choices=OPERATOR_CHOICES, default='AND')
     class Meta:
@@ -260,7 +260,7 @@ class MajorRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     major = models.ForeignKey(Major, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
 
@@ -297,7 +297,7 @@ class MinorRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     minor = models.ForeignKey(Minor, related_name="requirements", on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
 
@@ -336,7 +336,7 @@ class CertificateRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
 
@@ -357,7 +357,7 @@ class CustomUser(AbstractUser):
     )
     
     role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
-    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True)
     minors = models.ManyToManyField(Minor)
     # take in more than one minor
     class_year = models.IntegerField(null=True, blank=True)

@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
-    # 'utils.cas_client.CASClient',
+    'utils.cas_client.CASClient',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -61,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 
-CAS_URL = os.environ.get('CAS_URL')
+CAS_URL = 'https://fed.princeton.edu/cas/'
 LANDING_PAGE_URL = 'http://localhost:3000' # CHANGE FOR PRODUCTION
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds

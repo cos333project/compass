@@ -5,6 +5,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
+from urllib.parse import urlencode
 from urllib.error import URLError, HTTPError
 import logging
 
@@ -52,7 +53,8 @@ class CASClient:
             The username if validation is successful, otherwise None.
         """
         try:
-            val_url = f"{self.cas_url}validate?service={quote(service_url)}&ticket={quote(ticket)}"
+            params = {'service': service_url, 'ticket': ticket}
+            val_url = f"{self.cas_url}validate?{urlencode(params)}"
             response = urlopen(val_url, timeout=5).readlines()
             if len(response) != 2:
                 self.logger.warning("Validation failed: Unexpected response length.")
@@ -77,15 +79,13 @@ class CASClient:
 
         ticket = request.GET.get('ticket')
         service_url = self.strip_ticket(request)
-        
+        self.logger.debug(f"Service URL is: {service_url}")
         if ticket:
             username = self.validate(ticket, service_url)
             if username:
                 request.session['username'] = username
                 user, _ = get_user_model().objects.get_or_create(
-                    username=username, 
-                    # See what else we should store, e.g. class year, major, etc.
-                    defaults={'role': 'student'})
+                    username=username)
                 return None  # Authentication successful
 
         # Redirect to CAS login if authentication fails
