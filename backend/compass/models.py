@@ -36,9 +36,6 @@ class Department(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'Department'
-
 class Degree(models.Model):
     """
     Represents a type of degree offered by a department.
@@ -47,8 +44,11 @@ class Degree(models.Model):
     - department: Foreign key to the associated department.
     - degree_type: Type of degree, either 'AB' (Bachelor of Arts) or 'BSE' (Bachelor of Science in Engineering).
     """
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     degree_type = models.CharField(choices=DEGREE_TYPE_CHOICES, max_length=10)
+
+    class Meta:
+        db_table = 'Degree'
 
 #----------------------------------------------------------------------#
     
@@ -59,14 +59,19 @@ class CourseBucket(models.Model):
     Fields:
     - name: The name of this bucket, e.g., 'Core Courses', 'Electives'.
     - description: A textual description outlining the purpose or guidelines for this bucket.
+    - department: Foreign key to the associated department.
     - courses: Many-to-many relationship with courses that fall into this bucket.
     - category: Optional field to further categorize the bucket, e.g., 'Theory', 'Application'.
     """
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    description = models.TextField(default="")
     courses = models.ManyToManyField('Course')
     category = models.CharField(max_length=50, null=True, blank=True)
     # add dept/program
+
+    class Meta:
+        db_table = 'CourseBucket'
 
 class IndependentWork(models.Model):
     """
@@ -86,9 +91,12 @@ class IndependentWork(models.Model):
     )
 
     degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     type = models.CharField(max_length=2, choices=TYPE_CHOICES)
     completed_by_semester = models.IntegerField(choices=TIMELINE_CHOICES)
+
+    class Meta:
+        db_table = 'Independent Work'
 
 #----------------------------------------------------------------------#
 
@@ -110,16 +118,18 @@ class AcademicTerm(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    class Meta:
+        db_table = 'AcademicTerm'
+
     def __str__(self):
         return self.term_code
 
 class Course(models.Model):
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    guid = models.CharField(max_length=50)
-    course_id = models.CharField(max_length=10)
-    catalog_number = models.CharField(max_length=10)
-    title = models.CharField(max_length=150)
-    description = models.TextField()
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    course_id = models.CharField(max_length=10, null=True)
+    catalog_number = models.CharField(max_length=10, null=True)
+    title = models.CharField(max_length=150, default="")
+    description = models.TextField(default="")
     drop_consent = models.CharField(max_length=1, blank=True, null=True)
     add_consent = models.CharField(max_length=1, blank=True, null=True)
     web_address = models.URLField(max_length=255, blank=True, null=True)
@@ -151,6 +161,9 @@ class CourseEquivalent(models.Model):
     equivalent_course = models.ForeignKey('Course', related_name='equivalents', on_delete=models.CASCADE)
     equivalence_type = models.CharField(max_length=12, choices=EQUIVALENCE_TYPES, default='REQUIREMENT')
 
+    class Meta:
+        db_table = 'CourseEquvialent'
+
     def __str__(self):
         return f"{self.primary_course.title} is equivalent to {self.equivalent_course.title}"
 
@@ -159,6 +172,9 @@ class Instructor(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     full_name = models.CharField(max_length=255)  # Optional, provided by API.
+
+    class Meta:
+        db_table = 'Instructor'
 
     def __str__(self):
         return self.full_name
@@ -173,6 +189,9 @@ class Section(models.Model):
     capacity = models.IntegerField()
     enrollment = models.IntegerField()
 
+    class Meta:
+        db_table = 'Section'
+
     def __str__(self):
         return f"{self.course.title} - {self.term.term_code}"
 
@@ -186,6 +205,9 @@ class ClassMeeting(models.Model):
     building_code = models.CharField(max_length=50) 
     building_name = models.CharField(max_length=255)
     
+    class Meta:
+        db_table = 'ClassMeeting'
+
     def __str__(self):
         return f"{self.section} - {self.start_time} to {self.end_time}"
 
@@ -193,6 +215,9 @@ class ClassYearEnrollment(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     class_year = models.IntegerField()
     enrl_seats = models.IntegerField()
+
+    class Meta:
+        db_table = 'ClassYearEnrollment'
 
 #----------------------------------------------------------------------#
 
@@ -214,13 +239,13 @@ class Requirement(models.Model):
         ('OR', 'Or'),
     )
     
-    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
-    description = models.TextField()
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE, null=True)
+    description = models.TextField(default="")
     min_needed = models.IntegerField()
     deadline = models.IntegerField(choices=TIMELINE_CHOICES, null=True, blank=True)
-    double_counting_allowed = models.BooleanField()
+    double_counting_allowed = models.BooleanField(default=False)
     # max counted between minors, majors
-    pdfs_allowed = models.BooleanField()
+    pdfs_allowed = models.BooleanField(default=True)
     courses = models.ManyToManyField('Course')
     operator = models.CharField(max_length=3, choices=OPERATOR_CHOICES, default='AND')
     class Meta:
@@ -230,6 +255,9 @@ class Prerequisites(models.Model):
     course = models.ForeignKey(Course, related_name='course_prerequisites', on_delete=models.CASCADE)
     prerequisite = models.ForeignKey(Course, related_name='required_by_courses', on_delete=models.CASCADE)
     required = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'Preqrequisites'
 
 #----------------------------------------------------------------------#
 
@@ -248,6 +276,9 @@ class Major(models.Model):
     name = models.CharField(max_length=100)
     degree_type = models.CharField(choices=DEGREE_TYPE_CHOICES, max_length=3)
 
+    class Meta:
+        db_table = 'Major'
+
 class MajorRequirement(Requirement):
     """
     Represents a specific requirement for a major.
@@ -260,9 +291,12 @@ class MajorRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     major = models.ForeignKey(Major, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
+
+    class Meta:
+        db_table = 'MajorRequirement'
 
 #----------------------------------------------------------------------#
 
@@ -284,6 +318,9 @@ class Minor(models.Model):
     max_courses_double_dipped = models.IntegerField(null=True, blank=True)
     max_courses_from_major = models.IntegerField(default=2)
 
+    class Meta:
+        db_table = 'Minor'
+
 class MinorRequirement(Requirement):
     """
     Represents a specific requirement for a minor.
@@ -297,9 +334,12 @@ class MinorRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     minor = models.ForeignKey(Minor, related_name="requirements", on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
+
+    class Meta:
+        db_table = 'MinorRequirement'
 
 #----------------------------------------------------------------------#
 
@@ -336,9 +376,12 @@ class CertificateRequirement(Requirement):
     """
     id = models.AutoField(primary_key=True)
     certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(default="")
     course_bucket = models.ForeignKey(CourseBucket, on_delete=models.SET_NULL, null=True, blank=True)
     min_needed = models.IntegerField()
+
+    class Meta:
+        db_table = 'Department'
 
 #----------------------------------------------------------------------#
 
@@ -357,12 +400,15 @@ class CustomUser(AbstractUser):
     )
     
     role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
-    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True)
     minors = models.ManyToManyField(Minor)
     # take in more than one minor
     class_year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'User'
 
 class UserCourses(models.Model):
     """
@@ -383,5 +429,7 @@ class UserCourses(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     semester = models.IntegerField(choices=TIMELINE_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planned')
+    class Meta:
+        db_table = 'UserCourses'
 
 #----------------------------------------------------------------------#
