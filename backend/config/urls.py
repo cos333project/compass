@@ -22,7 +22,6 @@ from compass import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
-    path('login/', views.login, name='login'),
-    path('is_authenticated/', views.is_authenticated, name='is_authenticated'),
+    path('auth/<str:action>/', views.Authentication.as_view(), name='auth'),
     path('search/', views.SearchCourses.as_view(), name='search'),
 ]
