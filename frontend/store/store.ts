@@ -1,15 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authSlice';
+import rootReducer, { RootState } from './rootReducer';
 
 const store = configureStore({
-  reducer: {
-    auth: authReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: process.env.NODE_ENV !== 'production', // Double check this line
 });
 
+export type AppDispatch = typeof store.dispatch;
 export default store;
