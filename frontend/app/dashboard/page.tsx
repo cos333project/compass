@@ -1,23 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/rootReducer';
-import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
+import { useAuth } from '../utils/Auth';
+import { AuthProvider } from '../utils/Auth';
 
 const Dashboard = () => {
-  const isLoggedIn = useSelector((state: RootState) => state?.auth?.isLoggedIn ?? false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push('/login');
-    }
-  }, [isLoggedIn, router]);
-
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   return (
     <>
         <Navbar/>

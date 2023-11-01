@@ -1,15 +1,29 @@
-export const getStatus = async () => {
-  try {
-    const response = await fetch('http://localhost:8000/auth/is_authenticated')
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      console.error(`Failed to fetch with status ${response.status}`)
-      return null;
-    }
-  } catch (error) {
-    console.error("Failed to fetch authentication status: ", error)
-    return null;
-  }
+'use client';
+import React, { createContext, useContext, useState } from 'react';
+
+interface AuthContextProps {
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  // Fetch initial auth state here, if needed
+
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

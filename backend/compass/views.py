@@ -1,7 +1,8 @@
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseServerError
 from django.conf import settings
 from django.views import View
+from django.views.decorators.http import require_GET
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Course
 from .serializers import CourseSerializer
@@ -9,67 +10,47 @@ import json
 from urllib.parse import quote
 import traceback
 import logging
-
+from utils.cas_client import CASClient
 
 logger = logging.getLogger(__name__)
 
 #-------------------------------------- LOG IN --------------------------------------------#
 
-class Authentication(View):
-    """
-    Handles login, logout, and authentication checks.
-    """
-    def get(self, request, action=None):
+cas = CASClient(get_response=None)
+
+def login(request):
+    try:
         logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-
-        if action == 'login':
-            return self.login(request)
-        elif action == 'logout':
-            return self.logout(request)
-        elif action == 'is_authenticated':
-            return self.is_authenticated(request)
-        else:
-            logger.warning(f"Unknown action: {action}")
-            return HttpResponse(status=404)
-
-    def login(self, request):
-        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-
         logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
-        try:
-            logger.info(f"Redirecting to {settings.CAS_URL}")
-            redirect_url = quote(request.build_absolute_uri())
-            logger.info(f"Generated redirect URL: {redirect_url}")
-            login_url = f"{settings.CAS_URL}login?service={redirect_url}"
-            return HttpResponseRedirect(login_url)
-        except Exception as e:
-            logger.error(f"An error occurred: {e} \n {traceback.format_exc()}")
-            return HttpResponse(status=500)
+
+        response = cas.authenticate(request)
+        if response is not None:
+            return response  # Redirect to CAS login
+        else:
+            dashboard = f"{settings.HOMEPAGE}/dashboard"
+            return HttpResponseRedirect(dashboard)  # Or redirect to dashboard, etc.
+    except Exception as e:
+        logger.error(f"Exception in login view: {e}")
+        return HttpResponseServerError()
     
-    def logout(self, request):
-        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-
-        logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
-        try:
-            logout_url = f"{settings.CAS_URL}logout"
-            return HttpResponseRedirect(logout_url)
-        except Exception as e:
-            logger.error(f"An error occurred: {e} \n {traceback.format_exc()}")
-            return HttpResponse(status=500)
+def logout(request):
+    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
+    logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
+    return cas.logout(request)
     
-    def is_authenticated(self, request):
-        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-        logger.info(f"Request Headers: {request.headers}")
+def authenticated(request):
+    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
+    logger.info(f"Request Headers: {request.headers}")
 
-        authenticated = 'username' in request.session
-        status = "authenticated" if authenticated else "not authenticated"
-        logger.info(f"User is {status}. Cookies: {request.COOKIES}")
+    authenticated = cas.logged_in(request)
+    status = "authenticated" if authenticated else "not authenticated"
+    logger.info(f"User is {status}. Cookies: {request.COOKIES}")
 
-        response_data = {
-            'authenticated': authenticated,
-            'username': request.session.get('username', None)
-        }
-        return JsonResponse(response_data)
+    response_data = {
+        'authenticated': authenticated,
+        'username': request.session.get('username', None)
+    }
+    return JsonResponse(response_data)
 
 
 #------------------------------- SEARCH COURSES --------------------------------------#
