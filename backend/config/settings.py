@@ -62,7 +62,8 @@ MIDDLEWARE = [
 
 
 CAS_URL = 'https://fed.princeton.edu/cas/'
-LANDING_PAGE_URL = 'http://localhost:3000' # CHANGE FOR PRODUCTION
+HOMEPAGE = 'http://localhost:3000' # CHANGE FOR PRODUCTION
+DASHBOARD = 'http://localhost:3000/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds
 

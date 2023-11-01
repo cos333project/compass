@@ -23,20 +23,16 @@ class CASClient:
 
     def __call__(self, request):
         response = self.authenticate(request)
-        # Authentication failed, so we're redirecting to the login page
-        if response:
-            return response
-        
-        # Authentication was successful, or not required
-        response = self.get_response(request)
-        return response
+        return response if response else self.get_response(request)
+    
+    def logged_in(self, request) -> bool:
+        return 'username' in request.session
     
     def strip_ticket(self, request) -> str:
         """Strips ticket parameter from the URL."""
         url = request.build_absolute_uri()
-        url = sub(r'ticket=[^&]*&?', '', url)
-        url = sub(r'\?&?$|&$', '', url)
-        return url
+        url = request.build_absolute_uri()
+        return sub(r'\?&?$|&$', '', sub(r'ticket=[^&]*&?', '', url))
 
     def validate(self, ticket: str, service_url: str) -> Optional[str]:
         """Validates the CAS ticket.
@@ -56,15 +52,13 @@ class CASClient:
             params = {'service': service_url, 'ticket': ticket}
             val_url = f"{self.cas_url}validate?{urlencode(params)}"
             response = urlopen(val_url, timeout=5).readlines()
+
             if len(response) != 2:
                 self.logger.warning("Validation failed: Unexpected response length.")
                 return None
 
-            first_line, second_line = response[0].decode('utf-8'), response[1].decode('utf-8')
-            if not first_line.startswith('yes'):
-                return None
-
-            return second_line.strip()
+            first_line, second_line = map(str.strip, map(bytes.decode, response))
+            return second_line if first_line.startswith('yes') else None
         
         except (HTTPError, URLError) as e:
             self.logger.error(f"Validation failed due to network error: {e}")
@@ -76,21 +70,35 @@ class CASClient:
         Returns:
             A redirect response object if authentication fails, otherwise None.
         """
+        self.logger.debug(f"Starting authentication process for {request.path}")
+
+        # User already authenticated
+        if 'username' in request.session:
+            self.logger.debug("User already authenticated.")
+            return None
 
         ticket = request.GET.get('ticket')
         service_url = self.strip_ticket(request)
-        self.logger.debug(f"Service URL is: {service_url}")
+
         if ticket:
             username = self.validate(ticket, service_url)
             if username:
                 request.session['username'] = username
-                user, _ = get_user_model().objects.get_or_create(
-                    username=username)
+                # user, created = get_user_model().objects.get_or_create(
+                #     username=username, 
+                #     defaults={'role': 'student'}
+                # )
+                self.logger.debug(f"Authentication successful for {username}")
                 return None  # Authentication successful
 
-        # Redirect to CAS login if authentication fails
-        login_url = f"{self.cas_url}login?service={quote(service_url)}"
-        return HttpResponseRedirect(login_url)
+        protected_routes = ['/dashboard']
+        if request.path in protected_routes:
+            login_url = f"{self.cas_url}login?service={quote(service_url)}"
+            self.logger.debug(f"Authentication failed. Redirecting to {login_url}")
+            return HttpResponseRedirect(login_url)
+        
+        self.logger.debug("Route doesn't require authentication or is an auth check route. Not redirecting.")
+        return None
 
     def logout(self, request) -> HttpResponseRedirect:
         """Logs out the user and redirects to the landing page."""

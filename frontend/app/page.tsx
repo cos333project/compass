@@ -1,37 +1,43 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
-import { Provider as ReduxProvider } from 'react-redux';
-import store from '../store/store';
+import { useAuth } from './utils/Auth';
+import { AuthProvider } from './utils/Auth';
 import client from './apolloClient';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
-import { AppDispatch } from '../store/store';
-import { checkAuthentication } from '../store/authSlice';
 
 const Root = () => {
   return (
     <ApolloProvider client={client}>
-      <ReduxProvider store={store}>
+      <AuthProvider>
         <Home />
-      </ReduxProvider>
+      </AuthProvider>
     </ApolloProvider>
   );
 };
 
 const Home = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const { setIsLoggedIn } = useAuth();
 
   useEffect(() => {
-    dispatch(checkAuthentication());
+    console.log("Home component mounted");
+
+    fetch('http://localhost:8000/authenticated')
+      .then(response => response.json())
+      .then(data => setIsLoggedIn(data.authenticated))
+      .catch(error => console.error("Couldn't fetch auth state:", error));
+  
+    return () => {
+      console.log("Home component will unmount");
+    };
   }, []);
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <Hero />
       <Footer />
     </>

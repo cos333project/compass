@@ -24,21 +24,22 @@ const StyledButton = styled.button`
   }
 `;
 
-const Login: React.FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setIsLoggedIn }) => {
-  const handleLogin = async () => {
-    window.location.href = `http://localhost:8000/login`;
-    const response = await fetch('http://localhost:8000/authenticated'); 
+const Logout: React.FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setIsLoggedIn }) => {
+  const handleLogout = async () => {
+    window.location.href = `http://localhost:8000/logout`;
+    const response = await fetch('http://localhost:8000/logout');
     const data = await response.json();
-    if (data.authenticated) {
-      setIsLoggedIn(true);
+    if (!data.authenticated) {
+      setIsLoggedIn(false);
     }
   };
 
   return (
-    <StyledButton onClick={handleLogin}>
-      Log In
+    <StyledButton onClick={handleLogout}>
+      Log Out
     </StyledButton>
   );
 };
 
-export default Login;
+export default Logout;
+
