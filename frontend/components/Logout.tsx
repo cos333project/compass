@@ -1,4 +1,5 @@
 import React from 'react';
+import useAuthStore from '../store/authSlice';
 import styled from 'styled-components';
 
 // Styling for the login button
@@ -24,22 +25,14 @@ const StyledButton = styled.button`
   }
 `;
 
-const Logout: React.FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setIsLoggedIn }) => {
-  const handleLogout = async () => {
+const Logout: React.FC = () => {
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+
+  const handleLogout = () => {
     window.location.href = `http://localhost:8000/logout`;
-    const response = await fetch('http://localhost:8000/logout');
-    const data = await response.json();
-    if (!data.authenticated) {
-      setIsLoggedIn(false);
-    }
   };
 
-  return (
-    <StyledButton onClick={handleLogout}>
-      Log Out
-    </StyledButton>
-  );
+  return <StyledButton onClick={handleLogout}>Log Out</StyledButton>;
 };
 
 export default Logout;
-

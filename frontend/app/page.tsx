@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
-import { useAuth } from './utils/Auth';
-import { AuthProvider } from './utils/Auth';
+import Authorize from '../store/authSlice';
 import client from './apolloClient';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
@@ -12,15 +11,13 @@ import Footer from '../components/Footer';
 const Root = () => {
   return (
     <ApolloProvider client={client}>
-      <AuthProvider>
         <Home />
-      </AuthProvider>
     </ApolloProvider>
   );
 };
 
 const Home = () => {
-  const { setIsLoggedIn } = useAuth();
+  const setIsLoggedIn = Authorize(state => state.setIsLoggedIn);
 
   useEffect(() => {
     console.log("Home component mounted");
