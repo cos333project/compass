@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog } from '@headlessui/react';
-import { useAuth } from '../app/utils/Auth';
 import Link from 'next/link';
 import Login from './Login'
 import Logout from './Logout'
+import useAuthStore from '../store/authSlice';
 
 const navigation = [
   { name: 'About', href: '#' },
@@ -13,7 +13,8 @@ const navigation = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn); 
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -47,11 +48,7 @@ const Navbar: React.FC = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {isLoggedIn ? (
-            <Logout setIsLoggedIn={setIsLoggedIn} />
-          ) : (
-            <Login setIsLoggedIn={setIsLoggedIn} />
-          )}
+          {isLoggedIn ? <Logout /> : <Login />}
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -93,11 +90,7 @@ const Navbar: React.FC = () => {
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                 >
-                  {isLoggedIn ? (
-                    <Logout setIsLoggedIn={setIsLoggedIn} />
-                  ) : (
-                    <Login setIsLoggedIn={setIsLoggedIn} />
-                  )}
+                  {isLoggedIn ? <Logout /> : <Login />}
                 </a>
               </div>
             </div>

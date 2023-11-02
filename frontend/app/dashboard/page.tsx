@@ -3,11 +3,11 @@
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
-import { useAuth } from '../utils/Auth';
-import { AuthProvider } from '../utils/Auth';
+import useAuthStore  from '../../store/authSlice';
 
 const Dashboard = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
+  const setIsLoggedIn = useAuthStore(state => state.setIsLoggedIn);
   return (
     <>
         <Navbar/>

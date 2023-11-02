@@ -1,4 +1,5 @@
 import React from 'react';
+import useAuthStore from '../store/authSlice';
 import styled from 'styled-components';
 
 // Styling for the login button
@@ -24,21 +25,14 @@ const StyledButton = styled.button`
   }
 `;
 
-const Login: React.FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setIsLoggedIn }) => {
-  const handleLogin = async () => {
+const Login: React.FC = () => {
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+
+  const handleLogin = () => {
     window.location.href = `http://localhost:8000/login`;
-    const response = await fetch('http://localhost:8000/authenticated'); 
-    const data = await response.json();
-    if (data.authenticated) {
-      setIsLoggedIn(true);
-    }
   };
 
-  return (
-    <StyledButton onClick={handleLogin}>
-      Log In
-    </StyledButton>
-  );
+  return <StyledButton onClick={handleLogin}>Log In</StyledButton>;
 };
 
 export default Login;
