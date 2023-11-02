@@ -43,7 +43,7 @@ if __name__ == "__main__":
         "TRA", "TUR", "TWI", "UKR", "URB", "URD", "VIS", "WRI"
     ]
 
-    with open('f2023_courses_courses2.csv', 'w', newline='') as csvfile:
+    with open('f2023_courses.csv', 'w', newline='') as csvfile:
         fieldnames = [
             'Term Code', 'Term Name', 'Term Start Date', 'Term End Date',
             'Subject Code', 'Subject Name', 'Course ID', 'Catalog Number',
@@ -77,13 +77,13 @@ if __name__ == "__main__":
                     
                     for course in subject_data.get("courses", []):
                         course_id = course.get("course_id", "")
+                        guid = course.get("guid", "")
                         catalog_number = course.get("catalog_number", "")
                         course_title = course.get("title", "")
                         course_detail = course.get("detail", {})
                         course_start_date = course_detail.get("start_date", "")
                         course_end_date = course_detail.get("end_date", "")
                         course_track = course_detail.get("track", "")
-                        # description = course_detail.get("description", "")
                         description = course_detail.get("description", "").replace("\n", "")
                         seat_reservations = course_detail.get("seat_reservations", "")
                         
@@ -145,5 +145,4 @@ if __name__ == "__main__":
                                             'Meeting End Time': end_time, 'Meeting Days': days,
                                             'Building Name': building_name, 'Meeting Room': room
                                         })
-
-                                        
+   

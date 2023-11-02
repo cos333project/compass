@@ -1,0 +1,189 @@
+{
+    "class_definitions": {
+        "Department": {
+            "fields": [
+                "code",
+                "name",
+                "created_at",
+                "updated_at"
+            ],
+            "description": "Represents an academic department at the university.\n\n    Fields:\n    - code: The department's short code (e.g., 'COS' for Computer Science).\n    - name: The full name of the department (e.g., 'Computer Science')."
+        },
+        "Degree": {
+            "fields": [
+                "id",
+                "name",
+                "code",
+                "description",
+                "urls",
+                "req_list"
+            ],
+            "description": "TODO: Update comment\n    Represents a type of degree offered by a department.\n\n    Fields:\n    - department: Foreign key to the associated department.\n    - degree_type: Type of degree, either 'AB' (Bachelor of Arts) or 'BSE' (Bachelor of Science in Engineering)."
+        },
+        "Major": {
+            "fields": [
+                "id",
+                "name",
+                "code",
+                "degree",
+                "description",
+                "urls",
+                "req_list"
+            ],
+            "description": "TODO: Update comment\n    Represents a major field of study.\n\n    Fields:\n    - id: Auto-generated primary key.\n    - code: The short code for the major (e.g., 'COS' for Computer Science).\n    - name: The full name of the major.\n    - degree_type: The type of degree, either 'AB' or 'BSE'."
+        },
+        "Minor": {
+            "fields": [
+                "id",
+                "name",
+                "code",
+                "description",
+                "excluded_majors",
+                "excluded_minors",
+                "urls",
+                "apply_by_semester",
+                "req_list"
+            ],
+            "description": "TODO: Update comment\n    Represents a minor field of study.\n\n    Fields:\n    - id: Auto-generated primary key.\n    - code: The short code for the minor.\n    - name: The full name of the minor.\n    - compatible_with: The type of degree this minor is compatible with ('AB', 'BSE', or 'Both').\n    - max_courses_double_dipped: Max number of courses that can be counted toward other minors."
+        },
+        "Certificate": {
+            "fields": [
+                "id",
+                "name",
+                "code",
+                "description",
+                "excluded_majors",
+                "urls",
+                "apply_by_semester",
+                "req_list",
+                "active_until"
+            ],
+            "description": "TODO: Update comment\n    Represents a certificate program.\n\n    Fields:\n    - id: Auto-generated primary key.\n    - code: The short code for the certificate.\n    - name: The full name of the certificate.\n    - departments: The departments offering this certificate."
+        },
+        "AcademicTerm": {
+            "fields": [
+                "term_code",
+                "suffix",
+                "start_date",
+                "end_date"
+            ],
+            "description": "Represents a unique academic term (semester) at the university.\n\n    Fields:\n    - term_code: A unique identifier for the term (e.g., 'F2023' for Fall 2023).\n    - start_date: Start date of the academic term.\n    - end_date: End date of the academic term.\n\n    This table serves two primary purposes:\n    1. Track specific semesters when a course is offered.\n    2. Provide a reference for 'completed_by_semester' in the Requirement table."
+        },
+        "Course": {
+            "fields": [
+                "department",
+                "guid",
+                "course_id",
+                "catalog_number",
+                "title",
+                "description",
+                "drop_consent",
+                "add_consent",
+                "web_address",
+                "pu_flag",
+                "transcript_title",
+                "long_title",
+                "distribution_area_long",
+                "distribution_area_short",
+                "reading_writing_assignment",
+                "grading_basis",
+                "reading_list"
+            ],
+            "description": "No description provided."
+        },
+        "CourseEquivalent": {
+            "fields": [
+                "primary_course",
+                "equivalent_course",
+                "equivalence_type"
+            ],
+            "description": "No description provided."
+        },
+        "Instructor": {
+            "fields": [
+                "emplid",
+                "first_name",
+                "last_name",
+                "full_name"
+            ],
+            "description": "No description provided."
+        },
+        "Section": {
+            "fields": [
+                "course",
+                "term",
+                "track",
+                "seat_reservations",
+                "instructor",
+                "class_number",
+                "capacity",
+                "enrollment"
+            ],
+            "description": "No description provided."
+        },
+        "ClassMeeting": {
+            "fields": [
+                "section",
+                "meeting_number",
+                "start_time",
+                "end_time",
+                "room",
+                "days",
+                "building_name"
+            ],
+            "description": "No description provided."
+        },
+        "ClassYearEnrollment": {
+            "fields": [
+                "section",
+                "class_year",
+                "enrl_seats"
+            ],
+            "description": "No description provided."
+        },
+        "Requirement": {
+            "fields": [
+                "id",
+                "name",
+                "max_counted",
+                "min_needed",
+                "explanation",
+                "double_counting_allowed",
+                "max_common_with_major",
+                "pdfs_allowed",
+                "min_grade",
+                "completed_by_semester",
+                "req_list",
+                "course_list",
+                "excluded_course_list",
+                "dist_req",
+                "num_courses",
+                "parent_id"
+            ],
+            "description": "TODO: Update comment\n    Represents an academic requirement for a particular degree.\n\n    Fields:\n    - degree: Foreign key to the associated degree.\n    - description: Detailed description of the requirement.\n    - min_needed: Minimum number of courses/credits needed to fulfill this requirement.\n    - deadline: When this requirement should ideally be completed.\n    - double_counting_allowed: Whether a course can count for multiple requirements.\n    - pdfs_allowed: Whether courses taken as pass/D/fail can fulfill the requirement."
+        },
+        "UserCourses": {
+            "fields": [
+                "user",
+                "course",
+                "semester",
+                "status"
+            ],
+            "description": "Maps courses a user plans to take or has taken.\n    \n    Fields:\n    - user: The student who is taking or has taken the course.\n    - course: The course the student is taking or has taken.\n    - semester: The semester when the course is or was taken.\n    - status: Whether the course is planned, in-progress, or completed."
+        }
+    },
+    "choices": {
+        "DEGREE_TYPE_CHOICES": [
+            [
+                "AB",
+                "Bachelor of Arts"
+            ]
+        ],
+        "TIMELINE_CHOICES": [
+            [
+                "1",
+                "freshman fall"
+            ]
+        ]
+    }
+}
