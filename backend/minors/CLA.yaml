@@ -3,14 +3,14 @@ type: Minor
 name: Classics
 code: CLA
 degree:
-urls:
-- https://classics.princeton.edu/minors-certificates
 description: A classics minor offers students significant and coherent 
   exposure to an area within the field of classics, which studies the 
   cultures, languages, history, politics and intellectual traditions of 
   the ancient Greek and Roman worlds, their contacts with other 
   civilizations of the ancient Mediterranean, resonances in later ages 
   and continued vitality today.
+urls:
+- https://classics.princeton.edu/minors-certificates
 contacts:
 - type: Department Chair
   name: Barbara Graziosi
@@ -41,7 +41,7 @@ req_list:
   req_list:
   - name: Classical Studies with a focal point
     max_counted: 1
-    min_needed: ALL
+    min_needed: 3
     explanation: Focal points include, but are not limited to Greek 
       Language, Literature, and Culture; Latin Language, Literature and
       Roman Culture Classics and Reception; Medicine, Science, and the
@@ -160,7 +160,7 @@ req_list:
         - PAW *
   - name: Ancient History and Material Culture
     max_counted: 1
-    min_needed: ALL
+    min_needed: 3
     explanation:
     req_list:
     - name: History Survey
@@ -217,24 +217,13 @@ req_list:
         - CLA *
         - LAT *
         - HUM *
-        - ART *
-        - ARC *
-        - HLS *
-        - REL *
-        - PHI *
-        - CDH *
-        - PAW *
 - name: Reflection Paper
   max_counted: 1
-  min_needed:
+  min_needed: 1
   explanation: In addition, a short (ca. 500 words) reflection paper on 
     how the courses add up to a coherent perspective on the ancient 
     world and its reception is required in the student’s final semester.
-  double_counting_allowed:
-  max_common_with_major:
-  pdfs_allowed:
-  course_list:
-  deadline: Senior Spring
+  completed_by_semester: 8
 
 # Notes: not sure if HUM216-217 should be added to the course list
 # For the fifth course that can be a relevant course offered in another
