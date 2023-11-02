@@ -5,7 +5,7 @@ from pathlib import Path
 from django.db import transaction
 
 logging.basicConfig(level=logging.INFO)
-sys.path.append('/Users/minhtri/Desktop/Princeton/COS/COS 333/compass/backend')
+sys.path.append(str(Path("..").resolve()))
 from config import django_init
 from compass.models import Course, Department
 
