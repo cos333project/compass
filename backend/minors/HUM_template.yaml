@@ -13,7 +13,7 @@ contacts:
 - type: Acting Director
   name: Esther Schor
   email: eschor@princeton.edu
-req_list:
+subrequirement:
 - name: Core Interdisciplinary Courses
   min_needed: 2
   explanation: "Students must complete two interdisciplinary courses during the first
@@ -35,7 +35,7 @@ req_list:
     courses, which may also be used to fulfill departmental requirements.
   double_counting_allowed: false
   max_common_with_major: 6
-  req_list:
+  subrequirement:
   - name: Interdisciplinary Electives
     min_needed: 4
     explanation: Four of the six elective courses must be explicitly interdisciplinary

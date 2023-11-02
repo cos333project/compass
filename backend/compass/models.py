@@ -99,7 +99,7 @@ class Minor(models.Model):
     excluded_majors = models.ManyToManyField('Major')
     excluded_minors = models.ManyToManyField('Minor')
     urls = models.CharField(max_length=250, null=True)
-    apply_by_semester = models.IntegerField(default=8)
+    apply_by_semester = models.IntegerField(default=6)
     req_list = models.ManyToManyField("Requirement")
 
     class Meta:
@@ -138,7 +138,8 @@ class AcademicTerm(models.Model):
     Represents a unique academic term (semester) at the university.
 
     Fields:
-    - term_code: A unique identifier for the term (e.g., 'F2023' for Fall 2023).
+    - term_code: A unique identifier for the term (e.g., '1242' for Fall 2023).
+    - suffix: A unique identifier for the term (e.g., 'F2023' for Fall 2023).
     - start_date: Start date of the academic term.
     - end_date: End date of the academic term.
 
@@ -146,7 +147,7 @@ class AcademicTerm(models.Model):
     1. Track specific semesters when a course is offered.
     2. Provide a reference for 'completed_by_semester' in the Requirement table.
     """
-    term_code = models.CharField(max_length=10, unique=True)
+    term_code = models.CharField(max_length=10, unique=True, null=True)
     suffix = models.CharField(max_length=10)  # e.g., "F2023"
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
@@ -213,13 +214,27 @@ class Instructor(models.Model):
         return self.full_name
 
 class Section(models.Model):
+    CLASS_TYPE_CHOICES = [
+    ('Seminar', 'Seminar'),
+    ('Lecture', 'Lecture'),
+    ('Precept', 'Precept'),
+    ('Unknown', 'Unknown'),
+    ('Class', 'Class'),
+    ('Studio', 'Studio'),
+    ('Drill', 'Drill'),
+    ('Lab', 'Lab'),
+    ('Ear training', 'Ear training')
+]
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE, null=True)
-    track = models.CharField(max_length=5, null=True)  # e.g. UGRD/Grad
-    seat_reservations = models.CharField(max_length=1)
-    instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)  # Changed to ForeignKey
     class_number = models.IntegerField(unique=True, null=True)
+    class_type = models.CharField(max_length=50, choices=CLASS_TYPE_CHOICES, default="")
+    class_section = models.CharField(max_length=10, null=True)
+    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE, null=True)
+    track = models.CharField(max_length=5, null=True)
+    seat_reservations = models.CharField(max_length=1)
+    instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(null=True)
+    status = models.CharField(max_length=1, null=True)
     enrollment = models.IntegerField(default=0)
 
     class Meta:
