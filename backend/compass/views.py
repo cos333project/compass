@@ -1,5 +1,5 @@
 from django.db.models import Q, F, Value, When, Case
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseServerError, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,36 +8,46 @@ from .serializers import CourseSerializer
 import json
 import logging
 import re
+from utils.cas_client import CASClient
 
 logger = logging.getLogger(__name__)
 
 #-------------------------------------- LOG IN --------------------------------------------#
 
-def login(request):
-    """
-    Redirects to the CAS login page.
-    """
-    logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
-    try:
-        logger.info(f"Redirecting to {settings.CAS_URL}")
-        return HttpResponseRedirect(settings.CAS_URL)
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        return HttpResponse(status=500)
+cas = CASClient(get_response=None)
 
-def is_authenticated(request):
-    """
-    Checks if the user is authenticated.
-    """
-    logger.info(f"Received is_authenticated request from {request.META.get('REMOTE_ADDR')}")
-    authenticated = 'username' in request.session
+def login(request):
+    try:
+        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
+        logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
+
+        response = cas.authenticate(request)
+        if response is not None:
+            return response  # Redirect to CAS login
+        else:
+            dashboard = f"{settings.HOMEPAGE}/dashboard"
+            return HttpResponseRedirect(dashboard)  # Or redirect to dashboard, etc.
+    except Exception as e:
+        logger.error(f"Exception in login view: {e}")
+        return HttpResponseServerError()
+    
+def logout(request):
+    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
+    logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
+    return cas.logout(request)
+    
+def authenticated(request):
+    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
+    logger.info(f"Request Headers: {request.headers}")
+
+    authenticated = cas.logged_in(request)
     status = "authenticated" if authenticated else "not authenticated"
-    logger.info(f"User is {status}.")
-    if authenticated:
-        response_data = {'authenticated': True, 'username': request.session['username']}
-    else:
-        response_data = {'authenticated': False, 'username': None}
-        
+    logger.info(f"User is {status}. Cookies: {request.COOKIES}")
+
+    response_data = {
+        'authenticated': authenticated,
+        'username': request.session.get('username', None)
+    }
     return JsonResponse(response_data)
 
 #------------------------------- SEARCH COURSES --------------------------------------#
@@ -85,8 +95,8 @@ class SearchCourses(View):
                 if exact_match_course:
                     # If an exact match is found, return only that course
                     serialized_course = CourseSerializer(exact_match_course, many=True)
+                    print(serialized_course)
                     return JsonResponse({"courses": serialized_course.data})
-                
                 courses = Course.objects.filter(
                     Q(department__code__icontains=dept) |
                     Q(catalog_number__icontains=num) |
