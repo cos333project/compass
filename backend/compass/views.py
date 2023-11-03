@@ -1,60 +1,44 @@
-from django.db.models import Q
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponseServerError
 from django.db.models import Q, F, Value, When, Case
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.views import View
-from django.views.decorators.http import require_GET
 from django.core.exceptions import ObjectDoesNotExist
 from .models import models, Course
 from .serializers import CourseSerializer
 import json
-from urllib.parse import quote
-import traceback
 import logging
-from utils.cas_client import CASClient
 import re
 
 logger = logging.getLogger(__name__)
 
 #-------------------------------------- LOG IN --------------------------------------------#
 
-cas = CASClient(get_response=None)
-
 def login(request):
+    """
+    Redirects to the CAS login page.
+    """
+    logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
     try:
-        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-        logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
-
-        response = cas.authenticate(request)
-        if response is not None:
-            return response  # Redirect to CAS login
-        else:
-            dashboard = f"{settings.HOMEPAGE}/dashboard"
-            return HttpResponseRedirect(dashboard)  # Or redirect to dashboard, etc.
+        logger.info(f"Redirecting to {settings.CAS_URL}")
+        return HttpResponseRedirect(settings.CAS_URL)
     except Exception as e:
-        logger.error(f"Exception in login view: {e}")
-        return HttpResponseServerError()
-    
-def logout(request):
-    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-    logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
-    return cas.logout(request)
-    
-def authenticated(request):
-    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-    logger.info(f"Request Headers: {request.headers}")
+        logger.error(f"An error occurred: {e}")
+        return HttpResponse(status=500)
 
-    authenticated = cas.logged_in(request)
+def is_authenticated(request):
+    """
+    Checks if the user is authenticated.
+    """
+    logger.info(f"Received is_authenticated request from {request.META.get('REMOTE_ADDR')}")
+    authenticated = 'username' in request.session
     status = "authenticated" if authenticated else "not authenticated"
-    logger.info(f"User is {status}. Cookies: {request.COOKIES}")
-
-    response_data = {
-        'authenticated': authenticated,
-        'username': request.session.get('username', None)
-    }
+    logger.info(f"User is {status}.")
+    if authenticated:
+        response_data = {'authenticated': True, 'username': request.session['username']}
+    else:
+        response_data = {'authenticated': False, 'username': None}
+        
     return JsonResponse(response_data)
-
 
 #------------------------------- SEARCH COURSES --------------------------------------#
 
@@ -62,30 +46,57 @@ class SearchCourses(View):
     """
     Handles search queries for courses.
     """
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         query = request.GET.get('course', None)
-        if re.match(r"^[a-zA-Z]{3}\d{3}$", query):
-            query = re.split(r'\d', query, 1)
         if query:
-            if len(query) == 2:
-                dept = query[0]
-                num = query[1]
-                title = ''
+            if query == '*' or query == '.':
+                courses = Course.objects.filter()
+                serialized_courses = CourseSerializer(courses, many=True)
+                return JsonResponse({"courses": serialized_courses.data})
+            
+            # process queries
+            trimmed_query = re.sub(r'\s', '', query)
+            title = 'nevergoingtomatch'
+            if re.match(r"^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$", trimmed_query):
+                result = re.split(r'(\d+[a-zA-Z])', trimmed_query, 1)
+                dept = result[0]
+                num = result[1]
+            elif re.match(r"^[a-zA-Z]{1,3}\d{1,3}$", trimmed_query):
+                result = re.split(r'(\d+)', trimmed_query, 1)
+                dept = result[0]
+                num = result[1]
+            elif re.match(r"^\d{1,3}[a-zA-Z]{1,3}$", trimmed_query):
+                result = re.split(r'([a-zA-Z]+)', trimmed_query, 1)
+                dept = result[1]
+                num = result[0]
+            elif re.match(r"^[a-zA-Z]{1,3}$", trimmed_query):
+                dept = trimmed_query
+                num = 'nevergoingtomatch'
+                title = query.strip()
+            elif re.match(r"^\d{1,3}$", trimmed_query):
+                dept = 'nevergoingtomatch'
+                num = trimmed_query
             else:
-                dept = query
-                num = query
-                title = query
+                dept = 'nevergoingtomatch'
+                num = 'nevergoingtomatch'
+                title = query.strip()
             try:
+                exact_match_course = Course.objects.filter(Q(department__code__iexact=dept) & Q(catalog_number__iexact=num))
+                if exact_match_course:
+                    # If an exact match is found, return only that course
+                    serialized_course = CourseSerializer(exact_match_course, many=True)
+                    return JsonResponse({"courses": serialized_course.data})
+                
                 courses = Course.objects.filter(
-                    Q(catalog_number__icontains=num) |
                     Q(department__code__icontains=dept) |
+                    Q(catalog_number__icontains=num) |
                     Q(title__icontains=title) |
                     Q(distribution_area_short__icontains='') |
                     Q(distribution_area_long__icontains='')
                 )
                 if not courses.exists():
                     return JsonResponse({"courses": []})
-                
+            
                 custom_sorting_field = Case(
                     When(Q(department__code__icontains=dept) & Q(catalog_number__icontains=num), then=Value(3)),
                     When(Q(department__code__icontains=dept), then=Value(2)),
@@ -93,18 +104,14 @@ class SearchCourses(View):
                     default=Value(0),
                     output_field=models.IntegerField()
                 )
-
-                sorted_courses = courses.annotate(custom_sorting=custom_sorting_field).order_by('-custom_sorting', 'department__code', 'catalog_number', 'title')
-
+                sorted_courses = courses.annotate(custom_sorting=custom_sorting_field).order_by(
+                    '-custom_sorting', 'department__code', 'catalog_number', 'title')
                 serialized_courses = CourseSerializer(sorted_courses, many=True)
-                # serialized_data = [{"subjectCode": c.subjectCode, "catalogNumber": c.catalogNumber, "title": c.title} for c in courses]
-                
-                # Print for debugging
-                # logger.info(serialized_courses.data)
                 return JsonResponse({"courses": serialized_courses.data})
             
             except Exception as e:
-                logger.error(f"An error occurred while searching for courses: {e} \n {traceback.format_exc()}")
+                logger.error(f"An error occurred while searching for courses: {e}")
                 return JsonResponse({"error": "Internal Server Error"}, status=500)
         else:
             return JsonResponse({"courses": []})
+
