@@ -18,7 +18,7 @@ const SemesterBin = ({ semester, onDrop, onDragStart }) => {
         border: '1px dashed #000',
       }}
     >
-      <p>Semester {semester.id}</p>
+      <p>{semester.id}</p>
       {semester.courses.map(course => (
         <Course
           key={course.id}
