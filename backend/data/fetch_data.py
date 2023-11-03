@@ -4,21 +4,48 @@ from req_lib import ReqLib
 
 #--------------------------------------------------------------------------------------
 
-def fetch_data(subject, term):
-    term_info = req_lib.getJSON(req_lib.configs.COURSES_COURSES, fmt="json", term=term, subject=subject)
-    course_ids = [course.get("course_id", "") for subject_data in term_info.get("term", []) for course in subject_data.get("courses", [])]
-    seat_info = req_lib.getJSON(req_lib.configs.COURSES_RESSEATS, fmt="json", term=term, course_ids=','.join(course_ids))
-    
-    course_details = {
+def get_course_ids(term_info):
+    """Extracts course IDs from term information."""
+    course_ids = []
+    for term_data in term_info.get('term', []):
+        for subject_data in term_data.get('subjects', []):
+            course_ids.extend(course['course_id'] for course in subject_data.get('courses', []) if course.get('course_id'))
+    return course_ids
+
+def get_course_details(course_ids, term):
+    """Fetches course details for a list of course IDs."""
+    return {
         course_id: req_lib.getJSON(
             req_lib.configs.COURSES_DETAILS, 
-            fmt="json", 
+            fmt='json', 
             term=term, 
             course_id=course_id
-            ) 
-        for course_id in course_ids
+        ) for course_id in course_ids
     }
+
+def get_seat_info(course_ids, term):
+    """Fetches seat information for a list of course IDs."""
+    course_id_str = ','.join(course_ids)
+    return req_lib.getJSON(req_lib.configs.COURSES_RESSEATS, fmt='json', term=term, course_ids=course_id_str)
+
+def fetch_data(subject, term):
+    """Fetches and prints course and seat information for a given subject and term."""
+    term_info = req_lib.getJSON(req_lib.configs.COURSES_COURSES, fmt='json', term=term, subject=subject)
+    course_ids = get_course_ids(term_info)
     
+    if not course_ids:
+        raise ValueError(f"No course IDs found for subject '{subject}' and term '{term}'.")
+
+    course_details = get_course_details(course_ids, term)
+    seat_info = get_seat_info(course_ids, term)
+    
+    # Debug: print fetched information
+    # print(f"course_ids: {course_ids}")
+    if not seat_info.get('course'):
+        print(f"No seat info returned for course_ids: {course_ids}")
+    # else:
+    #     print(f"seat_info: {seat_info}")
+
     return term_info, seat_info, course_details
 
 #--------------------------------------------------------------------------------------
