@@ -1,3 +1,4 @@
+// Course.js
 import React from 'react';
 
 const Course = ({ course, onDragStart }) => {
@@ -12,11 +13,8 @@ const Course = ({ course, onDragStart }) => {
         border: '1px solid #ccc',
         cursor: 'grab',
       }}
-    >  
-      <strong>{course.department_code} {course.catalog_number}</strong>
-      <div>{course.name}</div>
-      
-      
+    >
+      {course.name}
     </div>
   );
 };

@@ -1,17 +1,13 @@
 'use client';
+
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
 import DragDropContext from '../../components/DragDropContext';
-import useAuthStore  from '../../store/authSlice';
 
 const Dashboard = () => {
-  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
-  const setIsLoggedIn = useAuthStore(state => state.setIsLoggedIn);
-
-
-const Dashboard = () => {
+  const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
   const [initialCourses, setInitialCourses] = useState([
     {id: 1, name: 'lol', department_code: 'COS', catalog_number: 100, title: "hello"},
     {id: 2, name: 'okc', department_code: 'COS', catalog_number: 521, title: "hello"},
@@ -19,8 +15,9 @@ const Dashboard = () => {
   ]);
   return (
     <>
-        <Navbar/>
-        <div className="flex flex-col h-screen pt-20 p-8 bg-[#0F1E2F]">
+        {/* <Navbar auth={auth} /> */}
+        <Navbar />
+        <div className="flex flex-col h-screen pt-20 p-8 rounded">
             <main className="flex p-5 flex-grow bg-[#FAFAFA] rounded">
                 {/* Search Section (Left) */}
                 <div className="w-4/12 bg-[#FAFAFA] p-8 mr-8 rounded">
@@ -63,7 +60,6 @@ const Dashboard = () => {
         </div>
     </>
   );
-}
 }
 
 export default Dashboard;

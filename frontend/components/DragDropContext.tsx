@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import Course from './Course';
 import SemesterBin from './SemesterBin';
 
-const DragDropContext = ({initialCourses}) => {
+const DragDropContext = () => {
   // Initialize courses and semesters
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([
+    { id: 1, name: 'Mathematics' },
+    { id: 2, name: 'French' },
+    { id: 3, name: 'Science' },
+  ]);
   const [semesters, setSemesters] = useState([
-    { id: 'Fall 2022', courses: [] },
-    { id: 'Spring 2023', courses: [] },
+    { id: '2023-1', courses: [] },
+    { id: '2023-2', courses: [] },
   ]);
 
   // Function to handle dragging start from both courses list and semesters
