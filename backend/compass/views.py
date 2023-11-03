@@ -1,16 +1,19 @@
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponseServerError
+from django.db.models import Q, F, Value, When, Case
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.views import View
 from django.views.decorators.http import require_GET
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Course
+from .models import models, Course
 from .serializers import CourseSerializer
 import json
 from urllib.parse import quote
 import traceback
 import logging
 from utils.cas_client import CASClient
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -61,17 +64,39 @@ class SearchCourses(View):
     """
     def get(self, request):
         query = request.GET.get('course', None)
+        if re.match(r"^[a-zA-Z]{3}\d{3}$", query):
+            query = re.split(r'\d', query, 1)
         if query:
+            if len(query) == 2:
+                dept = query[0]
+                num = query[1]
+                title = ''
+            else:
+                dept = query
+                num = query
+                title = query
             try:
-                # courses = Course.objects.filter(title__icontains=query)
                 courses = Course.objects.filter(
-                    Q(catalog_number__icontains=query) |
-                    Q(title__icontains=query) | 
-                    Q(department__code__icontains=query)
-                ).order_by('catalog_number', 'title', 'department__code')
+                    Q(catalog_number__icontains=num) |
+                    Q(department__code__icontains=dept) |
+                    Q(title__icontains=title) |
+                    Q(distribution_area_short__icontains='') |
+                    Q(distribution_area_long__icontains='')
+                )
                 if not courses.exists():
                     return JsonResponse({"courses": []})
-                serialized_courses = CourseSerializer(courses, many=True)
+                
+                custom_sorting_field = Case(
+                    When(Q(department__code__icontains=dept) & Q(catalog_number__icontains=num), then=Value(3)),
+                    When(Q(department__code__icontains=dept), then=Value(2)),
+                    When(Q(catalog_number__icontains=num), then=Value(1)),
+                    default=Value(0),
+                    output_field=models.IntegerField()
+                )
+
+                sorted_courses = courses.annotate(custom_sorting=custom_sorting_field).order_by('-custom_sorting', 'department__code', 'catalog_number', 'title')
+
+                serialized_courses = CourseSerializer(sorted_courses, many=True)
                 # serialized_data = [{"subjectCode": c.subjectCode, "catalogNumber": c.catalogNumber, "title": c.title} for c in courses]
                 
                 # Print for debugging

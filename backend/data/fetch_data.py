@@ -33,8 +33,8 @@ def fetch_data(subject, term):
     term_info = req_lib.getJSON(req_lib.configs.COURSES_COURSES, fmt='json', term=term, subject=subject)
     course_ids = get_course_ids(term_info)
     
-    if not course_ids:
-        raise ValueError(f"No course IDs found for subject '{subject}' and term '{term}'.")
+    # if not course_ids:
+    #     raise ValueError(f"No course IDs found for subject '{subject}' and term '{term}'.")
 
     course_details = get_course_details(course_ids, term)
     seat_info = get_seat_info(course_ids, term)
@@ -52,6 +52,7 @@ def fetch_data(subject, term):
 
 def process_courses(term_info, seat_info, class_details, writer):
     seat_mapping = {seat['course_id']: seat for seat in seat_info.get('courses', [])}
+    print(f"seat_mapping: {seat_mapping}")
     detail_mapping = {detail['course_id']: detail for detail in class_details.get('course_details', [])}
     
     for term in term_info.get("term", []):

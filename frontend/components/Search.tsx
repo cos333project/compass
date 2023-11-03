@@ -65,6 +65,9 @@ const Search: React.FC = () => {
         {/* {courses.map((course: Course) => (
           <li key={`${course.department_code}${course.catalog_number}`} className="text-compass-blue hover:bg-gray-200 p-2">
             <div className="ml-2 font-semibold">{course.department_code} {course.catalog_number}</div>
+        {courses.map((course: Course) => (
+          <li key={`${course.department_code}${course.catalog_number}`} className="text-compass-blue hover:bg-gray-200 p-2">
+            <div className="ml-2 font-semibold">{course.department_code}{course.catalog_number}</div>
             <div className="ml-2 text-sm">{course.title}</div>
             <div className="ml-2 text-sm">{course.distribution_area_short}</div>
           </li>
