@@ -7,6 +7,7 @@ from req_lib import ReqLib
 def fetch_data(subject, term):
     term_info = req_lib.getJSON(req_lib.configs.COURSES_COURSES, fmt="json", term=term, subject=subject)
     course_ids = [course.get("course_id", "") for subject_data in term_info.get("term", []) for course in subject_data.get("courses", [])]
+    print(f"course:ids: {course_ids}")
     seat_info = req_lib.getJSON(req_lib.configs.COURSES_RESSEATS, fmt="json", term=term, course_ids=','.join(course_ids))
     
     course_details = {
@@ -18,7 +19,7 @@ def fetch_data(subject, term):
             ) 
         for course_id in course_ids
     }
-    
+    print(f"seat_info: {seat_info}")
     return term_info, seat_info, course_details
 
 #--------------------------------------------------------------------------------------

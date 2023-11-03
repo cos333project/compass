@@ -75,7 +75,7 @@ class SearchCourses(View):
                 # serialized_data = [{"subjectCode": c.subjectCode, "catalogNumber": c.catalogNumber, "title": c.title} for c in courses]
                 
                 # Print for debugging
-                logger.info(serialized_courses.data)
+                # logger.info(serialized_courses.data)
                 return JsonResponse({"courses": serialized_courses.data})
             
             except Exception as e:
