@@ -17,6 +17,7 @@ interface Course {
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [courses, setCourses] = useState<Course[]>([]);
+  const [recent, setPast] = useState<string[]>([]);
 
   const searchCourses = async () => {
     try {
@@ -30,6 +31,10 @@ const Search: React.FC = () => {
       }
     } catch (error) {
       console.error("There was an error fetching courses:", error)
+    }
+    recent.push(query)
+    if (recent.length > 5) {
+        recent.shift()
     }
   };
 
@@ -66,19 +71,32 @@ const Search: React.FC = () => {
             <span className="ml-2 text-sm"> {course.title}</span>
           </li>
         ))}
+      </ul>   
 
-        {/* Faster way to do it :)) (not working): */}
-        {/* <For each={courses}>
-          {(course, _) => (
-            <li key={`${course.subjectCode} ${course.catalogNumber}`} className="text-compass-blue p-2 hover:bg-gray-200">
-              <span className="font-semibold">{course.subjectCode} {course.catalogNumber}</span>
-              <span className="ml-2 text-sm"> {course.title}</span>
-            </li>
-          )}
-        </For> */}
+      <ul>
+        
+        <div> Recent Searches </div>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[0]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[1]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[2]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[3]}
+        </button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {recent[4]}
+        </button>
+        
       </ul>
     </div>
   )
 }
+
+
 
 export default Search;
