@@ -6,9 +6,13 @@ import Footer from '../../components/Footer';
 import Search from '../../components/Search';
 import DragDropContext from '../../components/DragDropContext';
 
-
 const Dashboard = () => {
   const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
+  const [initialCourses, setInitialCourses] = useState([
+    {id: 1, name: 'lol', department_code: 'COS', catalog_number: 100, title: "hello"},
+    {id: 2, name: 'okc', department_code: 'COS', catalog_number: 521, title: "hello"},
+    {id: 3, name: 'idk', department_code: 'COS', catalog_number: 333, title: "hello"}
+  ]);
   return (
     <>
         {/* <Navbar auth={auth} /> */}
@@ -34,7 +38,7 @@ const Dashboard = () => {
                   </div>
                   <div>
                     {/* Carousel goes here */}
-                    <DragDropContext/> 
+                    <DragDropContext initialCourses={initialCourses} /> 
                   </div>
                 </div>
                 {/* Orange Bar */}
