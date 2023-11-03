@@ -9,8 +9,8 @@ import { useState, useEffect } from 'react';
 import store from '../store/store';
 import client from './apolloClient';
 import Navbar from '../components/Navbar';
-import Hero from '../components/Hero'
-import Footer from '../components/Footer'
+import Hero from '../components/Hero';
+import Footer from '../components/Footer';
 
 export default function Home() {
   const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });

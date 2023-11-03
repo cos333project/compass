@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
+import DragDropContext from '../../components/DragDropContext';
+
 
 const Dashboard = () => {
   const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
@@ -32,9 +34,9 @@ const Dashboard = () => {
                   </div>
                   <div>
                     {/* Carousel goes here */}
+                    <DragDropContext/> 
                   </div>
                 </div>
-
                 {/* Orange Bar */}
                 <div className="bg-[#D87B2D] w-1 h-[80%] my-auto"></div>
 
@@ -49,9 +51,9 @@ const Dashboard = () => {
                         <h3 className="mb-4  text-[#0F1E2F] rounded">PACM</h3>
                     </div>
                 </div>
-            </main>
+            </main> 
+          <Footer />
         </div>
-        <Footer />
     </>
   );
 }
