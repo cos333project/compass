@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
     # Now use these course IDs in COURSES_RESSEATS endpoint
     course_ids_str = ','.join(course_ids)
+    
 
     with open('f2023_courses_resseats.csv', 'w', newline='') as csvfile:
         fieldnames = ['Course ID', 'Class Number', 'Class Section', 'Class Year Enrollments']
