@@ -52,7 +52,7 @@ class Degree(models.Model):
     name = models.CharField(max_length=10, null=True)
     code = models.CharField(max_length=10, null=True)
     description = models.TextField(null=True)
-    urls = models.JSONField(null=True)
+    urls = models.CharField(max_length=250, null=True)
     req_list = models.ManyToManyField("Requirement")
 
     class Meta:
@@ -74,7 +74,7 @@ class Major(models.Model):
     code = models.CharField(max_length=10, null=True)
     degree = models.ManyToManyField('Degree')
     description = models.TextField(null=True)
-    urls = models.JSONField(null=True)
+    urls = models.CharField(max_length=250, null=True)
     req_list = models.ManyToManyField("Requirement")
 
     class Meta:
@@ -98,8 +98,8 @@ class Minor(models.Model):
     description = models.TextField(null=True)
     excluded_majors = models.ManyToManyField('Major')
     excluded_minors = models.ManyToManyField('Minor')
-    urls = models.JSONField(null=True)
-    apply_by_semester = models.IntegerField(default=8)
+    urls = models.CharField(max_length=250, null=True)
+    apply_by_semester = models.IntegerField(default=6)
     req_list = models.ManyToManyField("Requirement")
 
     class Meta:
@@ -121,7 +121,7 @@ class Certificate(models.Model):
     code = models.CharField(max_length=10, null=True)
     description = models.TextField(null=True)
     excluded_majors = models.ManyToManyField('Major')
-    urls = models.JSONField(null=True)
+    urls = models.CharField(max_length=250, null=True)
     apply_by_semester = models.IntegerField(default=8)
     req_list = models.ManyToManyField("Requirement")
     # to help with phasing out certificates
@@ -138,7 +138,8 @@ class AcademicTerm(models.Model):
     Represents a unique academic term (semester) at the university.
 
     Fields:
-    - term_code: A unique identifier for the term (e.g., 'F2023' for Fall 2023).
+    - term_code: A unique identifier for the term (e.g., '1242' for Fall 2023).
+    - suffix: A unique identifier for the term (e.g., 'F2023' for Fall 2023).
     - start_date: Start date of the academic term.
     - end_date: End date of the academic term.
 
@@ -146,7 +147,7 @@ class AcademicTerm(models.Model):
     1. Track specific semesters when a course is offered.
     2. Provide a reference for 'completed_by_semester' in the Requirement table.
     """
-    term_code = models.CharField(max_length=10, unique=True)
+    term_code = models.CharField(max_length=10, unique=True, null=True)
     suffix = models.CharField(max_length=10)  # e.g., "F2023"
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
@@ -196,7 +197,9 @@ class CourseEquivalent(models.Model):
         db_table = 'CourseEquivalent'
 
     def __str__(self):
-        return f"{self.primary_course.title} is equivalent to {self.equivalent_course.title}"
+        primary_title = self.primary_course.title if self.primary_course else "None"
+        equivalent_title = self.equivalent_course.title if self.equivalent_course else "None"
+        return f"{primary_title} is equivalent to {equivalent_title}"
 
 class Instructor(models.Model):
     emplid = models.CharField(max_length=50, unique=True, null=True)
@@ -211,20 +214,36 @@ class Instructor(models.Model):
         return self.full_name
 
 class Section(models.Model):
+    CLASS_TYPE_CHOICES = [
+    ('Seminar', 'Seminar'),
+    ('Lecture', 'Lecture'),
+    ('Precept', 'Precept'),
+    ('Unknown', 'Unknown'),
+    ('Class', 'Class'),
+    ('Studio', 'Studio'),
+    ('Drill', 'Drill'),
+    ('Lab', 'Lab'),
+    ('Ear training', 'Ear training')
+]
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE, null=True)
-    track = models.CharField(max_length=5, null=True)  # e.g. UGRD/Grad
-    seat_reservations = models.CharField(max_length=1)
-    instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)  # Changed to ForeignKey
     class_number = models.IntegerField(unique=True, null=True)
+    class_type = models.CharField(max_length=50, choices=CLASS_TYPE_CHOICES, default="")
+    class_section = models.CharField(max_length=10, null=True)
+    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE, null=True)
+    track = models.CharField(max_length=5, null=True)
+    seat_reservations = models.CharField(max_length=1)
+    instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(null=True)
+    status = models.CharField(max_length=1, null=True)
     enrollment = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'Section'
 
     def __str__(self):
-        return f"{self.course.title} - {self.term.term_code}"
+        section_title = self.course.title if self.course else "None"
+        term_code = self.term.term_code if self.term else "None"
+        return f"{section_title} - {term_code}"
 
 class ClassMeeting(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True)
@@ -270,7 +289,7 @@ class Requirement(models.Model):
     max_counted = models.IntegerField(default=1)
     min_needed = models.IntegerField(default=1)
     explanation = models.TextField(null=True)
-    double_counting_allowed = models.BooleanField(null=True)
+    double_counting_allowed = models.BooleanField()
     max_common_with_major = models.IntegerField(default=0)
     pdfs_allowed = models.IntegerField(default=0)
     min_grade = models.FloatField(default=0.0)
@@ -278,7 +297,7 @@ class Requirement(models.Model):
     req_list = models.ManyToManyField('self')
     course_list = models.ManyToManyField('Course', related_name='satisfied_by')
     excluded_course_list = models.ManyToManyField('Course', related_name='not_satisfied_by')
-    dist_req = models.JSONField(null=True)
+    dist_req = models.CharField(max_length=5, null=True)
     num_courses = models.IntegerField(null=True)
 
     class Meta:

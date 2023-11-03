@@ -1,16 +1,25 @@
 'use client';
-
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
+import DragDropContext from '../../components/DragDropContext';
+import useAuthStore  from '../../store/authSlice';
 
 const Dashboard = () => {
-  const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({ isAuthenticated: false, username: null });
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
+  const setIsLoggedIn = useAuthStore(state => state.setIsLoggedIn);
+
+
+const Dashboard = () => {
+  const [initialCourses, setInitialCourses] = useState([
+    {id: 1, name: 'lol', department_code: 'COS', catalog_number: 100, title: "hello"},
+    {id: 2, name: 'okc', department_code: 'COS', catalog_number: 521, title: "hello"},
+    {id: 3, name: 'idk', department_code: 'COS', catalog_number: 333, title: "hello"}
+  ]);
   return (
     <>
-        {/* <Navbar auth={auth} /> */}
-        <Navbar />
+        <Navbar/>
         <div className="flex flex-col h-screen pt-20 p-8 bg-[#0F1E2F]">
             <main className="flex p-5 flex-grow bg-[#FAFAFA] rounded">
                 {/* Search Section (Left) */}
@@ -32,9 +41,9 @@ const Dashboard = () => {
                   </div>
                   <div>
                     {/* Carousel goes here */}
+                    <DragDropContext initialCourses={initialCourses} /> 
                   </div>
                 </div>
-
                 {/* Orange Bar */}
                 <div className="bg-[#D87B2D] w-1 h-[80%] my-auto"></div>
 
@@ -49,11 +58,12 @@ const Dashboard = () => {
                         <h3 className="mb-4  text-[#0F1E2F] rounded">PACM</h3>
                     </div>
                 </div>
-            </main>
+            </main> 
+          <Footer />
         </div>
-        <Footer />
     </>
   );
+}
 }
 
 export default Dashboard;

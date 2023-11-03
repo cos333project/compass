@@ -1,3 +1,5 @@
+# DELETE ONCE INSERT_DATA.PY IS FINISHED
+
 import sys
 import csv
 import logging
