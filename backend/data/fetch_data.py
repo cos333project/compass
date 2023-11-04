@@ -7,9 +7,13 @@ from req_lib import ReqLib
 def get_course_ids(term_info):
     """Extracts course IDs from term information."""
     course_ids = []
-    for term_data in term_info.get('term', []):
-        for subject_data in term_data.get('subjects', []):
-            course_ids.extend(course['course_id'] for course in subject_data.get('courses', []) if course.get('course_id'))
+    term_subjects = term_info.get("term", [])
+    for subjects in term_subjects:
+        subject = subjects.get("subjects", [])
+        for courses in subject:
+            course = courses.get("courses", "")
+            for course_id in course:
+                course_ids.append(course_id.get("course_id", ""))
     return course_ids
 
 def get_course_details(course_ids, term):
@@ -51,14 +55,24 @@ def fetch_data(subject, term):
 #--------------------------------------------------------------------------------------
 
 def process_courses(term_info, seat_info, class_details, writer):
-    seat_mapping = {seat['course_id']: seat for seat in seat_info.get('courses', [])}
-    print(f"seat_mapping: {seat_mapping}")
-    detail_mapping = {detail['course_id']: detail for detail in class_details.get('course_details', [])}
-    
+    seat_mapping = {seat['course_id']: seat for seat in seat_info.get('course', [])}
+    # print(f"seat_info.get('courses', []): {seat_info.get('course', [])}")
+    # print(f"seat_mapping: {seat_mapping}")
+
+    # print(f"class_details: {class_details}")
+    # print(f"term info: {term_info}")
+    # print(f"course_id: {course_id}")
+    # print(f"course details: {class_details.get(next(iter(class_details))).get('course_details', [])}")
+    # detail_mapping = {detail['course_id']: detail for detail in 
+    #                   class_details.get(next(iter(class_details))).get('course_details', [])}
+    # detail_mapping = class_details.get(next(iter(class_details))).get('course_details', [])
+    # print(f"detail_mapping: {detail_mapping}")
+
     for term in term_info.get("term", []):
         for subject in term.get("subjects", []):
             for course in subject.get("courses", []):
-                course_detail = detail_mapping.get(course.get("course_id", ""), {})
+                course_detail = class_details.get(course.get("course_id", "")).get('course_details', []).get('course_detail', [])
+                print(f"course_detail: {course_detail}")
                 process_course(term, subject, course, seat_mapping, course_detail, writer)
 
 #--------------------------------------------------------------------------------------
@@ -126,6 +140,7 @@ def extract_crosslisting_data(crosslistings):
 
 def extract_class_data(course_class, seat_mapping):
     course_id = course_class.get("course_id", "")
+    #to do / course_id currently not in seat_mapping
     if course_id in seat_mapping:
         specific_seat_info = seat_mapping[course_id]
         class_year_enrollments = specific_seat_info.get("classes", [])[0].get("class_year_enrollments", [])
@@ -342,3 +357,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
