@@ -52,6 +52,12 @@ def authenticated(request):
 
 #------------------------------- SEARCH COURSES --------------------------------------#
 
+DEPT_NUM_SUFFIX_REGEX = re.compile(r"^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$", re.IGNORECASE)
+DEPT_NUM_REGEX = re.compile(r"^[a-zA-Z]{1,3}\d{1,3}$", re.IGNORECASE)
+NUM_DEPT_REGEX = re.compile(r"^\d{1,3}[a-zA-Z]{1,3}$", re.IGNORECASE)
+DEPT_ONLY_REGEX = re.compile(r"^[a-zA-Z]{1,3}$", re.IGNORECASE)
+NUM_ONLY_REGEX = re.compile(r"^\d{1,3}$", re.IGNORECASE)
+
 class SearchCourses(View):
     """
     Handles search queries for courses.
@@ -60,42 +66,44 @@ class SearchCourses(View):
         query = request.GET.get('course', None)
         if query:
             if query == '*' or query == '.':
-                courses = Course.objects.filter()
+                courses = Course.objects.select_related('department').all()
                 serialized_courses = CourseSerializer(courses, many=True)
                 return JsonResponse({"courses": serialized_courses.data})
             
             # process queries
             trimmed_query = re.sub(r'\s', '', query)
             title = 'nevergoingtomatch'
-            if re.match(r"^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$", trimmed_query):
+            if DEPT_NUM_SUFFIX_REGEX.match(trimmed_query):
                 result = re.split(r'(\d+[a-zA-Z])', trimmed_query, 1)
                 dept = result[0]
                 num = result[1]
-            elif re.match(r"^[a-zA-Z]{1,3}\d{1,3}$", trimmed_query):
+            elif DEPT_NUM_REGEX.match(trimmed_query):
                 result = re.split(r'(\d+)', trimmed_query, 1)
                 dept = result[0]
                 num = result[1]
-            elif re.match(r"^\d{1,3}[a-zA-Z]{1,3}$", trimmed_query):
+            elif NUM_DEPT_REGEX.match(trimmed_query):
                 result = re.split(r'([a-zA-Z]+)', trimmed_query, 1)
                 dept = result[1]
                 num = result[0]
-            elif re.match(r"^[a-zA-Z]{1,3}$", trimmed_query):
+            elif DEPT_ONLY_REGEX.match(trimmed_query):
                 dept = trimmed_query
                 num = 'nevergoingtomatch'
                 title = query.strip()
-            elif re.match(r"^\d{1,3}$", trimmed_query):
+            elif NUM_ONLY_REGEX.match(trimmed_query):
                 dept = 'nevergoingtomatch'
                 num = trimmed_query
             else:
                 dept = 'nevergoingtomatch'
                 num = 'nevergoingtomatch'
                 title = query.strip()
+
             try:
-                exact_match_course = Course.objects.filter(Q(department__code__iexact=dept) & Q(catalog_number__iexact=num))
+                exact_match_course = Course.objects.select_related('department').filter(
+                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
+                )
                 if exact_match_course:
                     # If an exact match is found, return only that course
                     serialized_course = CourseSerializer(exact_match_course, many=True)
-                    print(serialized_course)
                     return JsonResponse({"courses": serialized_course.data})
                 courses = Course.objects.filter(
                     Q(department__code__icontains=dept) |
@@ -124,4 +132,3 @@ class SearchCourses(View):
                 return JsonResponse({"error": "Internal Server Error"}, status=500)
         else:
             return JsonResponse({"courses": []})
-
