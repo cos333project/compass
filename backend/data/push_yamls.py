@@ -18,7 +18,7 @@ DEGREE_FIELDS = ['name', 'code', 'description', 'urls']
 MAJOR_FIELDS = ['name', 'code', 'description', 'urls']
 MINOR_FIELDS = ['name', 'code', 'description', 'urls', 'apply_by_semester']
 CERTIFICATE_FIELDS = ['name', 'code', 'description', 'urls', 'apply_by_semester', 'active_until']
-REQUIREMENT_FIELDS = ['name', 'max_counted', 'min_needed', 'explanation', 'double_counting_allowed', 'max_common_with_major', 'pdfs_allowed', 'min_grade', 'completed_by_semester', 'dist_req', 'num_courses']
+REQUIREMENT_FIELDS = ['name', 'max_counted', 'min_needed', 'explanation', 'double_counting_allowed', 'max_common_with_major', 'pdfs_allowed', 'min_grade', 'completed_by_semester', 'dept_list', 'dist_req', 'num_courses']
 
 
 def load_data(yaml_file):
@@ -30,6 +30,7 @@ def load_data(yaml_file):
 
 def load_course_list(course_list):
     course_inst_list = []
+    dept_list = []
 
     for course_code in course_list:
         if isinstance(course_code, dict):
@@ -47,9 +48,8 @@ def load_course_list(course_list):
         if not dept_id:
             continue
 
-        if course_num == "*":
-            course_inst_list += \
-                Course.objects.filter(department_id=dept_id)
+        if course_num in ["*", "***"]:
+            dept_list.append(dept_code)
         elif "*" in course_num:
             course_inst_list += \
                 Course.objects.filter(department_id=dept_id,
@@ -59,8 +59,7 @@ def load_course_list(course_list):
             course_inst_list += \
                 Course.objects.filter(department_id=dept_id,
                                       catalog_number=course_num)
-
-    return course_inst_list
+    return course_inst_list, dept_list
 
 
 def push_requirement(req):
@@ -91,9 +90,14 @@ def push_requirement(req):
             req_inst.req_list.add(sub_req_inst)
 
     elif 'course_list' in req:
-        course_inst_list = load_course_list(req['course_list'])
+        course_inst_list, dept_list = \
+            load_course_list(req['course_list'])
         for course_inst in course_inst_list:
             req_inst.course_list.add(course_inst)
+        if len(dept_list) != 0:
+            print(f"Dept list: {dept_list}")
+            req_inst.dept_list = json.dumps(dept_list)
+            req_inst.save()
 
     elif 'excluded_course_list' in req:
         course_inst_list = load_course_list(req['excluded_course_list'])
@@ -207,7 +211,7 @@ def push_minors(minors_path):
 
 if __name__ == '__main__':
     push_degrees(Path("../degrees").resolve())
-    # push_majors(Path("../majors").resolve())
+    push_majors(Path("../majors").resolve())
     # push_minors(Path("../minors").resolve())
-    push_major(Path("../majors/COS-AB.yaml").resolve())
+    # push_major(Path("../majors/COS-AB.yaml").resolve())
     push_minor(Path("../minors/CLA.yaml").resolve())
