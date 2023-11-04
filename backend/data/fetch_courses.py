@@ -15,6 +15,7 @@ def fetch_data(subject, term):
     # print(f"course_ids here: {course_ids}")
     # print(f"course_ids: {course_ids}")
     course_ids_str = ','.join(course_ids)
+    print(f"course_id: {course_ids_str}")
     # print(f"course_ids_str: {course_ids_str}")
     seat_info = req_lib.getJSON(req_lib.configs.COURSES_RESSEATS, fmt="json", term=term, course_ids=course_ids_str)
     print(f"seat_info_fetchdata: {seat_info}")
