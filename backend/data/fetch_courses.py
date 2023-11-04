@@ -3,13 +3,28 @@ from req_lib import ReqLib
 
 def fetch_data(subject, term):
     term_info = req_lib.getJSON(req_lib.configs.COURSES_COURSES, fmt="json", term=term, subject=subject)
-    course_ids = [course.get("course_id", "") for subject_data in term_info.get("term", []) for course in subject_data.get("courses", [])]
+    course_ids = []
+    term_subjects = term_info.get("term", [])
+    for subjects in term_subjects:
+        subject = subjects.get("subjects", [])
+        for courses in subject:
+            course = courses.get("courses", "")
+            for course_id in course:
+                course_ids.append(course_id.get("course_id", ""))
+                
+    # print(f"course_ids here: {course_ids}")
+    # print(f"course_ids: {course_ids}")
     course_ids_str = ','.join(course_ids)
+    # print(f"course_ids_str: {course_ids_str}")
     seat_info = req_lib.getJSON(req_lib.configs.COURSES_RESSEATS, fmt="json", term=term, course_ids=course_ids_str)
+    print(f"seat_info_fetchdata: {seat_info}")
     return term_info, seat_info
 
 def process_courses(term_info, seat_info, writer):
+    # print(f"seat_info: {seat_info}")
     seat_mapping = {seat['course_id']: seat for seat in seat_info.get('courses', [])}
+    # print(f"seat_info.get: {seat_info.get('courses', [])}")
+    # print(f"seat_mapping_process: {seat_mapping}")
     for term in term_info.get("term", []):
         for subject in term.get("subjects", []):
             for course in subject.get("courses", []):
@@ -21,7 +36,8 @@ def process_course(term, subject, course, seat_mapping, writer):
         instructor_data = extract_instructor_data(instructor)
         crosslisting_data = extract_crosslisting_data(course.get("crosslistings", []))
         for course_class in course.get("classes", []):
-            class_data = extract_class_data(course_class, seat_mapping)
+            class_data = extract_class_data(course_class, seat_mapping, course)
+            # print(f"class_data: {class_data}")
             for meeting in course_class.get("schedule", {}).get("meetings", []):
                 meeting_data = extract_meeting_data(meeting)
                 row_data = {**common_data, **instructor_data, **crosslisting_data, **class_data, **meeting_data}
@@ -61,8 +77,11 @@ def extract_crosslisting_data(crosslistings):
         'Crosslisting Catalog Numbers': ','.join(crosslisting_catalog_numbers)
     }
 
-def extract_class_data(course_class, seat_mapping):
-    course_id = course_class.get("course_id", "")
+def extract_class_data(course_class, seat_mapping, course):
+    course_id = course.get("course_id", "")
+    # print(f"course_class: {course_class}")
+    # print(f"course_id: {course_id}")
+    # print(f"seat_mapping: {seat_mapping}")
     if course_id in seat_mapping:
         specific_seat_info = seat_mapping[course_id]
         class_year_enrollments = specific_seat_info.get("classes", [])[0].get("class_year_enrollments", [])
@@ -152,4 +171,8 @@ if __name__ == "__main__":
 
         for subj in subjects:
             term_info, seat_info = fetch_data(subj, int(query[semester]))
+            print(f"subj: {subj}")
+            print(f"query: {int(query[semester])}")
+            print(f"term_info: {term_info}")
+            print(f"seat_info csv: {seat_info}")
             process_courses(term_info, seat_info, writer)

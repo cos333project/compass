@@ -25,3 +25,22 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+@keyframes cascadeFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cascade-animation {
+  animation: cascadeFadeIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
