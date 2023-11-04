@@ -31,7 +31,7 @@ class Department(models.Model):
     - code: The department's short code (e.g., 'COS' for Computer Science).
     - name: The full name of the department (e.g., 'Computer Science').
     """
-    code = models.CharField(max_length=4, unique=True, null=True)
+    code = models.CharField(max_length=4, unique=True, db_index=True, null=True)
     name = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -162,8 +162,8 @@ class Course(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     guid = models.CharField(max_length=50, null=True)
     course_id = models.CharField(max_length=10, null=True)
-    catalog_number = models.CharField(max_length=10, null=True)
-    title = models.CharField(max_length=150, null=True)
+    catalog_number = models.CharField(max_length=10, db_index=True, null=True)
+    title = models.CharField(max_length=150, db_index=True, null=True)
     description = models.TextField(null=True)
     drop_consent = models.CharField(max_length=1, blank=True, null=True)
     add_consent = models.CharField(max_length=1, blank=True, null=True)
@@ -296,6 +296,7 @@ class Requirement(models.Model):
     completed_by_semester = models.IntegerField(default=8)
     req_list = models.ManyToManyField('self')
     course_list = models.ManyToManyField('Course', related_name='satisfied_by')
+    dept_list = models.JSONField(null=True)
     excluded_course_list = models.ManyToManyField('Course', related_name='not_satisfied_by')
     dist_req = models.CharField(max_length=5, null=True)
     num_courses = models.IntegerField(null=True)

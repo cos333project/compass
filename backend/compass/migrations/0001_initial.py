@@ -9,127 +9,43 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
+
     initial = True
 
     dependencies = [
-        ("auth", "0012_alter_user_first_name_max_length"),
+        ('auth', '0012_alter_user_first_name_max_length'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="CustomUser",
+            name='CustomUser',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("password", models.CharField(max_length=128, verbose_name="password")),
-                (
-                    "last_login",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="last login"
-                    ),
-                ),
-                (
-                    "is_superuser",
-                    models.BooleanField(
-                        default=False,
-                        help_text="Designates that this user has all permissions without explicitly assigning them.",
-                        verbose_name="superuser status",
-                    ),
-                ),
-                (
-                    "username",
-                    models.CharField(
-                        error_messages={
-                            "unique": "A user with that username already exists."
-                        },
-                        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
-                        max_length=150,
-                        unique=True,
-                        validators=[
-                            django.contrib.auth.validators.UnicodeUsernameValidator()
-                        ],
-                        verbose_name="username",
-                    ),
-                ),
-                (
-                    "first_name",
-                    models.CharField(
-                        blank=True, max_length=150, verbose_name="first name"
-                    ),
-                ),
-                (
-                    "last_name",
-                    models.CharField(
-                        blank=True, max_length=150, verbose_name="last name"
-                    ),
-                ),
-                (
-                    "email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="email address"
-                    ),
-                ),
-                (
-                    "is_staff",
-                    models.BooleanField(
-                        default=False,
-                        help_text="Designates whether the user can log into this admin site.",
-                        verbose_name="staff status",
-                    ),
-                ),
-                (
-                    "is_active",
-                    models.BooleanField(
-                        default=True,
-                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
-                        verbose_name="active",
-                    ),
-                ),
-                (
-                    "date_joined",
-                    models.DateTimeField(
-                        default=django.utils.timezone.now, verbose_name="date joined"
-                    ),
-                ),
-                (
-                    "role",
-                    models.CharField(
-                        choices=[("admin", "Administrator"), ("student", "Student")],
-                        default="student",
-                        max_length=25,
-                    ),
-                ),
-                ("class_year", models.IntegerField(blank=True, null=True)),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("updated_at", models.DateTimeField(auto_now=True)),
-                (
-                    "groups",
-                    models.ManyToManyField(
-                        blank=True,
-                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
-                        related_name="user_set",
-                        related_query_name="user",
-                        to="auth.group",
-                        verbose_name="groups",
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('password', models.CharField(max_length=128, verbose_name='password')),
+                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
+                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
+                ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
+                ('first_name', models.CharField(blank=True, max_length=150, verbose_name='first name')),
+                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
+                ('email', models.EmailField(blank=True, max_length=254, verbose_name='email address')),
+                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
+                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                ('role', models.CharField(choices=[('admin', 'Administrator'), ('student', 'Student')], default='student', max_length=25)),
+                ('class_year', models.IntegerField(blank=True, null=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
             ],
             options={
                 "db_table": "CustomUser",
             },
             managers=[
-                ("objects", django.contrib.auth.models.UserManager()),
+                ('objects', django.contrib.auth.models.UserManager()),
             ],
         ),
         migrations.CreateModel(
-            name="AcademicTerm",
+            name='AcademicTerm',
             fields=[
                 (
                     "id",
@@ -146,7 +62,7 @@ class Migration(migrations.Migration):
                 ("end_date", models.DateField(null=True)),
             ],
             options={
-                "db_table": "AcademicTerm",
+                'db_table': 'AcademicTerm',
             },
         ),
         migrations.CreateModel(
@@ -191,7 +107,7 @@ class Migration(migrations.Migration):
                 ("reading_list", models.TextField(blank=True, null=True)),
             ],
             options={
-                "db_table": "Course",
+                'db_table': 'Degree',
             },
         ),
         migrations.CreateModel(
@@ -246,11 +162,11 @@ class Migration(migrations.Migration):
                 ("full_name", models.CharField(max_length=255, null=True)),
             ],
             options={
-                "db_table": "Instructor",
+                'db_table': 'Department',
             },
         ),
         migrations.CreateModel(
-            name="Major",
+            name='Instructor',
             fields=[
                 ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=150, null=True)),
@@ -260,7 +176,7 @@ class Migration(migrations.Migration):
                 ("degree", models.ManyToManyField(to="compass.degree")),
             ],
             options={
-                "db_table": "Major",
+                'db_table': 'Instructor',
             },
         ),
         migrations.CreateModel(
@@ -321,11 +237,11 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "db_table": "UserCourses",
+                'db_table': 'UserCourses',
             },
         ),
         migrations.CreateModel(
-            name="Section",
+            name='Section',
             fields=[
                 (
                     "id",
@@ -367,7 +283,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "db_table": "Section",
+                'db_table': 'Section',
             },
         ),
         migrations.CreateModel(
@@ -431,7 +347,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(to="compass.requirement"),
         ),
         migrations.CreateModel(
-            name="CourseEquivalent",
+            name='CourseEquivalent',
             fields=[
                 (
                     "id",
@@ -486,7 +402,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.CreateModel(
-            name="ClassYearEnrollment",
+            name='ClassYearEnrollment',
             fields=[
                 (
                     "id",
@@ -509,11 +425,11 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "db_table": "ClassYearEnrollment",
+                'db_table': 'ClassYearEnrollment',
             },
         ),
         migrations.CreateModel(
-            name="ClassMeeting",
+            name='ClassMeeting',
             fields=[
                 (
                     "id",
@@ -540,7 +456,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "db_table": "ClassMeeting",
+                'db_table': 'ClassMeeting',
             },
         ),
         migrations.CreateModel(
@@ -570,20 +486,13 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="customuser",
-            name="minors",
-            field=models.ManyToManyField(to="compass.minor"),
+            model_name='customuser',
+            name='minors',
+            field=models.ManyToManyField(to='compass.minor'),
         ),
         migrations.AddField(
-            model_name="customuser",
-            name="user_permissions",
-            field=models.ManyToManyField(
-                blank=True,
-                help_text="Specific permissions for this user.",
-                related_name="user_set",
-                related_query_name="user",
-                to="auth.permission",
-                verbose_name="user permissions",
-            ),
+            model_name='customuser',
+            name='user_permissions',
+            field=models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions'),
         ),
     ]
