@@ -1,68 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useDispatch, useSelector } from 'react-redux';
 import { Dialog } from '@headlessui/react';
+import Link from 'next/link';
+import Login from './Login'
+import Logout from './Logout'
+import useAuthStore from '../store/authSlice';
 
 const navigation = [
   { name: 'About', href: '#' },
-  { name: 'Planner', href: '#' },
-  { name: 'Courses', href: '#' },
-  { name: 'Schedule', href: '#' },
+  { name: 'Dashboard', href: '/dashboard' },
   { name: 'Contact Us', href: '#' },
 ];
 
-const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
+const Navbar: React.FC = () => {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn); 
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Check if the user is already logged in when the component mounts
-//   useEffect(() => {
-//     fetch("http://localhost:8000/is_authenticated", {
-//       credentials: 'include' 
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         if (data.authenticated) {
-//           setIsLoggedIn(true);
-//           // TODO: Fetch username from API or session
-//         }
-//       })
-//       .catch((error) => {
-//         console.log(`Fetch to /is_authenticated failed: ${error}`);
-//     });
-//     }, []);
-
-//   useEffect(() => {
-//     if (isLoggedIn) {
-//       setUsername("John_Doe"); // TODO: Fetch username from API
-//     }
-//   }, [isLoggedIn]);
-
-// const handleLoginClick = async () => {
-//   if (!isLoggedIn) {
-//     try {
-//       console.log("Redirecting to login URL");
-//       // TODO: Replace with your production backend URL when deploying
-//       window.location.href = 'http://localhost:8000/login';
-//     } catch (error) {
-//       console.error('Failed to login:', error);
-//     }
-//   } else {
-//     window.location.href = '/404';  // Redirect to 404 page or dashboard, as we see fit
-//   }
-// };
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+          <a href="." className="-m-1.5 p-1.5">
             <span className="sr-only">Compass</span>
             <img
               className="h-9 w-auto"
               src={"./compassLogo.png"}
-              alt=""
+              alt="Compass Logo"
             />
           </a>
         </div>
@@ -84,9 +48,7 @@ const Navbar = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-        {/* <a onClick={handleLoginClick} className="text-sm font-semibold leading-6 text-white cursor-pointer">
-          {isLoggedIn ? username : "Log in"} <span aria-hidden="true">&rarr;</span>
-        </a> */}
+          {isLoggedIn ? <Logout /> : <Login />}
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -128,7 +90,7 @@ const Navbar = () => {
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                 >
-                  Log in
+                  {isLoggedIn ? <Logout /> : <Login />}
                 </a>
               </div>
             </div>
