@@ -7,6 +7,7 @@ import Search from '../../components/Search';
 import DragDropContext from '../../components/DragDropContext';
 import useSearchStore from '../../store/searchSlice';
 import { Course } from '../../types';
+import DropdownMenu from '@/components/DropdownMenu';
 
 const Dashboard = () => {
   const { preloadCourses, allCourses } = useSearchStore(state => ({
@@ -52,6 +53,7 @@ const Dashboard = () => {
             </div>
             <DragDropContext initialCourses={initialCourses} />
           </div>
+            <DropdownMenu />
         </main> 
 
        {/* Planning Hub (Bottom Half) */}
