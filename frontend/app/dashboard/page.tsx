@@ -9,6 +9,7 @@ import DragDropContext from '../../components/DragDropContext';
 import useSearchStore from '../../store/searchSlice';
 import useAuthStore from '../../store/authSlice';
 import { Course } from '../../types';
+import DropdownMenu from '@/components/DropdownMenu';
 
 const Dashboard = () => {
   const router = useRouter();
@@ -65,7 +66,8 @@ const Dashboard = () => {
             </div>
             <DragDropContext initialCourses={initialCourses} />
           </div>
-        </main>
+          <DropdownMenu />
+        </main> 
 
        {/* Planning Hub (Bottom Half) */}
 <div className="flex flex-col md:flex-row p-5 mt-6 bg-gray-100 rounded-xl shadow-xl">

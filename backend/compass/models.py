@@ -296,6 +296,7 @@ class Requirement(models.Model):
     completed_by_semester = models.IntegerField(default=8)
     req_list = models.ManyToManyField('self')
     course_list = models.ManyToManyField('Course', related_name='satisfied_by')
+    dept_list = models.JSONField(null=True)
     excluded_course_list = models.ManyToManyField('Course', related_name='not_satisfied_by')
     dist_req = models.CharField(max_length=5, null=True)
     num_courses = models.IntegerField(null=True)
