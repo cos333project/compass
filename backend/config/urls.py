@@ -16,14 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django_cas_ng.views import LoginView, LogoutView
 from graphene_django.views import GraphQLView
 from compass import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
-    path('login/', views.login, name='login'),
-    path('logout', views.logout, name='logout'),
-    path('authenticated/', views.authenticated, name='authenticated'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('authenticate/', views.authenticate, name='authenticate'),
     path('search/', views.SearchCourses.as_view(), name='search'),
 ]
