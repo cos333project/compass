@@ -8,47 +8,18 @@ from .serializers import CourseSerializer
 import json
 import logging
 import re
-from utils.cas_client import CASClient
 
 logger = logging.getLogger(__name__)
 
-#-------------------------------------- LOG IN --------------------------------------------#
+#------------------------------------ LOG IN -----------------------------------------#
 
-cas = CASClient(get_response=None)
-
-def login(request):
-    try:
-        logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-        logger.info(f"Received login request from {request.META.get('REMOTE_ADDR')}")
-
-        response = cas.authenticate(request)
-        if response is not None:
-            return response  # Redirect to CAS login
-        else:
-            dashboard = f"{settings.HOMEPAGE}/dashboard"
-            return HttpResponseRedirect(dashboard)  # Or redirect to dashboard, etc.
-    except Exception as e:
-        logger.error(f"Exception in login view: {e}")
-        return HttpResponseServerError()
-    
-def logout(request):
-    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-    logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
-    return cas.logout(request)
-    
-def authenticated(request):
+def authenticate(request):
+    authenticated = request.user.is_authenticated
+    status = "authenticated" if authenticated else "not authenticated"
     logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
     logger.info(f"Request Headers: {request.headers}")
-
-    authenticated = cas.logged_in(request)
-    status = "authenticated" if authenticated else "not authenticated"
     logger.info(f"User is {status}. Cookies: {request.COOKIES}")
-
-    response_data = {
-        'authenticated': authenticated,
-        'username': request.session.get('username', None)
-    }
-    return JsonResponse(response_data)
+    return JsonResponse({'authenticated': authenticated})
 
 #------------------------------- SEARCH COURSES --------------------------------------#
 
@@ -69,7 +40,7 @@ class SearchCourses(View):
                 courses = Course.objects.select_related('department').all()
                 serialized_courses = CourseSerializer(courses, many=True)
                 return JsonResponse({"courses": serialized_courses.data})
-            
+
             # process queries
             trimmed_query = re.sub(r'\s', '', query)
             title = 'nevergoingtomatch'
@@ -114,7 +85,7 @@ class SearchCourses(View):
                 )
                 if not courses.exists():
                     return JsonResponse({"courses": []})
-            
+
                 custom_sorting_field = Case(
                     When(Q(department__code__icontains=dept) & Q(catalog_number__icontains=num), then=Value(3)),
                     When(Q(department__code__icontains=dept), then=Value(2)),
@@ -126,7 +97,7 @@ class SearchCourses(View):
                     '-custom_sorting', 'department__code', 'catalog_number', 'title')
                 serialized_courses = CourseSerializer(sorted_courses, many=True)
                 return JsonResponse({"courses": serialized_courses.data})
-            
+
             except Exception as e:
                 logger.error(f"An error occurred while searching for courses: {e}")
                 return JsonResponse({"error": "Internal Server Error"}, status=500)

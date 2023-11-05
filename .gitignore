@@ -18,6 +18,13 @@ __pycache__/
 *.py[co]
 db.sqlite3
 .env
+
+# Zed editor settings ("It's the IDE of the future --Windsor")
+.zed/
+
+# CAS folder
+backend/cas/
+
 # Virtual environment
 env/
 
