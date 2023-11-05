@@ -1,27 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Search from '../../components/Search';
 import DragDropContext from '../../components/DragDropContext';
 import useSearchStore from '../../store/searchSlice';
+import useAuthStore from '../../store/authSlice';
 import { Course } from '../../types';
 
 const Dashboard = () => {
+  const router = useRouter();
   const { preloadCourses, allCourses } = useSearchStore(state => ({
     preloadCourses: state.preloadCourses,
     allCourses: state.allCourses
   }));
 
-  const [auth, setAuth] = useState<{ isAuthenticated: boolean; username: string | null }>({
-    isAuthenticated: false,
-    username: null
-  });
+  const { isAuthenticated, checkAuthentication } = useAuthStore((state) => ({
+    isAuthenticated: state.isAuthenticated,
+    checkAuthentication: state.checkAuthentication,
+  }));
 
   useEffect(() => {
-    preloadCourses(); // Trigger the course preload when the dashboard mounts
-  }, [preloadCourses]); // Dependency array to prevent multiple calls
+    checkAuthentication().catch((error) => {
+      console.error("Couldn't fetch auth state:", error);
+    });
+  }, [checkAuthentication]);
+
+  // Then, listen for changes to isAuthenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Redirect to CAS login page
+      router.push('http://localhost:8000/cas/login');
+    }
+  }, [isAuthenticated, router]);
 
   // Use the preloaded courses as the initial state if available
   const initialCourses = allCourses.length > 0 ? allCourses : [
@@ -43,7 +56,7 @@ const Dashboard = () => {
             </select>
             <Search />
           </div>
-  
+
           {/* Carousel for Courses (Middle) */}
           <div className="flex-grow bg-white p-5 rounded shadow">
             <div className="flex justify-center items-center mb-5">
@@ -52,7 +65,7 @@ const Dashboard = () => {
             </div>
             <DragDropContext initialCourses={initialCourses} />
           </div>
-        </main> 
+        </main>
 
        {/* Planning Hub (Bottom Half) */}
 <div className="flex flex-col md:flex-row p-5 mt-6 bg-gray-100 rounded-xl shadow-xl">

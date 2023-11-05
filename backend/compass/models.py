@@ -256,7 +256,7 @@ class ClassMeeting(models.Model):
 
     class Meta:
         db_table = 'ClassMeeting'
-    
+
     def __str__(self):
         return f"{self.section} - {self.start_time} to {self.end_time}"
 
@@ -318,11 +318,15 @@ class CustomUser(AbstractUser):
         ('admin', 'Administrator'),
         ('student', 'Student'),
     )
-    
+
     role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
     major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True)
     minors = models.ManyToManyField(Minor)
-    # take in more than one minor
+    net_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    university_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    email = models.EmailField(max_length=254, unique=True, null=True, blank=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
     class_year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -333,7 +337,7 @@ class CustomUser(AbstractUser):
 class UserCourses(models.Model):
     """
     Maps courses a user plans to take or has taken.
-    
+
     Fields:
     - user: The student who is taking or has taken the course.
     - course: The course the student is taking or has taken.

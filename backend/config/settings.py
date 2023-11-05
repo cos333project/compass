@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cas_ng',
     'rest_framework',
     'graphene_django',
     'corsheaders',
@@ -50,18 +51,40 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
-    'utils.cas_client.CASClient',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_cas_ng.middleware.CASMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend',
+)
 
-CAS_URL = 'https://fed.princeton.edu/cas/'
+CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'
+CAS_CREATE_USER = True
+CAS_CREATE_USER_ID = True
+CAS_REDIRECT_URL = 'http://localhost:3000/dashboard'
+CAS_LOGOUT_NEXT_PAGE = 'http://localhost:3000'
+CAS_VERSION = 3
+CAS_APPLY_ATTRIBUTES_TO_USER = True
+CAS_LOGIN_URL_NAME = 'login'
+CAS_LOGOUT_URL_NAME = 'logout'
+
+CAS_RENAME_ATTRIBUTES = {
+    'uid': 'net_id',                       # Maps to 'net_id'
+    'universityid': 'university_id',       # Maps to 'university_id'
+    'mail': 'email',                       # Maps to 'email'
+    'givenname': 'first_name',             # Maps to 'first_name'
+    'sn': 'last_name',                     # Maps to 'last_name'
+    'puclassyear': 'class_year',           # Maps to 'class_year'
+}
+
 HOMEPAGE = 'http://localhost:3000' # CHANGE FOR PRODUCTION
 DASHBOARD = 'http://localhost:3000/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
