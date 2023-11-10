@@ -90,12 +90,15 @@ DASHBOARD = 'http://localhost:3000/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds
 
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "https://fed.princeton.edu", # Change for production (hide it)
-    os.environ.get('COMPASS'),
-    "http://127.0.0.1:8000"     # Change for production (hide it)
+    "http://localhost:3000",     # Change for production (hide it)
 ]
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CAS_REDIRECT_WHITELIST = ['http://localhost:8000/', 'http://127.0.0.1:8000/']
+CAS_CHECK_NEXT = False
+
 
 LOGGING = {
     'version': 1,

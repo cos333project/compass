@@ -3,16 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
+  --background-start-rgb: 102, 51, 153; /* Darkened Princeton Orange */
+  --background-end-rgb: 51, 51, 51; /* Softened Black */
+  --system-text-color: #D9D9D9; /* Light Gray */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 224, 224, 224; /* Soft White for text */
+    --background-start-rgb: 18, 18, 18; /* Near Black */
+    --background-end-rgb: 30, 30, 30; /* Dark Gray */
+    --system-text-color: #FAFAFA; /* Soft Blue */
   }
 }
 
@@ -43,5 +45,18 @@ body {
 
 .cascade-animation {
   animation: cascadeFadeIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.columns-1 {
+  column-count: 1;
+}
+.columns-2 {
+  column-count: 2;
+}
+.columns-3 {
+  column-count: 3;
+}
+.columns-4 {
+  column-count: 4;
 }
 

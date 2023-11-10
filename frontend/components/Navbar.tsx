@@ -1,24 +1,42 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog } from '@headlessui/react';
-import Link from 'next/link';
-import Login from './Login'
-import Logout from './Logout'
+import { Login } from './Login'
+import DropdownMenu from './DropdownMenu';
 import useAuthStore from '../store/authSlice';
 
 const navigation = [
   { name: 'About', href: '#' },
-  { name: 'Dashboard', href: '/dashboard' },
-  { name: 'Contact Us', href: '#' },
+  { name: 'Dashboard', href: '/dashboard' }, // Should be protected path and not auto-redirect
+  { name: 'Contact Us', href: '/' },
 ];
 
 const Navbar: React.FC = () => {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn); 
-  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const { isAuthenticated, login, logout } = useAuthStore(state => ({
+    isAuthenticated: state.isAuthenticated,
+    login: state.login,
+    logout: state.logout,
+  }));
+  console.log("Navbar component rendering, isAuthenticated:", isAuthenticated);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // TODO: Change this to a proper route guard instead of onclick event
+    e.preventDefault();
+    login();
+  };
+
+  const renderUserMenu = () => isAuthenticated ? <DropdownMenu /> : <Login />;
+
+  // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
+  const fadeIn = "transform transition-all duration-700 ease-out opacity-100 translate-y-0";
+  const fadeOut = "transform transition-all duration-700 ease-in opacity-0 translate-y-(-100%)";
+  const hidden = "opacity-0";
+  const isAuthInitialized = isAuthenticated !== null;
+  
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
+    <header className={`absolute inset-x-0 top-0 z-50 transform ${isAuthInitialized ? fadeIn : hidden} ${!isAuthInitialized ? fadeOut : ''}`}>
       <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <a href="." className="-m-1.5 p-1.5">
@@ -42,13 +60,19 @@ const Navbar: React.FC = () => {
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
-            <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-white">
-              {item.name}
-            </a>
+            item.name === 'Dashboard' ? (
+              <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-[var(--system-text-color)]" onClick={handleDashboardClick}>
+                {item.name}
+              </a>
+            ) : (
+              <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-[var(--system-text-color)]">
+                {item.name}
+              </a>
+            )
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {isLoggedIn ? <Logout /> : <Login />}
+          {renderUserMenu()}
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -85,13 +109,8 @@ const Navbar: React.FC = () => {
                   </a>
                 ))}
               </div>
-              <div className="py-6">
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
-                >
-                  {isLoggedIn ? <Logout /> : <Login />}
-                </a>
+              <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                {renderUserMenu()}
               </div>
             </div>
           </div>
@@ -99,6 +118,6 @@ const Navbar: React.FC = () => {
       </Dialog>
     </header>
   );
-};
+}
 
-export default Navbar;
+export default React.memo(Navbar);

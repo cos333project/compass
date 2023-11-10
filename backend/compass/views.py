@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q, F, Value, When, Case
 from django.http import HttpResponseServerError, HttpResponseRedirect, JsonResponse
 from django.conf import settings
@@ -13,13 +14,30 @@ logger = logging.getLogger(__name__)
 
 #------------------------------------ LOG IN -----------------------------------------#
 
+def fetch_user_info(user):
+    return {
+        'net_id': getattr(user, 'net_id', None),
+        'university_id': getattr(user, 'university_id', None),
+        'email': getattr(user, 'email', None),
+        'first_name': getattr(user, 'first_name', None),
+        'last_name': getattr(user, 'last_name', None),
+        'class_year': getattr(user, 'class_year', None),
+    }
+
+@login_required
+def profile(request):
+    user_info = fetch_user_info(request.user)
+    return JsonResponse(user_info)
+
 def authenticate(request):
-    authenticated = request.user.is_authenticated
-    status = "authenticated" if authenticated else "not authenticated"
-    logger.info(f"Incoming GET request: {request.GET}, Session: {request.session}")
-    logger.info(f"Request Headers: {request.headers}")
-    logger.info(f"User is {status}. Cookies: {request.COOKIES}")
-    return JsonResponse({'authenticated': authenticated})
+    user_is_authenticated = request.user.is_authenticated
+    if user_is_authenticated:
+        user_info = fetch_user_info(request.user)
+        logger.info(f"User is authenticated. User info: {user_info}. Cookies: {request.COOKIES}")
+        return JsonResponse({'authenticated': True, 'user': user_info})
+    else:
+        logger.info("User is not authenticated.")
+        return JsonResponse({'authenticated': False, 'user': None})
 
 #------------------------------- SEARCH COURSES --------------------------------------#
 

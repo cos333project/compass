@@ -3,7 +3,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
-export default function Loading() {
+export default function Variants() {
   return (
     <Box sx={{ width: '100%' }}>
       {/* Simulating Navbar */}

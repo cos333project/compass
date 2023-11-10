@@ -15,7 +15,7 @@ export default function Hero() {
 
   return (
     // <div className="bg-gray-900">
-    <div className='compass-gray'>
+    <div className='compass-blue'>
       {/* <header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1">
@@ -114,11 +114,11 @@ export default function Hero() {
         </div>
         <div className="py-24 sm:py-32 lg:pb-40">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <div className="mx-auto max-w-2xl text-center text-[var(--system-text-color)]">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
                 Welcome to Compass.
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-6 text-lg leading-8">
                 Plan your courses, manage your schedule, and collaborate with your peers.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">

@@ -17,21 +17,12 @@ const Root = () => {
 };
 
 const Home = () => {
-  const checkAuthentication = useAuthStore((state) => state.checkAuthentication);
-  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
+  const { checkAuthentication } = useAuthStore();
   
   useEffect(() => {
-    console.log("Home component mounted");
-
-    fetch('http://localhost:8000/authenticate')
-      .then(response => response.json())
-      .then(data => setIsAuthenticated(data.authenticated))
-      .catch(error => console.error("Couldn't fetch auth state:", error));
-
-    return () => {
-      console.log("Home component will unmount");
-    };
+    checkAuthentication();
   }, [checkAuthentication]);
+  
 
   return (
     <>
