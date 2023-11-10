@@ -80,29 +80,42 @@ def push_requirement(req):
                     continue
             elif field == 'dist_req':
                 req_fields[field] = json.dumps(req[field])
+            elif field == 'num_courses':
+                req_fields[field] = req[field]
+                req_fields['min_needed'] = req[field]
             else:
                 req_fields[field] = req[field]
     req_inst = Requirement.objects.create(**req_fields)
 
-    if 'req_list' in req:
+    if ('req_list' in req) and (len(req['req_list']) != 0):
         for sub_req in req['req_list']:
+            if "double_counting_allowed" in req_fields:
+                sub_req["double_counting_allowed"] = \
+                    req_fields["double_counting_allowed"]
             sub_req_inst = push_requirement(sub_req)
-            req_inst.req_list.add(sub_req_inst)
+            sub_req_inst.parent = req_inst # assign sub_req_inst as child of req_inst
+            sub_req_inst.save()
 
-    elif 'course_list' in req:
+    elif ('course_list' in req) and (len(req['course_list']) != 0):
         course_inst_list, dept_list = \
             load_course_list(req['course_list'])
         for course_inst in course_inst_list:
             req_inst.course_list.add(course_inst)
         if len(dept_list) != 0:
-            print(f"Dept list: {dept_list}")
             req_inst.dept_list = json.dumps(dept_list)
             req_inst.save()
 
-    elif 'excluded_course_list' in req:
+    elif ('excluded_course_list' in req) and (len(req['excluded_course_list']) != 0):
         course_inst_list = load_course_list(req['excluded_course_list'])
         for course_inst in course_inst_list:
             req_inst.excluded_course_list.add(course_inst)
+
+    elif ((('dist_req' not in req) or (req['dist_req'] == None))
+        and (('num_courses' not in req) or (req['num_courses'] == None))
+        and (('dept_list' not in req) or (req['dept_list'] == None))):
+        req_inst.max_counted = 0
+        req_inst.min_needed = 0
+        req_inst.save()
 
     return req_inst
 
@@ -119,11 +132,13 @@ def push_degree(yaml_file):
             else:
                 degree_fields[field] = data[field]
 
+    degree_fields["min_needed"] = len(data['req_list'])
     degree_inst = Degree.objects.create(**degree_fields)
 
     for req in data['req_list']:
         req_inst = push_requirement(req)
-        degree_inst.req_list.add(req_inst)
+        req_inst.degree = degree_inst
+        req_inst.save()
 
 
 def push_major(yaml_file):
@@ -138,6 +153,7 @@ def push_major(yaml_file):
             else:
                 major_fields[field] = data[field]
 
+    major_fields["min_needed"] = len(data['req_list'])
     major_inst = Major.objects.create(**major_fields)
 
     degree_code = ('AB' if major_inst.code in constants.AB_MAJORS
@@ -150,7 +166,8 @@ def push_major(yaml_file):
 
     for req in data['req_list']:
         req_inst = push_requirement(req)
-        major_inst.req_list.add(req_inst)
+        req_inst.major = major_inst
+        req_inst.save()
 
 
 def push_minor(yaml_file):
@@ -165,6 +182,7 @@ def push_minor(yaml_file):
             else:
                 minor_fields[field] = data[field]
 
+    minor_fields["min_needed"] = len(data['req_list'])
     minor_inst = Minor.objects.create(**minor_fields)
 
     if 'excluded_majors' in data:
@@ -185,7 +203,38 @@ def push_minor(yaml_file):
 
     for req in data['req_list']:
         req_inst = push_requirement(req)
-        minor_inst.req_list.add(req_inst)
+        req_inst.minor = minor_inst
+        req_inst.save()
+
+
+def push_certificate(yaml_file):
+    data = load_data(yaml_file)
+    logging.info(f"{data['name']}")
+    certificate_fields = {}
+
+    for field in CERTIFICATE_FIELDS:
+        if field in data:
+            if field == 'urls':
+                certificate_fields[field] = json.dumps(data[field])
+            else:
+                certificate_fields[field] = data[field]
+
+    certificate_fields["min_needed"] = len(data['req_list'])
+    certificate_fields["active_until"] = date(2025, 5, 1)
+    certificate_inst = Certificate.objects.create(**certificate_fields)
+
+    if 'excluded_majors' in data:
+        for major_code in data['excluded_majors']:
+            try:
+                major_inst = Major.objects.get(code=major_code)
+                certificate_inst.excluded_majors.add(major_inst)
+            except Major.DoesNotExist:
+                logging.info(f"Major with code {major_code} not found")
+
+    for req in data['req_list']:
+        req_inst = push_requirement(req)
+        req_inst.certificate = certificate_inst
+        req_inst.save()
 
 
 def push_degrees(degrees_path):
@@ -209,9 +258,17 @@ def push_minors(minors_path):
     logging.info("Minor requirements pushed!")
 
 
+def push_certificates(certificates_path):
+    logging.info("Pushing certificate requirements...")
+    for file in certificates_path.glob("*.yaml"):
+        push_certificate(str(file))
+    logging.info("Certificate requirements pushed!")
+
+
 if __name__ == '__main__':
     push_degrees(Path("../degrees").resolve())
-    push_majors(Path("../majors").resolve())
+    # push_majors(Path("../majors").resolve())
     # push_minors(Path("../minors").resolve())
-    # push_major(Path("../majors/COS-AB.yaml").resolve())
+    push_major(Path("../majors/COS-AB.yaml").resolve())
+    # push_certificate(Path("../certificates/AAS.yaml").resolve())
     push_minor(Path("../minors/CLA.yaml").resolve())

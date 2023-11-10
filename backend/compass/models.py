@@ -52,8 +52,9 @@ class Degree(models.Model):
     name = models.CharField(max_length=10, null=True)
     code = models.CharField(max_length=10, null=True)
     description = models.TextField(null=True)
-    urls = models.CharField(max_length=250, null=True)
-    req_list = models.ManyToManyField("Requirement")
+    urls = models.JSONField(null=True)
+    max_counted = models.IntegerField(null=True)
+    min_needed = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'Degree'
@@ -74,8 +75,9 @@ class Major(models.Model):
     code = models.CharField(max_length=10, null=True)
     degree = models.ManyToManyField('Degree')
     description = models.TextField(null=True)
-    urls = models.CharField(max_length=250, null=True)
-    req_list = models.ManyToManyField("Requirement")
+    urls = models.JSONField(null=True)
+    max_counted = models.IntegerField(null=True)
+    min_needed = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'Major'
@@ -98,9 +100,10 @@ class Minor(models.Model):
     description = models.TextField(null=True)
     excluded_majors = models.ManyToManyField('Major')
     excluded_minors = models.ManyToManyField('Minor')
-    urls = models.CharField(max_length=250, null=True)
+    urls = models.JSONField(null=True)
     apply_by_semester = models.IntegerField(default=6)
-    req_list = models.ManyToManyField("Requirement")
+    max_counted = models.IntegerField(null=True)
+    min_needed = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'Minor'
@@ -121,9 +124,10 @@ class Certificate(models.Model):
     code = models.CharField(max_length=10, null=True)
     description = models.TextField(null=True)
     excluded_majors = models.ManyToManyField('Major')
-    urls = models.CharField(max_length=250, null=True)
+    urls = models.JSONField(null=True)
     apply_by_semester = models.IntegerField(default=8)
-    req_list = models.ManyToManyField("Requirement")
+    max_counted = models.IntegerField(null=True)
+    min_needed = models.IntegerField(default=1)
     # to help with phasing out certificates
     # filter out for new users, keep for existing users pursuing it
     active_until = models.DateField(null=True, blank=True)
@@ -289,16 +293,25 @@ class Requirement(models.Model):
     max_counted = models.IntegerField(default=1)
     min_needed = models.IntegerField(default=1)
     explanation = models.TextField(null=True)
-    double_counting_allowed = models.BooleanField()
+    double_counting_allowed = models.BooleanField(null=True)
     max_common_with_major = models.IntegerField(default=0)
     pdfs_allowed = models.IntegerField(default=0)
     min_grade = models.FloatField(default=0.0)
     completed_by_semester = models.IntegerField(default=8)
-    req_list = models.ManyToManyField('self')
+    parent = models.ForeignKey("self", on_delete=models.CASCADE,
+                                 related_name='req_list', null=True)
+    degree = models.ForeignKey("Degree", on_delete=models.CASCADE,
+                                 related_name='req_list', null=True)
+    major = models.ForeignKey("Major", on_delete=models.CASCADE,
+                                 related_name='req_list', null=True)
+    minor = models.ForeignKey("Minor", on_delete=models.CASCADE,
+                                 related_name='req_list', null=True)
+    certificate = models.ForeignKey("Certificate", on_delete=models.CASCADE,
+                                 related_name='req_list', null=True)
     course_list = models.ManyToManyField('Course', related_name='satisfied_by')
     dept_list = models.JSONField(null=True)
     excluded_course_list = models.ManyToManyField('Course', related_name='not_satisfied_by')
-    dist_req = models.CharField(max_length=5, null=True)
+    dist_req = models.JSONField(null=True)
     num_courses = models.IntegerField(null=True)
 
     class Meta:

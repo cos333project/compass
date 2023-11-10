@@ -11,8 +11,6 @@ sys.path.append(str(Path("..").resolve()))
 from config import django_init
 from compass.models import Course, Department
 
-relative_path = Path("../data/f2023_courses.csv")
-abs_path = relative_path.resolve()
 
 def clean_string(s):
     return s.strip()
@@ -41,20 +39,23 @@ def process_course_rows(rows):
 
 if __name__ == "__main__":
     # Read CSV into list of rows
-    with abs_path.open('r') as file:
-        reader = csv.DictReader(file)
-        rows = [row for row in reader]
+    courses_path = Path("../courses/").resolve()
+    for abs_path in courses_path.glob("*.csv"):
+        with abs_path.open('r') as file:
+            print(f"Opening {str(abs_path)}")
+            reader = csv.DictReader(file)
+            rows = [row for row in reader]
     
-    # Trim the column names
-    trimmed_rows = [
-        {key.strip(): value.strip() for key, value in row.items()}
-        for row in rows
-    ]
-    
-    try:
-        with transaction.atomic():
-            process_department_rows(trimmed_rows)
-        with transaction.atomic():
-            process_course_rows(trimmed_rows)
-    except Exception as e:
-        logging.error(f"Transaction failed: {e}")
+        # Trim the column names
+        trimmed_rows = [
+            {key.strip(): value.strip() for key, value in row.items()}
+            for row in rows
+        ]
+
+        try:
+            with transaction.atomic():
+                process_department_rows(trimmed_rows)
+            with transaction.atomic():
+                process_course_rows(trimmed_rows)
+        except Exception as e:
+            logging.error(f"Transaction failed: {e}")
