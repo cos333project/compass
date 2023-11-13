@@ -2,58 +2,49 @@ import React, { useState } from 'react';
 import { Semester, DragDropContextProps, CourseType } from '../types';
 import SemesterBin from './SemesterBin';
 import { generateSemesters } from '@/app/utilities/GenerateSemesters';
+import useSearchStore from '@/store/searchSlice';
+import Course from './Course';
+import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, closestCenter } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-const Canvas: React.FC<DragDropContextProps> = () => {
-  // Assuming courses are initially fetched or passed down from a parent component.
-  const [courses, setCourses] = useState<CourseType[]>([]); // Initialize with an empty array
-  const classYear = 2025; // TODO: Dynamically set to user's class year
+const Canvas = () => {
+  const { searchResults, setSearchResults } = useSearchStore();
+  const classYear = 2025;
   const [semesters, setSemesters] = useState<Semester[]>(generateSemesters(classYear)); 
+  
+  function handleDragEnd(event: DragEndEvent) {
+    console.log("Drag end called");
+    const {active, over} = event;
+    console.log("ACTIVE: " + active.id);
+    console.log("OVER :" + over.id);
 
-  const onDragStart = (e: React.DragEvent, course: CourseType, originSemesterId: string) => {
-    e.dataTransfer.setData('course', JSON.stringify(course));
-    e.dataTransfer.setData('originSemesterId', originSemesterId);
-  };
-
-  const onDrop = (e: React.DragEvent<HTMLDivElement>, semesterId: string) => {
-    e.preventDefault();
-    const droppedCourse = JSON.parse(e.dataTransfer.getData('course') || '{}') as CourseType;
-    const originSemesterId = e.dataTransfer.getData('originSemesterId');
-
-    // Adding to a semester
-    setSemesters(prevSemesters =>
-      prevSemesters.map(semester => {
-        if (semester.id === semesterId) {
-          // Avoid duplicates
-          if (!semester.courses.find(c => c.id === droppedCourse.id)) {
-            return { ...semester, courses: [...semester.courses, droppedCourse] };
-          }
-        }
-        // Remove from previous semester if it was moved from another semester
-        if (semester.id === originSemesterId) {
-          return { ...semester, courses: semester.courses.filter(c => c.id !== droppedCourse.id) };
-        }
-        return semester;
-      }),
-    );
-
-    // If the course was not dragged from a semester, remove it from the available list
-    if (originSemesterId === 'availableCourses') {
-      setCourses(prevCourses => prevCourses.filter(course => course.id !== droppedCourse.id));
+    if(active.id !== over.id) {
+      setSearchResults((items) => {
+        const activeIndex = items.indexOf(active.id);
+        const overIndex = items.indexOf(over.id);
+        console.log(arrayMove(items, activeIndex, overIndex));
+        return arrayMove(items, activeIndex, overIndex);
+        // items: [2, 3, 1]   0  -> 2
+        // [1, 2, 3] oldIndex: 0 newIndex: 2  -> [2, 3, 1] 
+      });
+      
     }
-  };
+  }
 
   return (
     <div className="grid grid-cols-4 md:grid-cols-2 gap-2 p-5">
-      {semesters.map((semester) => (
-        <SemesterBin
-          key={semester.id}
-          semester={semester}
-          onDrop={onDrop}
-          onDragStart={onDragStart}
-        />
+      {semesters.map(semester => (
+        <SortableContext key={semester.id} items={searchResults} strategy={verticalListSortingStrategy}>
+          <SemesterBin semester={semester}>
+            {searchResults.map(course => (
+              <Course key={course} id={course}/>
+            ))}
+          </SemesterBin>
+        </SortableContext>
       ))}
     </div>
   );
 };
 
 export default Canvas;
+

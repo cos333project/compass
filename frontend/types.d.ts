@@ -1,11 +1,35 @@
-export interface User {
-  role: string;
-  netId: string;
-  universityId: string;
-  email: string;
+export interface Settings {
   firstName: string;
   lastName: string;
-  classYear: number;
+  major?: string;
+  minors: string[];
+  timeFormat24h: boolean;
+  themeDarkMode: boolean;
+}
+
+export interface SettingsProps {
+  settings: Settings;
+  onClose: () => void;
+  onSave: (updatedSettings: Settings) => void;
+}
+
+export interface SettingsModalProps {
+  children: React.ReactNode;
+  onClose: () => void;
+}
+
+export interface SelectFieldProps {
+  label: string;
+  options: string[];
+  value: string | string[] | undefined ;
+  onChange: (value: string | string[] | undefined) => void;
+  multiple?: boolean;
+}
+
+export interface ToggleSwitchProps {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
 }
 
 export interface CourseType {
@@ -18,13 +42,21 @@ export interface CourseType {
   onDragEnd?: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
+export interface SearchStoreState {
+  searchResults: CourseType[];
+  setSearchResults: (results: CourseType[]) => void;
+  recentSearches: string[];
+  addRecentSearch: (query: string) => void;
+  activeDraggableCourse: CourseType | null;
+  setActiveDraggableCourse: (course: CourseType | null) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+}
+
 export interface CourseProps {
   course: CourseType;
-  index?: number;
-  style?: React.CSSProperties;
-  onDragStart?: (e: React.DragEvent<HTMLDivElement>, course: CourseType, originSemesterId: string) => void;
-  originSemesterId?: string;
-  isDragging?: boolean;
 }
 
 export interface Semester {
@@ -34,10 +66,9 @@ export interface Semester {
 }
 
 export interface SemesterBinProps {
+  children?: React.ReactNode;
   semester: Semester;
   className?: string;
-  onDrop?: (event: DragEvent<HTMLDivElement>) => void;
-  onDragStart?: (event: DragEvent<HTMLDivElement>) => void;
 }
 
 export interface DraggableProps {
@@ -62,6 +93,7 @@ export interface DropdownMenuProps {
 export interface MenuItemProps {
   isActive: boolean;
   children: React.ReactNode;
+  onClick: () => void;
 }
 
 export interface SettingsFormProps {

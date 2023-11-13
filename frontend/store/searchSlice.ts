@@ -1,23 +1,14 @@
 import { create } from 'zustand';
-import { CourseType } from '../types';
-
-interface SearchStoreState {
-  searchResults: CourseType[];
-  setSearchResults: (results: CourseType[]) => void;
-  recentSearches: string[];
-  addRecentSearch: (query: string) => void;
-  error: string | null;
-  setError: (error: string | null) => void;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-}
+import { SearchStoreState } from '../types';
 
 const useSearchStore = create<SearchStoreState>((set) => ({
   searchResults: [],
+  activeDraggableCourse: null,
   recentSearches: [],
   error: null,
   loading: false,
   setSearchResults: (results) => set({ searchResults: results }),
+  setActiveDraggableCourse: (course) => set({ activeDraggableCourse: course }),
   addRecentSearch: (query) => {
     let trimmedQuery = query.trim();
     if (trimmedQuery.length === 0) return;

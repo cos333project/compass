@@ -7,6 +7,7 @@ import { CourseType } from '../types';
 import { debounce } from 'lodash';
 import { LRUCache } from 'typescript-lru-cache';
 import { Draggable } from '../components/Draggable';
+import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, closestCenter } from '@dnd-kit/core';
 
 const searchCache = new LRUCache<string, CourseType[]>({
   maxSize: 50,
@@ -21,6 +22,7 @@ const Search: React.FC = () => {
     searchResults,
     addRecentSearch,
     recentSearches,
+    setActiveDraggableCourse,
     setError,
     loading,
     setLoading
@@ -38,21 +40,24 @@ const Search: React.FC = () => {
     });
   }, [searchResults]);
   
-  const debouncedSearch = useCallback(debounce(async (searchQuery: string) => {
-    if (!searchQuery) return;
+  const search = async (query: string) => {
+    if (!query) return;
 
-    if (searchCache.has(searchQuery)) {
-      setSearchResults(searchCache.get(searchQuery) || []);
-      return;
-    }
+    // if (searchCache.has(query)) {
+    //   setSearchResults(searchCache.get(query) || []);
+    //   return;
+    // }
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`);
+      console.time('Fetch Time'); // Start timer
+    const response = await fetch(`http://localhost:8000/search/?course=${encodeURIComponent(query)}`);
+    console.timeEnd('Fetch Time'); 
       if (response.ok) {
         const data: { courses: CourseType[] } = await response.json();
         setSearchResults(data.courses);
-        if (data.courses.length > 0) addRecentSearch(searchQuery);
+        searchCache.set(query, data.courses);
+        if (data.courses.length > 0) addRecentSearch(query);
       } else {
         setError(`Server returned ${response.status}: ${response.statusText}`);
       }
@@ -62,24 +67,23 @@ const Search: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, 1000), [setSearchResults, searchCache, setLoading, setError, addRecentSearch]);
+  };
 
-  // Update the query state and trigger the debounced search function
-  const handleSearch = useCallback((value: string) => {
-    setQuery(value.trim());
-    if (!value.trim()) return;
-    debouncedSearch(value);
-  }, [debouncedSearch]);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setQuery(value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      search(query);
+    }
+  };
   
   const handleRecentSearchClick = (search: string) => {
     // Display dummy popup for now
     alert(`Displaying course information for: ${search}`);
     // In the future, you might open a modal or a dedicated component to show the course profile
-  };
-
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, course: CourseType) => {
-    e.dataTransfer.setData('application/reactflow', JSON.stringify(course));
-    e.dataTransfer.effectAllowed = 'move';
   };
 
   return (
@@ -96,10 +100,8 @@ const Search: React.FC = () => {
           className="block w-full py-1.5 pl-10 pr-3 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
           placeholder="Search courses"
           autoComplete="off"
-          onChange={e => handleSearch(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') handleSearch(query);
-          }}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
         />
       </div>
       {/* Recent Searches */}
@@ -109,7 +111,7 @@ const Search: React.FC = () => {
           { /* Consider changing this to For block */ }
           {recentSearches.map((search, index) => (
             <button
-              key={index} // Preferably use a more unique key if possible
+              key={index}
               style={{
                 animation: `cascadeFadeIn 500ms ease-out forwards ${index * 150}ms`,
               }}
@@ -121,34 +123,26 @@ const Search: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="relative max-h-[400px] overflow-y-auto">
-        {loading ? (
-          // Center the loading spinner in the middle of the search box
-          <div className="flex justify-center items-center h-full">
-            <span className="loading loading-ring loading-lg text-gray-700"></span>
-          </div>
-        ) : searchResults.length > 0 ? (
-          // Render the list of search results
-          <ul className="divide-y divide-dashed hover:divide-solid">
-            {searchResults.map((course, index) => (
-              <li key={course.id}>
-              <Draggable id={course.id}>
-                <div onDragStart={(e) => handleDragStart(e, course)}>
-                  <Course
-                    course={course}
-                    style={{
-                      animation: `cascadeFadeIn 500ms ease-out forwards ${index * 150}ms`,
-                    }}
-                  />
-                </div>
-              </Draggable>
-            </li>
-            ))}
-          </ul>
-        ) : (
-          // Display when no courses are found
-          <div className="text-center py-4 text-gray-500">No courses found.</div>
-        )}
+      <div className="relative max-h-[400px] overflow-y-auto" dir="rtl">
+        <div dir="ltr">
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <span className="loading loading-ring loading-lg text-gray-700"></span>
+            </div>
+          ) : searchResults.length > 0 ? (
+            <ul className="divide-y divide-dashed hover:divide-solid">
+              {searchResults.map((course) => (
+                <li key={course.id}>
+                  <Draggable id={course.id}>
+                    <Course id={course.id} course={course} />
+                  </Draggable>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center py-4 text-gray-500">No courses found.</div>
+          )}
+        </div>
       </div>
     </div>
   );

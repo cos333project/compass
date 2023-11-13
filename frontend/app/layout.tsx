@@ -2,8 +2,6 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { GeistSans, GeistMono } from 'geist/font';
-import { ApolloProvider } from '@apollo/client';
-import client from './apolloClient';
 
 const inter = Inter({
   subsets: ['latin'],

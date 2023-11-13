@@ -1,18 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ApolloProvider } from '@apollo/client';
 import useAuthStore from '../store/authSlice';
-import client from './apolloClient';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
 
 const Root = () => {
   return (
-    <ApolloProvider client={client}>
-        <Home />
-    </ApolloProvider>
+    // Apply Zustand client store here if necessary
+    <Home />
   );
 };
 

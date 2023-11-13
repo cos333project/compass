@@ -1,126 +1,64 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import SelectField from './SettingsSelectField';
+import { SettingsProps } from '../types';
+import SettingsToggleSwitch from './SettingsToggleSwitch';
 
-// User data interface
-export interface IUser {
-  major: string;
-  minors: string[];
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+const majorsList = [
+  'Computer Science', 
+  'Biology', 
+  'Economics'
+];
 
-// Props for UserSettings component
-interface UserSettingsProps {
-  user: IUser;
-  onClose: () => void;
-  onSave: (updatedUser: IUser) => void;
-}
+const minorsList = [
+  'Mathematics', 
+  'History', 
+  'Art'
+];
 
-const UserSettings: React.FC<UserSettingsProps> = ({ user, onClose, onSave }) => {
-  const [major, setMajor] = useState(user.major);
-  const [minors, setMinors] = useState(user.minors);
-  const [firstName, setFirstName] = useState(user.firstName);
-  const [lastName, setLastName] = useState(user.lastName);
-  const [email, setEmail] = useState(user.email);
+const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) => {
+  const { firstName, lastName, major, minors, timeFormat24h, themeDarkMode } = settings;
+  const [firstNameState, setFirstName] = useState(firstName);
+  const [lastNameState, setLastName] = useState(lastName);
+  const [majorState, setMajor] = useState(major);
+  const [minorsState, setMinors] = useState(minors);
+  const [timeFormat24hState, setTimeFormat] = useState(timeFormat24h);
+  const [themeDarkModeState, setThemeDarkMode] = useState(themeDarkMode);
+
+  const handleMinorsChange = (selectedMinors: string | string[] | undefined) => {
+    if (Array.isArray(selectedMinors)) {
+      setMinors(selectedMinors);
+    }
+  };
+
+  const handleMajorChange = (value: string | string[] | undefined) => {
+    if (typeof value === 'string') {
+      setMajor(value);
+    }
+  };
 
   const handleSave = () => {
-    onSave({ major, minors, firstName, lastName, email });
+    onSave({ firstName: firstNameState, lastName: lastNameState, major: majorState, minors: minorsState, timeFormat24h: timeFormat24hState, themeDarkMode: themeDarkModeState });
     onClose();
   };
 
-  const modalOverlayStyle: React.CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    backdropFilter: 'blur(5px)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  };
-
-  const modalStyle: React.CSSProperties = {
-    background: 'white',
-    padding: '20px',
-    borderRadius: '10px',
-    width: '50%',
-    maxWidth: '600px',
-    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
-  };
-
-  const tableStyle: React.CSSProperties = {
-    width: '100%',
-    borderCollapse: 'collapse',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontWeight: 'bold',
-    paddingRight: '10px',
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '5px',
-  };
-
-  return ReactDOM.createPortal(
-    (
-      <div style={modalOverlayStyle}>
-        <div style={modalStyle}>
-          <table style={tableStyle}>
-            <tbody>
-              <tr>
-                <td style={labelStyle}>FirstName:</td>
-                <td>
-                  <input type="text" style={inputStyle} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                </td>
-              </tr>
-              <tr>
-                <td style={labelStyle}>LastName:</td>
-                <td>
-                  <input type="text" style={inputStyle} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                </td>
-              </tr>
-              <tr>
-                <td style={labelStyle}>Email:</td>
-                <td>
-                  <input type="email" style={inputStyle} value={email} onChange={(e) => setEmail(e.target.value)} />
-                </td>
-              </tr>
-              <tr>
-                <td style={labelStyle}>Major:</td>
-                <td>
-                  <select style={inputStyle} value={major} onChange={(e) => setMajor(e.target.value)}>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Business">Business</option>
-                    {/* More options */}
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td style={labelStyle}>Minors:</td>
-                <td>
-                  <select multiple style={inputStyle} value={minors} onChange={(e) => setMinors(Array.from(e.target.selectedOptions, option => option.value))}>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Physics">Physics</option>
-                    {/* More options */}
-                  </select>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div style={{ marginTop: '20px', textAlign: 'right' }}>
-            <button onClick={handleSave}>Save</button>
-            <button onClick={onClose} style={{ marginLeft: '10px' }}>Close</button>
-          </div>
+  return (
+    <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50">
+      <div className="bg-white p-5 rounded-lg max-w-md w-1/2 shadow-lg">
+        <div className="grid grid-cols-2 gap-4">
+          <input type="text" value={firstNameState} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className="input-field-class"/>
+          <input type="text" value={lastNameState} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className="input-field-class"/>
+          <SelectField label="Major" options={majorsList} value={majorState} onChange={handleMajorChange} />
+          <SelectField label="Minors" options={minorsList} value={minorsState} onChange={handleMinorsChange} multiple />
+          <SettingsToggleSwitch label="Dark Mode" checked={themeDarkModeState} onChange={setThemeDarkMode} />
+          <SettingsToggleSwitch label="24-Hour Time Format" checked={timeFormat24hState} onChange={setTimeFormat} />
+        </div>
+        <div className="mt-5 text-right">
+          <button className="bg-blue-500 text-white rounded px-4 py-2" onClick={handleSave}>Save</button>
+          <button className="ml-2 bg-gray-200 rounded px-4 py-2" onClick={onClose}>Close</button>
         </div>
       </div>
-    ),
-    document.body
+    </div>
   );
 };
 

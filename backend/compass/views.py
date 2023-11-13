@@ -4,15 +4,16 @@ from django.http import HttpResponseServerError, HttpResponseRedirect, JsonRespo
 from django.conf import settings
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-from .models import models, Course
+from .models import models, Course, CustomUser
 from .serializers import CourseSerializer
 import json
 import logging
 import re
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 logger = logging.getLogger(__name__)
 
-#------------------------------------ LOG IN -----------------------------------------#
+#------------------------------------ PROFILE ----------------------------------------#
 
 def fetch_user_info(user):
     return {
@@ -28,6 +29,34 @@ def fetch_user_info(user):
 def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
+
+@login_required
+def update_profile(request):
+    # TODO: Validate this stuff
+    # Assuming the request data is sent as JSON
+    data = request.JSON
+
+    # Validate and extract the new fields
+    new_first_name = data.get('firstName', '')
+    new_last_name = data.get('lastName', '')
+    new_major = data.get('major', '')
+    new_minors = data.get('minors', '')  # Assuming minors is a comma-separated string
+
+    # Fetch the user's profile
+    user_profile = CustomUser.objects.get(user=request.user)
+
+    # Update the fields
+    user_profile.first_name = new_first_name
+    user_profile.last_name = new_last_name
+    user_profile.major = new_major
+    user_profile.minors = new_minors.split(',')  # Split the string into a list
+    user_profile.save()
+
+    # Fetch updated user info (assuming this function exists and returns a dict)
+    updated_user_info = fetch_user_info(request.user)
+    return JsonResponse(updated_user_info)
+
+#------------------------------------ LOG IN -----------------------------------------#
 
 def authenticate(request):
     user_is_authenticated = request.user.is_authenticated
@@ -121,3 +150,4 @@ class SearchCourses(View):
                 return JsonResponse({"error": "Internal Server Error"}, status=500)
         else:
             return JsonResponse({"courses": []})
+     

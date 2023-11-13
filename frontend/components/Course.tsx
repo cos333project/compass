@@ -1,20 +1,27 @@
-import React from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { CourseProps } from '../types';
 
-const CourseItem: React.FC<CourseProps> = ({ course }) => {
+const Course: React.FC<CourseProps & { id: string }> = ({ id, course }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <div 
-      className="w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer"
-      draggable 
-    >
-      <div className="flex mb-3 rounded">
-        {/* Use text-black for the text color and text-xs for a slightly smaller font size */}
-        <h4 className="text-xs font-semibold text-black">{course.department_code} {course.catalog_number}</h4>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <div 
+        className="p-5 rounded-lg hover:bg-gray-200 hover:shadow-md hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer"
+      >
+        <div className="flex mb-3 rounded">
+          <h4 className="text-xs font-semibold text-black">{course.department_code} {course.catalog_number}</h4>
+        </div>
+        <div className="text-sm text-gray-900 text-left">{course.title}</div>
       </div>
-      {/* Use text-gray-900 to ensure the title is clearly visible */}
-      <div className="text-sm text-gray-900 text-left">{course.title}</div>
     </div>
   );
 };
 
-export default CourseItem;
+export default Course;

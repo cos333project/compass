@@ -7,15 +7,18 @@ from pathlib import Path
 
 import django
 from django.db import transaction
-
-#-------------------------------------------------------------------------------------#
-
+from compass.models import (Department, AcademicTerm, Course, CourseEquivalent, 
+                           Section, ClassMeeting, ClassYearEnrollment, Instructor)
 logging.basicConfig(level=logging.INFO)
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
-from compass.models import (Department, AcademicTerm, Course, CourseEquivalent, 
-                           Section, ClassMeeting, ClassYearEnrollment, Instructor)
+
+#-------------------------------------------------------------------------------------#
+
+
+
 
 #-------------------------------------------------------------------------------------#
 

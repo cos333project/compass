@@ -17,15 +17,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import django_cas_ng.views
-from graphene_django.views import GraphQLView
 from compass import views
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
-    path("graphql/", GraphQLView.as_view(graphiql=True)),
+
+    # CAS Authentication
     path('login/', django_cas_ng.views.LoginView.as_view(), name='login'),
     path('logout/', django_cas_ng.views.LogoutView.as_view(), name='logout'),
     path('authenticate/', views.authenticate, name='authenticate'),
+
+    # Profile
     path('profile/', views.profile, name='profile'),
+    path('update_profile/', views.update_profile, name='update_profile'),
+
+    # Search
     path('search/', views.SearchCourses.as_view(), name='search'),
 ]

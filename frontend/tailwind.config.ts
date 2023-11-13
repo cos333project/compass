@@ -28,6 +28,7 @@ const config: Config = {
       textColor: {
         'compass-blue': '#0F1E2F',
         'compass-black': '#2C2C2C',
+        'compass-purple': '#663399',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

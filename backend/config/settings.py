@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_cas_ng',
     'rest_framework',
-    'graphene_django',
     'corsheaders',
     'compass'
 ]
@@ -151,9 +150,6 @@ DATABASES = {
 #     }
 # }
 
-GRAPHENE = {
-    'SCHEMA': 'compass.schema.schema',
-}
 
 AUTH_USER_MODEL = 'compass.CustomUser'
 
