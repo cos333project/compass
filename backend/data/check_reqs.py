@@ -94,6 +94,10 @@ def check_requirements(table, id, courses):
     add_course_lists_to_req(req, courses)
     formatted_courses = format_courses_output(courses)
     formatted_req = format_req_output(req)
+    # for sem in courses:
+    #     for course in sem:
+    #         if course['inst'].catalog_number == '217':
+    #             print(course)
     return formatted_req["satisfied"], formatted_courses, formatted_req
 
 
@@ -120,7 +124,7 @@ def _init_req(req_inst):
     req['inst'] = req_inst
     req['settled'] = []
     req['unsettled'] = []
-    req["count"] = 0
+    req['count'] = 0
     if req_inst.req_list.exists():
         req['req_list'] = []
         for sub_req_inst in req_inst.req_list.all():
@@ -149,12 +153,16 @@ def assign_settled_courses_to_reqs(req, courses):
             newly_satisfied += assign_settled_courses_to_reqs(sub_req, courses)
     elif req["inst"].double_counting_allowed:
         newly_satisfied = mark_all(req, courses)
-    elif req["inst"].course_list.exists():
+    elif req["inst"].course_list.exists() or req["inst"].dept_list:
         newly_satisfied = mark_settled(req, courses)
     elif req["inst"].dist_req:
         newly_satisfied = mark_settled(req, courses)
     elif req["inst"].num_courses:
         newly_satisfied = check_degree_progress(req, courses)
+    else:
+        # for papers, IW, where there are no leaf nodes
+        newly_satisfied = 1
+
     req["count"] += newly_satisfied
     new_deficit = req['inst'].min_needed - req['count']
     if (not was_satisfied) and (new_deficit <= 0):
@@ -197,12 +205,14 @@ def mark_dist(req, courses):
             if course["inst"].distribution_area_short in json.loads(req["inst"].dist_req):
                 num_marked += 1
                 course["possible_reqs"].append(req["inst"].id)
-                if not req["double_counting_allowed"]:
+                if not req["inst"].double_counting_allowed:
                     course["num_settleable"] += 1
     return num_marked
 
 
 # RELEVANT
+# This only assigns settleable requirements to courses, and not the
+# other way around.
 def mark_courses(req, courses):
     num_marked = 0
     for sem in courses:
@@ -263,7 +273,8 @@ def mark_settled(req, courses):
                         num_marked += 1
                         course["reqs_satisfied"].append(p)
                         break
-            elif course["num_settleable"] == 1 and req["inst"].id in course["possible_reqs"]:
+            # or course is manually settled to this req...
+            elif (course["num_settleable"] == 1) and (req["inst"].id in course["possible_reqs"]):
                 num_marked += 1
                 course["reqs_satisfied"].append(req["inst"].id)
                 course["settled"].append(req["inst"].id)
@@ -295,7 +306,7 @@ def add_course_lists_to_req(req, courses):
     req["unsettled"] = []
     for sem in courses:
         for course in sem:
-            if (req["inst"]._meta.db_table == 'Requirement') and req["inst"].double_counting_allowed:
+            if ((req["inst"]._meta.db_table == 'Requirement') and req["inst"].double_counting_allowed):
                 if len(course["reqs_double_counted"]) > 0:
                     for req_id in course["reqs_double_counted"]:
                         if req_id == req["inst"].id:
@@ -366,13 +377,32 @@ def format_req_output(req):
     return output
 
 def main():
-    course_dict = {61511: 1, 2321: 1, 29481: 1, 2352: 1, 2113: 1,
-                   2303: 2, 7008: 2, 2207: 2, 2131: 2, 2133: 3}
+    # course_dict = {61511: 1, 2321: 1, 29481: 1, 2352: 1, 2113: 1,
+    #                2303: 2, 7008: 2, 2207: 2, 2131: 2, 2133: 3}
+    course_dict = {29481: 1, 2113: 1, 2137: 1, 7008: 2, 2131: 2,
+                   2133: 3, 13483: 3}
     courses = create_dummy_courses(course_dict)
-    # req_inst = Minor.objects.get(id=4)
+    for sem in courses:
+        for course in sem:
+            if course['inst'].catalog_number == '217':
+                course['settled'] = [2514]
+            elif course['inst'].catalog_number == '216':
+                course['settled'] = [2514]
+            elif course['inst'].catalog_number == '218':
+                course['settled'] = [2504]
+            elif course['inst'].catalog_number == '219':
+                course['settled'] = [2516]
+            elif course['inst'].catalog_number == '326':
+                course['settled'] = [2515]
+            elif course['inst'].catalog_number == '520':
+                course['settled'] = [2515]
+    # courses = _init_courses(courses)
+    # print(courses)
+    # req_inst = Minor.objects.get(id=5)
     # req = _init_req(req_inst)
-    satisfied, formatted_courses, formatted_req = check_requirements("Minor", 4, courses)
-    print(satisfied)
+    # print(req)
+    satisfied, formatted_courses, formatted_req = check_requirements("Minor", 5, courses)
+    print(formatted_courses)
     print("\n–––––––––––––––––––––––––––––––––––––––––––––––––––––––\n")
     print(formatted_req)
 

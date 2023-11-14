@@ -73,10 +73,14 @@ def push_requirement(req):
                         req_fields[field] = len(req['req_list'])
                     elif 'course_list' in req:
                         req_fields[field] = len(req['course_list'])
-                elif req[field] == None:
+                elif req[field] is not None:
+                    req_fields[field] = req[field]
+                else:
                     continue
             elif field == 'max_counted':
-                if req[field] == None:
+                if req[field] is not None:
+                    req_fields[field] = req[field]
+                else:
                     continue
             elif field == 'dist_req':
                 req_fields[field] = json.dumps(req[field])
@@ -113,7 +117,7 @@ def push_requirement(req):
     elif ((('dist_req' not in req) or (req['dist_req'] == None))
         and (('num_courses' not in req) or (req['num_courses'] == None))
         and (('dept_list' not in req) or (req['dept_list'] == None))):
-        req_inst.max_counted = 0
+        req_inst.max_counted = 1
         req_inst.min_needed = 0
         req_inst.save()
 
