@@ -22,16 +22,13 @@ from compass import views
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-
     # CAS Authentication
     path('login/', django_cas_ng.views.LoginView.as_view(), name='login'),
     path('logout/', django_cas_ng.views.LogoutView.as_view(), name='logout'),
     path('authenticate/', views.authenticate, name='authenticate'),
-
     # Profile
     path('profile/', views.profile, name='profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
-
     # Search
     path('search/', views.SearchCourses.as_view(), name='search'),
 ]

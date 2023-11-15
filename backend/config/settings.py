@@ -45,12 +45,12 @@ INSTALLED_APPS = [
     'django_cas_ng',
     'rest_framework',
     'corsheaders',
-    'compass'
+    'compass',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -76,23 +76,23 @@ CAS_LOGIN_URL_NAME = 'login'
 CAS_LOGOUT_URL_NAME = 'logout'
 
 CAS_RENAME_ATTRIBUTES = {
-    'uid': 'net_id',                       # Maps to 'net_id'
-    'universityid': 'university_id',       # Maps to 'university_id'
-    'mail': 'email',                       # Maps to 'email'
-    'givenname': 'first_name',             # Maps to 'first_name'
-    'sn': 'last_name',                     # Maps to 'last_name'
-    'puclassyear': 'class_year',           # Maps to 'class_year'
+    'uid': 'net_id',  # Maps to 'net_id'
+    'universityid': 'university_id',  # Maps to 'university_id'
+    'mail': 'email',  # Maps to 'email'
+    'givenname': 'first_name',  # Maps to 'first_name'
+    'sn': 'last_name',  # Maps to 'last_name'
+    'puclassyear': 'class_year',  # Maps to 'class_year'
 }
 
-HOMEPAGE = 'http://localhost:3000' # CHANGE FOR PRODUCTION
+HOMEPAGE = 'http://localhost:3000'  # CHANGE FOR PRODUCTION
 DASHBOARD = 'http://localhost:3000/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 2419200 # 4 weeks, in seconds
+SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "https://fed.princeton.edu", # Change for production (hide it)
-    "http://localhost:3000",     # Change for production (hide it)
+    'https://fed.princeton.edu',  # Change for production (hide it)
+    'http://localhost:3000',  # Change for production (hide it)
 ]
 CORS_ALLOW_CREDENTIALS = True
 CAS_REDIRECT_WHITELIST = ['http://localhost:8000/', 'http://127.0.0.1:8000/']
@@ -137,11 +137,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
-}
+DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 
 # DATABASES = {
 #     'default': {

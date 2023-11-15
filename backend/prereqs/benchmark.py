@@ -1,6 +1,4 @@
-import numpy as np
 import pandas as pd
-import random
 import torch
 from sklearn.metrics import accuracy_score
 from transformers import RobertaTokenizer, RobertaForSequenceClassification
@@ -338,11 +336,11 @@ from transformers import RobertaTokenizer, RobertaForSequenceClassification
 # subjects_list.extend([
 #     # McGraw courses
 #     "CHM 201", "CHM 202", "CHM 207", "CHM 215", "CHM 301", "CHM 304", "COS 126",
-#     "COS 240", "COS 340", "COS 217", "COS 226", "ECO 100", "ECO 101", "ECO 202", 
-#     "EGR 151", "EGR 152", "EGR 153", "EGR 154", "EGR 156", "MAT 103", "MAT 104", 
-#     "MAT 175", "MAT 201", "MAT 202", "MAT 203", "MAT 204", "MAT 210", "MAT 214", 
-#     "MAT 215", "MAT 216", "MAT 217", "MAT 218", "MOL 214", "ORF 245", "ORF 309", 
-#     "ORF 335", "ORF 307", "ORF 363", "PHY 101", "PHY 102","PHY 103", "PHY 104", 
+#     "COS 240", "COS 340", "COS 217", "COS 226", "ECO 100", "ECO 101", "ECO 202",
+#     "EGR 151", "EGR 152", "EGR 153", "EGR 154", "EGR 156", "MAT 103", "MAT 104",
+#     "MAT 175", "MAT 201", "MAT 202", "MAT 203", "MAT 204", "MAT 210", "MAT 214",
+#     "MAT 215", "MAT 216", "MAT 217", "MAT 218", "MOL 214", "ORF 245", "ORF 309",
+#     "ORF 335", "ORF 307", "ORF 363", "PHY 101", "PHY 102","PHY 103", "PHY 104",
 #     "PHY 105", "PHY 106", "PHY 108", "POL 345", "PSY 251", "SPI 200", "R-Programming"
 # ])
 
@@ -450,10 +448,10 @@ from transformers import RobertaTokenizer, RobertaForSequenceClassification
 # def generate_unique_sentences(subjects, phrases, label, num_samples):
 #     # Generate all possible combinations
 #     all_combinations = [(phrase.format(subject), label) for subject in subjects for phrase in phrases]
-    
+
 #     # Sample without replacement
 #     sampled_combinations = np.random.choice(len(all_combinations), num_samples, replace=False)
-    
+
 #     return [all_combinations[i] for i in sampled_combinations]
 
 # # Total samples per label
@@ -475,7 +473,9 @@ from transformers import RobertaTokenizer, RobertaForSequenceClassification
 # df.to_csv(dataset_path, index=False)
 
 # Load benchmark dataset
-benchmark_path = '/Users/minhtri/Desktop/Princeton/COS/COS 333/compass/backend/prereqs/benchmark.csv'
+benchmark_path = (
+    '/Users/minhtri/Desktop/Princeton/COS/COS 333/compass/backend/prereqs/benchmark.csv'
+)
 df_benchmark = pd.read_csv(benchmark_path, na_values=[], keep_default_na=False)
 
 # Load pretrained model and tokenizer
@@ -483,10 +483,12 @@ tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 model = RobertaForSequenceClassification.from_pretrained('./RoBERTa.pth')
 
 # Tokenize benchmark samples
-inputs = tokenizer(list(df_benchmark['sentence']), padding=True, truncation=True, return_tensors="pt")
+inputs = tokenizer(
+    list(df_benchmark['sentence']), padding=True, truncation=True, return_tensors='pt'
+)
 
 # Initialize label map
-label_map = {0: "No prereqs required", 1: "Prereq required"}
+label_map = {0: 'No prereqs required', 1: 'Prereq required'}
 
 # Initialize ground truth and prediction lists
 true_labels = df_benchmark['label'].tolist()
@@ -503,7 +505,7 @@ with torch.no_grad():
 accuracy = accuracy_score(true_labels, predicted_labels)
 
 # Print results in a box
-print("=" * 40)
+print('=' * 40)
 print(f"||{'Final Benchmark Accuracy:':^34}||")
 print(f"||{f'{accuracy * 100:.2f}%':^34}||")
-print("=" * 40)
+print('=' * 40)

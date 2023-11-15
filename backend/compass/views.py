@@ -1,19 +1,18 @@
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q, F, Value, When, Case
-from django.http import HttpResponseServerError, HttpResponseRedirect, JsonResponse
-from django.conf import settings
-from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
-from .models import models, Course, CustomUser
-from .serializers import CourseSerializer
-import json
 import logging
 import re
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Case, Q, Value, When
+from django.http import JsonResponse
+from django.views import View
+
+from .models import Course, CustomUser, models
+from .serializers import CourseSerializer
 
 logger = logging.getLogger(__name__)
 
-#------------------------------------ PROFILE ----------------------------------------#
+# ------------------------------------ PROFILE ----------------------------------------#
+
 
 def fetch_user_info(user):
     return {
@@ -25,10 +24,12 @@ def fetch_user_info(user):
         'class_year': getattr(user, 'class_year', None),
     }
 
+
 @login_required
 def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
+
 
 @login_required
 def update_profile(request):
@@ -56,51 +57,58 @@ def update_profile(request):
     updated_user_info = fetch_user_info(request.user)
     return JsonResponse(updated_user_info)
 
-#------------------------------------ LOG IN -----------------------------------------#
+
+# ------------------------------------ LOG IN -----------------------------------------#
+
 
 def authenticate(request):
     user_is_authenticated = request.user.is_authenticated
     if user_is_authenticated:
         user_info = fetch_user_info(request.user)
-        logger.info(f"User is authenticated. User info: {user_info}. Cookies: {request.COOKIES}")
+        logger.info(
+            f'User is authenticated. User info: {user_info}. Cookies: {request.COOKIES}'
+        )
         return JsonResponse({'authenticated': True, 'user': user_info})
     else:
-        logger.info("User is not authenticated.")
+        logger.info('User is not authenticated.')
         return JsonResponse({'authenticated': False, 'user': None})
 
-#------------------------------- SEARCH COURSES --------------------------------------#
 
-DEPT_NUM_SUFFIX_REGEX = re.compile(r"^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$", re.IGNORECASE)
-DEPT_NUM_REGEX = re.compile(r"^[a-zA-Z]{1,3}\d{1,3}$", re.IGNORECASE)
-NUM_DEPT_REGEX = re.compile(r"^\d{1,3}[a-zA-Z]{1,3}$", re.IGNORECASE)
-DEPT_ONLY_REGEX = re.compile(r"^[a-zA-Z]{1,3}$", re.IGNORECASE)
-NUM_ONLY_REGEX = re.compile(r"^\d{1,3}$", re.IGNORECASE)
+# ------------------------------- SEARCH COURSES --------------------------------------#
+
+DEPT_NUM_SUFFIX_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', re.IGNORECASE)
+DEPT_NUM_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}$', re.IGNORECASE)
+NUM_DEPT_REGEX = re.compile(r'^\d{1,3}[a-zA-Z]{1,3}$', re.IGNORECASE)
+DEPT_ONLY_REGEX = re.compile(r'^[a-zA-Z]{1,3}$', re.IGNORECASE)
+NUM_ONLY_REGEX = re.compile(r'^\d{1,3}$', re.IGNORECASE)
+
 
 class SearchCourses(View):
     """
     Handles search queries for courses.
     """
+
     def get(self, request, *args, **kwargs):
         query = request.GET.get('course', None)
         if query:
             if query == '*' or query == '.':
                 courses = Course.objects.select_related('department').all()
                 serialized_courses = CourseSerializer(courses, many=True)
-                return JsonResponse({"courses": serialized_courses.data})
+                return JsonResponse({'courses': serialized_courses.data})
 
             # process queries
             trimmed_query = re.sub(r'\s', '', query)
             title = 'nevergoingtomatch'
             if DEPT_NUM_SUFFIX_REGEX.match(trimmed_query):
-                result = re.split(r'(\d+[a-zA-Z])', trimmed_query, 1)
+                result = re.split(r'(\d+[a-zA-Z])', string=trimmed_query, maxsplit=1)
                 dept = result[0]
                 num = result[1]
             elif DEPT_NUM_REGEX.match(trimmed_query):
-                result = re.split(r'(\d+)', trimmed_query, 1)
+                result = re.split(r'(\d+)', string=trimmed_query, maxsplit=1)
                 dept = result[0]
                 num = result[1]
             elif NUM_DEPT_REGEX.match(trimmed_query):
-                result = re.split(r'([a-zA-Z]+)', trimmed_query, 1)
+                result = re.split(r'([a-zA-Z]+)', string=trimmed_query, maxsplit=1)
                 dept = result[1]
                 num = result[0]
             elif DEPT_ONLY_REGEX.match(trimmed_query):
@@ -122,32 +130,38 @@ class SearchCourses(View):
                 if exact_match_course:
                     # If an exact match is found, return only that course
                     serialized_course = CourseSerializer(exact_match_course, many=True)
-                    return JsonResponse({"courses": serialized_course.data})
+                    return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.filter(
-                    Q(department__code__icontains=dept) |
-                    Q(catalog_number__icontains=num) |
-                    Q(title__icontains=title) |
-                    Q(distribution_area_short__icontains='') |
-                    Q(distribution_area_long__icontains='')
+                    Q(department__code__icontains=dept)
+                    | Q(catalog_number__icontains=num)
+                    | Q(title__icontains=title)
+                    | Q(distribution_area_short__icontains='')
+                    | Q(distribution_area_long__icontains='')
                 )
                 if not courses.exists():
-                    return JsonResponse({"courses": []})
+                    return JsonResponse({'courses': []})
 
                 custom_sorting_field = Case(
-                    When(Q(department__code__icontains=dept) & Q(catalog_number__icontains=num), then=Value(3)),
+                    When(
+                        Q(department__code__icontains=dept)
+                        & Q(catalog_number__icontains=num),
+                        then=Value(3),
+                    ),
                     When(Q(department__code__icontains=dept), then=Value(2)),
                     When(Q(catalog_number__icontains=num), then=Value(1)),
                     default=Value(0),
-                    output_field=models.IntegerField()
+                    output_field=models.IntegerField(),
                 )
-                sorted_courses = courses.annotate(custom_sorting=custom_sorting_field).order_by(
-                    '-custom_sorting', 'department__code', 'catalog_number', 'title')
+                sorted_courses = courses.annotate(
+                    custom_sorting=custom_sorting_field
+                ).order_by(
+                    '-custom_sorting', 'department__code', 'catalog_number', 'title'
+                )
                 serialized_courses = CourseSerializer(sorted_courses, many=True)
-                return JsonResponse({"courses": serialized_courses.data})
+                return JsonResponse({'courses': serialized_courses.data})
 
             except Exception as e:
-                logger.error(f"An error occurred while searching for courses: {e}")
-                return JsonResponse({"error": "Internal Server Error"}, status=500)
+                logger.error(f'An error occurred while searching for courses: {e}')
+                return JsonResponse({'error': 'Internal Server Error'}, status=500)
         else:
-            return JsonResponse({"courses": []})
-     
+            return JsonResponse({'courses': []})

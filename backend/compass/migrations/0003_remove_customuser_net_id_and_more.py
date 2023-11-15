@@ -5,45 +5,45 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("compass", "0002_alter_customuser_university_id"),
+        ('compass', '0002_alter_customuser_university_id'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name="customuser",
-            name="net_id",
+            model_name='customuser',
+            name='net_id',
         ),
         migrations.RemoveField(
-            model_name="customuser",
-            name="university_id",
+            model_name='customuser',
+            name='university_id',
         ),
         migrations.AlterField(
-            model_name="customuser",
-            name="email",
+            model_name='customuser',
+            name='email',
             field=models.EmailField(
-                blank=True, default="", max_length=254, verbose_name="email address"
+                blank=True, default='', max_length=254, verbose_name='email address'
             ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name="customuser",
-            name="first_name",
+            model_name='customuser',
+            name='first_name',
             field=models.CharField(
-                blank=True, default="", max_length=150, verbose_name="first name"
+                blank=True, default='', max_length=150, verbose_name='first name'
             ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name="customuser",
-            name="last_name",
+            model_name='customuser',
+            name='last_name',
             field=models.CharField(
-                blank=True, default="", max_length=150, verbose_name="last name"
+                blank=True, default='', max_length=150, verbose_name='last name'
             ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name="customuser",
-            name="username",
+            model_name='customuser',
+            name='username',
             field=models.CharField(blank=True, max_length=20, null=True, unique=True),
         ),
     ]

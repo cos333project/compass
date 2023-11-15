@@ -1,7 +1,5 @@
 import sys
-import re
 import time
-import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -12,7 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import Select
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from concurrent.futures import ThreadPoolExecutor
+
 
 def scrape_department(department):
     # Initialize WebDriver
@@ -25,9 +23,11 @@ def scrape_department(department):
 
     # Navigate and initialize
     local_driver.get(
-        f'https://registrar.princeton.edu/course-offerings?term=1242&subject={department}')
-    WebDriverWait(local_driver, 10).until(EC.presence_of_element_located(
-        (By.ID, 'classes-search-button'))).click()
+        f'https://registrar.princeton.edu/course-offerings?term=1242&subject={department}'
+    )
+    WebDriverWait(local_driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'classes-search-button'))
+    ).click()
 
     # Change department using dropdown
     select = Select(local_driver.find_element(By.ID, 'cs-subject-1'))
@@ -35,8 +35,7 @@ def scrape_department(department):
 
     # Wait for the course list to load
     wait = WebDriverWait(local_driver, 30)
-    wait.until(EC.presence_of_all_elements_located(
-        (By.CSS_SELECTOR, 'td.class-info')))
+    wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'td.class-info')))
 
     # Initialize local list for prerequisites
     local_prerequisites = []
@@ -46,12 +45,12 @@ def scrape_department(department):
 
     # Loop through courses
     try:
-        course_elements = local_driver.find_elements(
-            By.CSS_SELECTOR, 'td.class-info a')
+        course_elements = local_driver.find_elements(By.CSS_SELECTOR, 'td.class-info a')
         for i in range(len(course_elements)):
             # Refresh the list of course elements to prevent stale elements
             course_elements = local_driver.find_elements(
-                By.CSS_SELECTOR, 'td.class-info a')
+                By.CSS_SELECTOR, 'td.class-info a'
+            )
             if len(course_elements) == 0:
                 time.sleep(1.5)
                 continue
@@ -62,11 +61,9 @@ def scrape_department(department):
             # Open course details in new tab
             action = webdriver.ActionChains(local_driver)
             action.move_to_element(course_element)
-            action.key_down(Keys.COMMAND if 'darwin' ==
-                            sys.platform else Keys.CONTROL)
+            action.key_down(Keys.COMMAND if 'darwin' == sys.platform else Keys.CONTROL)
             action.click()
-            action.key_up(Keys.COMMAND if 'darwin' ==
-                          sys.platform else Keys.CONTROL)
+            action.key_up(Keys.COMMAND if 'darwin' == sys.platform else Keys.CONTROL)
             action.perform()
             time.sleep(1.5)
 
@@ -77,19 +74,23 @@ def scrape_department(department):
                 continue
 
             # Wait for the details to load
-            wait.until(EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'div.container')))
+            wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div.container'))
+            )
 
             # Scrape prerequisites
             try:
                 prereqs_section = local_driver.find_element(
-                    By.CSS_SELECTOR, 'div.prereqs-and-other-restrictions p span').text
-                local_prerequisites.append({
-                    'Course Name': course_name,
-                    'Course Numbers': prereqs_section,  # placeholder, replace with actual processing
-                    # placeholder, replace with actual processing
-                    'Additional Requirements': prereqs_section
-                })
+                    By.CSS_SELECTOR, 'div.prereqs-and-other-restrictions p span'
+                ).text
+                local_prerequisites.append(
+                    {
+                        'Course Name': course_name,
+                        'Course Numbers': prereqs_section,  # placeholder, replace with actual processing
+                        # placeholder, replace with actual processing
+                        'Additional Requirements': prereqs_section,
+                    }
+                )
             except NoSuchElementException:
                 pass
 
@@ -99,10 +100,11 @@ def scrape_department(department):
             time.sleep(1.5)
 
             # Wait for course list to reload
-            wait.until(EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, 'td.class-info')))
+            wait.until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'td.class-info'))
+            )
     except (NoSuchElementException, WebDriverException) as e:
-        print(f"[{department}] An error occurred: {e}. Exiting gracefully.")
+        print(f'[{department}] An error occurred: {e}. Exiting gracefully.')
         local_driver.quit()
 
     # Close driver
@@ -110,30 +112,134 @@ def scrape_department(department):
 
     return local_prerequisites  # Return the scraped data
 
-departments_to_scrape = ["AAS", "AFS", "AMS", "ANT", "AOS", "APC", "ARA", "ARC", "ART", "ASA",
-                         "ASL", "AST", "ATL", "BCS", "BNG", "CBE", "CDH", "CEE", "CGS", "CHI",
-                         "CHM", "CHV", "CLA", "COM", "COS", "CWR", "CZE", "DAN", "EAS", "ECE",
-                         "ECO", "ECS", "EEB", "EGR", "ENE", "ENG", "ENT", "ENV", "EPS", "FIN",
-                         "FRE", "FRS", "GEO", "GER", "GEZ", "GHP", "GSS", "HEB", "HIN", "HIS",
-                         "HLS", "HOS", "HUM", "ISC", "ITA", "JDS", "JPN", "JRN", "KOR", "LAO",
-                         "LAS", "LAT", "LCA", "LIN", "MAE", "MAT", "MED", "MOD", "MOG", "MOL",
-                         "MPP", "MSE", "MTD", "MUS", "NES", "NEU", "ORF", "PAW", "PER", "PHI",
-                         "PHY", "PLS", "POL", "POP", "POR", "PSY", "QCB", "REL", "RES", "RUS",
-                         "SAN", "SLA", "SML", "SOC", "SPA", "SPI", "STC", "SWA", "THR", "TPP",
-                         "TRA", "TUR", "TWI", "UKR", "URB", "URD", "VIS", "WRI"]
+
+departments_to_scrape = [
+    'AAS',
+    'AFS',
+    'AMS',
+    'ANT',
+    'AOS',
+    'APC',
+    'ARA',
+    'ARC',
+    'ART',
+    'ASA',
+    'ASL',
+    'AST',
+    'ATL',
+    'BCS',
+    'BNG',
+    'CBE',
+    'CDH',
+    'CEE',
+    'CGS',
+    'CHI',
+    'CHM',
+    'CHV',
+    'CLA',
+    'COM',
+    'COS',
+    'CWR',
+    'CZE',
+    'DAN',
+    'EAS',
+    'ECE',
+    'ECO',
+    'ECS',
+    'EEB',
+    'EGR',
+    'ENE',
+    'ENG',
+    'ENT',
+    'ENV',
+    'EPS',
+    'FIN',
+    'FRE',
+    'FRS',
+    'GEO',
+    'GER',
+    'GEZ',
+    'GHP',
+    'GSS',
+    'HEB',
+    'HIN',
+    'HIS',
+    'HLS',
+    'HOS',
+    'HUM',
+    'ISC',
+    'ITA',
+    'JDS',
+    'JPN',
+    'JRN',
+    'KOR',
+    'LAO',
+    'LAS',
+    'LAT',
+    'LCA',
+    'LIN',
+    'MAE',
+    'MAT',
+    'MED',
+    'MOD',
+    'MOG',
+    'MOL',
+    'MPP',
+    'MSE',
+    'MTD',
+    'MUS',
+    'NES',
+    'NEU',
+    'ORF',
+    'PAW',
+    'PER',
+    'PHI',
+    'PHY',
+    'PLS',
+    'POL',
+    'POP',
+    'POR',
+    'PSY',
+    'QCB',
+    'REL',
+    'RES',
+    'RUS',
+    'SAN',
+    'SLA',
+    'SML',
+    'SOC',
+    'SPA',
+    'SPI',
+    'STC',
+    'SWA',
+    'THR',
+    'TPP',
+    'TRA',
+    'TUR',
+    'TWI',
+    'UKR',
+    'URB',
+    'URD',
+    'VIS',
+    'WRI',
+]
 
 # Initialize global prerequisites DataFrame
 prerequisites = []
 
 # Run the scraper function in parallel for each department
 with ThreadPoolExecutor(max_workers=5) as executor:
-    future_to_department = {executor.submit(scrape_department, dept): dept for dept in departments_to_scrape}
-    
+    future_to_department = {
+        executor.submit(scrape_department, dept): dept for dept in departments_to_scrape
+    }
+
     for future in as_completed(future_to_department):
         dept = future_to_department[future]
         try:
             data = future.result()
-            if data:
-                df_prerequisites = df_prerequisites.append(pd.DataFrame(data), ignore_index=True)
+            # if data:
+            #     df_prerequisites = df_prerequisites.append(
+            #         pd.DataFrame(data), ignore_index=True
+            #     )
         except Exception as exc:
             print(f'{dept} generated an exception: {exc}')
