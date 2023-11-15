@@ -23,10 +23,14 @@
         "name": "next"
       }
     ],
+    // TODO: Change all relevant import paths to @ for better readability and maintainability
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@components/*": ["components/*"],
+      "@store/*": ["store/*"],
+      "@app/*": ["app/*"],
+      "@hooks/*": ["app/hooks/*"],
+      "@utilities/*": ["app/utilities/*"]
     }
   },
   "include": [
@@ -34,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "components/DndContextProvider.tsx"  ],
+, "components/DndContextProvider.tsx", "app/plswork/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

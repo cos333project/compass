@@ -1,34 +1,29 @@
-import { generateSemestersRecord } from './../app/utilities/GenerateSemesters';
+import { produce } from 'immer';
 import { create } from 'zustand';
-import { Planner, CourseType } from '../types';
 
-export const useAcademicPlannerStore = create<Planner>(set => ({
-  // Initial State
+import { generateSemestersRecord } from './../app/utilities/GenerateSemesters';
+import { Planner, CourseType } from '../types'; 
+
+export const useAcademicPlannerStore = create<Planner>((set) => ({
   classYear: null,
   semesters: {},
 
-  // Actions
-  setClassYear: (classYear: number) => {
-    set({ classYear, semesters: generateSemestersRecord(classYear) });
-  },
+  setClassYear: (classYear: number) =>
+    set({ classYear, semesters: generateSemestersRecord(classYear) }),
 
-  addCourseToSemester: (semesterId: string, course: CourseType) => set(state => {
-    const updatedSemesterCourses = new Set([...state.semesters[semesterId].courses, course]);
-    return {
-      semesters: {
-        ...state.semesters,
-        [semesterId]: { ...state.semesters[semesterId], courses: Array.from(updatedSemesterCourses) }
+  addCourseToSemester: (semesterId: string, course: CourseType) =>
+    set(produce((state) => {
+      const semester = state.semesters[semesterId];
+      if (semester && !semester.courses.find((c: CourseType) => c.id === course.id)) {
+        semester.courses.push(course);
       }
-    };
-  }),
+    })),
 
-  removeCourseFromSemester: (semesterId: string, courseId: string) => set(state => {
-    const updatedSemesterCourses = state.semesters[semesterId].courses.filter(c => c.id !== courseId);
-    return {
-      semesters: {
-        ...state.semesters,
-        [semesterId]: { ...state.semesters[semesterId], courses: updatedSemesterCourses }
+  removeCourseFromSemester: (semesterId: string, courseID: string) =>
+    set(produce((state) => {
+      const semester = state.semesters[semesterId];
+      if (semester) {
+        semester.courses = semester.courses.filter((c: CourseType) => c.id !== courseID);
       }
-    };
-  }),
+    })),
 }));

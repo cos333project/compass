@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 :root {
   --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
@@ -71,6 +71,7 @@ body {
   animation: modalEntrance 0.4s ease forwards;
 }
 
+// TODO: Double check if this is needed
 @keyframes backdropFadeIn {
   to {
     opacity: 1;

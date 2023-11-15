@@ -1,89 +1,82 @@
 import { useState, useCallback, useEffect } from 'react';
-import { For } from 'million/react';
+
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import useSearchStore from '../store/searchSlice';
-import Course from './Course';
-import { CourseType } from '../types';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
+import { For } from 'million/react';
 import { LRUCache } from 'typescript-lru-cache';
-import { Draggable } from '../components/Draggable';
-import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, closestCenter } from '@dnd-kit/core';
+
+import Course from '../components/Course';
+import useSearchStore from '../store/searchSlice';
+import { CourseType } from '../types';
+
 
 const searchCache = new LRUCache<string, CourseType[]>({
   maxSize: 50,
-  entryExpirationTimeInMS: 1000 * 60 * 60 * 24 // 24 hours
+  entryExpirationTimeInMS: 1000 * 60 * 60 * 24
 });
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
-  const {
-    setSearchResults,
-    searchResults,
-    addRecentSearch,
-    recentSearches,
-    setActiveDraggableCourse,
-    setError,
-    loading,
-    setLoading
-  } = useSearchStore(state => state);
+  const { setSearchResults, searchResults, addRecentSearch, recentSearches, setError, loading, setLoading } = useSearchStore(state => ({
+    setSearchResults: state.setSearchResults,
+    searchResults: state.searchResults,
+    addRecentSearch: state.addRecentSearch,
+    recentSearches: state.recentSearches,
+    setError: state.setError,
+    loading: state.loading,
+    setLoading: state.setLoading
+  }));
+
+
+
+    const debouncedSearch = debounce(async (searchQuery: string) => {
+      if (!searchQuery) return;
   
-  useEffect(() => {
-    setAnimatedItems(prevAnimatedItems => {
-      const newAnimatedItems = new Set(prevAnimatedItems);
-      searchResults.forEach(course => {
-        if (!newAnimatedItems.has(course.id)) {
-          newAnimatedItems.add(course.id);
+      setLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`);
+        if (response.ok) {
+          const data: { courses: CourseType[] } = await response.json();
+          setSearchResults(data.courses);
+          if (data.courses.length > 0) {
+            addRecentSearch(searchQuery);
+            // Add your searchCache.set logic here
+          }
+        } else {
+          setError(`Server returned ${response.status}: ${response.statusText}`);
         }
-      });
-      return newAnimatedItems;
-    });
-  }, [searchResults]);
-  
-  const search = async (query: string) => {
-    if (!query) return;
-
-    // if (searchCache.has(query)) {
-    //   setSearchResults(searchCache.get(query) || []);
-    //   return;
-    // }
-
-    setLoading(true);
-    try {
-      console.time('Fetch Time'); // Start timer
-    const response = await fetch(`http://localhost:8000/search/?course=${encodeURIComponent(query)}`);
-    console.timeEnd('Fetch Time'); 
-      if (response.ok) {
-        const data: { courses: CourseType[] } = await response.json();
-        setSearchResults(data.courses);
-        searchCache.set(query, data.courses);
-        if (data.courses.length > 0) addRecentSearch(query);
-      } else {
-        setError(`Server returned ${response.status}: ${response.statusText}`);
+      } catch (error) {
+        setError("There was an error fetching courses.");
+        console.error("There was an error fetching courses:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setError("There was an error fetching courses.");
-      console.error("There was an error fetching courses:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 300);
+  
 
+  // Update the query state and trigger the debounced search function
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setQuery(value);
+    debouncedSearch(query);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      search(query);
+    if (event.key === 'Enter' && query.trim().length > 0) {
+      debouncedSearch(query);
     }
   };
-  
+
   const handleRecentSearchClick = (search: string) => {
     // Display dummy popup for now
     alert(`Displaying course information for: ${search}`);
     // In the future, you might open a modal or a dedicated component to show the course profile
+  };
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, course: CourseType) => {
+    e.dataTransfer.setData('application/reactflow', JSON.stringify(course));
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   return (
@@ -111,7 +104,7 @@ const Search: React.FC = () => {
           { /* Consider changing this to For block */ }
           {recentSearches.map((search, index) => (
             <button
-              key={index}
+              key={index} // Preferably use a more unique key if possible
               style={{
                 animation: `cascadeFadeIn 500ms ease-out forwards ${index * 150}ms`,
               }}
@@ -123,26 +116,26 @@ const Search: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="relative max-h-[400px] overflow-y-auto" dir="rtl">
-        <div dir="ltr">
-          {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <span className="loading loading-ring loading-lg text-gray-700"></span>
-            </div>
-          ) : searchResults.length > 0 ? (
-            <ul className="divide-y divide-dashed hover:divide-solid">
-              {searchResults.map((course) => (
-                <li key={course.id}>
-                  <Draggable id={course.id}>
-                    <Course id={course.id} course={course} />
-                  </Draggable>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-center py-4 text-gray-500">No courses found.</div>
-          )}
-        </div>
+      <div className="relative max-h-[400px] overflow-y-auto">
+        {loading ? (
+          // Center the loading spinner in the middle of the search box
+          <div className="flex justify-center items-center h-full">
+            <span className="loading loading-ring loading-lg text-gray-700"></span>
+          </div>
+        ) : searchResults.length > 0 ? (
+          // Render the list of search results
+          <ul className="divide-y divide-dashed hover:divide-solid">
+            {searchResults.map((course) => (
+              <li key={course.catalog_number} draggable onDragStart={(e) => handleDragStart(e, course)}>
+                <Course 
+                id={course.catalog_number}
+                course={course} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-center py-4 text-gray-500">No courses found.</div>
+        )}
       </div>
     </div>
   );

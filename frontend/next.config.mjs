@@ -1,12 +1,18 @@
-import million from 'million/compiler';
+import { next } from 'million/compiler';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-/** @type {import('next').NextConfig} */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const nextConfig = {
   reactStrictMode: true,
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
+  },
 };
 
 const millionConfig = {
   auto: { rsc: true },
 };
 
-export default million.next(nextConfig, millionConfig);
+export default next(nextConfig, millionConfig);

@@ -1,3 +1,5 @@
+import { devtools } from 'zustand/middleware';
+
 export interface Settings {
   firstName: string;
   lastName: string;
@@ -56,13 +58,13 @@ export interface SearchStoreState {
 }
 
 export interface CourseProps {
-  course: CourseType;
+  id: number;
+  course?: CourseType;
 }
 
 export interface Semester {
   id: string;
   courses: CourseType[];
-  isHovering?: boolean;
 }
 
 export interface SemesterBinProps {
@@ -72,14 +74,22 @@ export interface SemesterBinProps {
 }
 
 export interface DraggableProps {
+  id: number;
   children: React.ReactNode;
-  id: string;
+  className?: string;
+  style?: CSSProperties;
 }
 
 export interface DroppableProps {
-  children: React.ReactNode;
   id: string;
-  onDrop?: (event: DragEvent<HTMLDivElement>) => void;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export interface DndState {
+  semesters: Semester[];
+  addCourseToSemester: (course: CourseType, semesterId: string) => void;
+  moveCourseWithinSemester: (courseID: string, oldIndex: number, newIndex: number) => void;
 }
 
 export interface DragDropContextProps {
