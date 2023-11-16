@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
       <Navbar />
       <div className='flex flex-col h-screen pt-20 p-2 rounded-xl'>
         <main className='flex p-2 flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
-          <div className="w-3/12 bg-white p-2 mr-0 rounded-xl shadow-xl transform transition-all hover:shadow-2xl">
+          <div className='min-w-max w-3/12 bg-white p-2 mr-0 rounded-xl shadow-xl transform transition-all hover:shadow-2xl'>
             <Search />
           </div>
           {user && (

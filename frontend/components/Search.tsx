@@ -5,11 +5,11 @@ import debounce from 'lodash/debounce';
 import { For } from 'million/react';
 import { LRUCache } from 'typescript-lru-cache';
 
-import Course from './Course';
 import useSearchStore from '../store/searchSlice';
-import { CourseType } from '../types';
+import { Course } from '@/types';
+import { Item } from '@/components/Item';
 
-const searchCache = new LRUCache<string, CourseType[]>({
+const searchCache = new LRUCache<string, Course[]>({
   maxSize: 50,
   entryExpirationTimeInMS: 1000 * 60 * 60 * 24,
 });
@@ -35,8 +35,20 @@ const Search: React.FC = () => {
     setLoading: state.setLoading,
   }));
 
-  const debouncedSearch = debounce(async (searchQuery: string) => {
-    if (!searchQuery) return;
+  // Check search results data
+  useEffect(() => {
+    console.log('Search results:', searchResults);
+    setSearchResults(searchResults);
+  }, [searchResults]);
+
+  const search = async (searchQuery: string) => {
+    // if (!searchQuery) return;
+
+    const cachedResults = searchCache.get(searchQuery);
+    if (cachedResults) {
+      setSearchResults(cachedResults);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -44,12 +56,12 @@ const Search: React.FC = () => {
         `http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`
       );
       if (response.ok) {
-        const data: { courses: CourseType[] } = await response.json();
+        const data: { courses: Course[] } = await response.json();
         setSearchResults(data.courses);
-        // if (data.courses.length > 0) {
-        //   addRecentSearch(searchQuery);
-        // Add your searchCache.set logic here
-        // }
+        if (data.courses.length > 0) {
+          addRecentSearch(searchQuery);
+          searchCache.set(searchQuery, data.courses);
+        }
       } else {
         setError(`Server returned ${response.status}: ${response.statusText}`);
       }
@@ -59,18 +71,16 @@ const Search: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, 0);
+  };
 
-  // Update the query state and trigger the debounced search function
+  // Update the query state to the current state in the search bar
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setQuery(value);
-    debouncedSearch(query);
+    setQuery(event.target.value);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && query.trim().length > 0) {
-      debouncedSearch(query);
+      search(query);
     }
   };
 
@@ -128,14 +138,8 @@ const Search: React.FC = () => {
         ) : searchResults.length > 0 ? (
           // Render the list of search results
           <ul className='divide-y divide-dashed hover:divide-solid'>
-            {searchResults.map((course) => (
-              <li
-                key={course.catalog_number}
-                draggable
-                onDragStart={(e) => handleDragStart(e, course)}
-              >
-                <Course id={course.catalog_number} course={course} />
-              </li>
+            {searchResults.map((course, index) => (
+              <li key={index}>Test</li>
             ))}
           </ul>
         ) : (

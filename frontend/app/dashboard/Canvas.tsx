@@ -38,12 +38,29 @@ import { CSS } from '@dnd-kit/utilities';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import debounce from 'lodash/debounce';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
+
 import { Item, Container, ContainerProps, Draggable } from '../../components';
-// import Course from '@/components/Course';
+// import Course from './components/Course';
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 import { createRange, generateSemesters } from '../utilities';
 import useSearchStore from '@/store/searchSlice';
-import { Course, User } from '@/types';
+
+type User = {
+  major: string;
+  classYear: number;
+};
+
+type Course = {
+  id: number;
+  guid: number;
+  department_code: string;
+  catalog_number: number;
+  title: string;
+  originSemesterId?: string;
+};
+
+const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 // SEARCH START //
 const Search: React.FC = () => {
@@ -78,10 +95,10 @@ const Search: React.FC = () => {
       if (response.ok) {
         const data: { courses: Course[] } = await response.json();
         setSearchResults(data.courses);
-        // if (data.courses.length > 0) {
-        //   addRecentSearch(searchQuery);
-        // Add your searchCache.set logic here
-        // }
+        if (data.courses.length > 0) {
+          addRecentSearch(searchQuery);
+          // Add your searchCache.set logic here
+        }
       } else {
         setError(`Server returned ${response.status}: ${response.statusText}`);
       }
@@ -91,7 +108,7 @@ const Search: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, 0);
+  }, 300);
 
   // Update the query state and trigger the debounced search function
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,43 +129,9 @@ const Search: React.FC = () => {
     // In the future, you might open a modal or a dedicated component to show the course profile
   };
 
-  const [items, setItems] = useState(searchResults.map((course) => course.id));
-  const [activeId, setActiveId] = useState(null); // State to track the active draggable item
-
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id); // Set the active draggable item's ID
-  };
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-
-  const findContainer = (id: UniqueIdentifier) => {
-    if (id in items) {
-      return id;
-    }
-
-    return Object.keys(items).find((key) => items[key].includes(id));
-  };
-
-  const getIndex = (id: UniqueIdentifier) => {
-    const container = findContainer(id);
-
-    if (!container) {
-      return -1;
-    }
-
-    const index = items[container].indexOf(id);
-
-    return index;
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, course: Course) => {
+    e.dataTransfer.setData('application/reactflow', JSON.stringify(course));
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   return (
@@ -197,39 +180,15 @@ const Search: React.FC = () => {
             <span className='loading loading-ring loading-lg text-gray-700'></span>
           </div>
         ) : searchResults.length > 0 ? (
-          <DndContext onDragEnd={handleDragEnd}>
-            <ul className='divide-y divide-dashed hover:divide-solid'>
-              <SortableContext items={searchResults.map((course) => course.id)}>
-                {searchResults.map((course, index) => (
-                  <li key={course.catalog_number}>
-                    <SortableItem
-                      key={course.catalog_number}
-                      id={course.catalog_number}
-                      index={index}
-                      handle={false} // Toggles entirely draggable or only by handle
-                      style={({ isDragging }) => ({
-                        boxShadow: isDragging ? '0px 0px 15px rgba(0,0,0,0.2)' : 'none',
-                        opacity: isDragging ? 0.7 : 1,
-                      })}
-                      wrapperStyle={() => ({})}
-                      renderItem={() => (
-                        <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>
-                          <div className='flex mb-3 rounded'>
-                            <h4 className='text-xs font-semibold text-black'>
-                              {course.department_code} {course.catalog_number}
-                            </h4>
-                          </div>
-                          <div className='text-sm text-gray-900'>{course.title}</div>
-                        </div>
-                      )}
-                      containerId='-99' // Arbitrary container ID to hold the search results
-                      getIndex={() => index}
-                    />
-                  </li>
-                ))}
-              </SortableContext>
-            </ul>
-          </DndContext>
+          // Render the list of search results
+          <ul className='divide-y divide-dashed hover:divide-solid'>
+            {searchResults.map((course) => (
+              <li key={course.catalog_number}>
+                {/* <Course id={course.catalog_number} course={course} /> */}
+                Balls
+              </li>
+            ))}
+          </ul>
         ) : (
           <div className='text-center py-4 text-gray-500'>No courses found.</div>
         )}
@@ -240,25 +199,6 @@ const Search: React.FC = () => {
 
 // SEARCH END //
 
-type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
-
-//----------------------------- !! START OF ANIMATION SECTION !! -----------------------------!! //
-
-const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
-
-const dropAnimation: DropAnimation = {
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0.5',
-      },
-    },
-  }),
-};
-
-//------------------------------- !! START OF TODO:(???) SECTION !! ------------------------------!! //
-// Necessary to define here due to dependencies on dynamic React states
 function DroppableContainer({
   children,
   columns = 1,
@@ -270,7 +210,7 @@ function DroppableContainer({
 }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
-  items: Course[] | UniqueIdentifier[];
+  items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
   const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } =
@@ -308,11 +248,24 @@ function DroppableContainer({
   );
 }
 
-interface CanvasProps {
+const dropAnimation: DropAnimation = {
+  sideEffects: defaultDropAnimationSideEffects({
+    styles: {
+      active: {
+        opacity: '0.5',
+      },
+    },
+  }),
+};
+
+type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
+
+interface Props {
   user: User;
   adjustScale?: boolean;
   cancelDrop?: CancelDrop;
   columns?: number;
+  initialItems?: Items;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
   getItemStyles?(args: {
@@ -338,17 +291,19 @@ interface CanvasProps {
 }
 
 export const TRASH_ID = 'void';
-const PLACEHOLDER_ID = 'placeholder';
+export const PLACEHOLDER_ID = 'placeholder';
+export const SEARCH_RESULTS_ID = 'search-results'; // Corrected the constant name
+
 const empty: UniqueIdentifier[] = [];
 
 export function Canvas({
   user,
   adjustScale = false,
-  itemCount = 1,
+  itemCount = 3,
   cancelDrop,
   columns,
   handle = false,
-  items: initialItems,
+  initialItems,
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
@@ -360,34 +315,49 @@ export function Canvas({
   trashable = false,
   vertical = false,
   scrollable,
-}: CanvasProps) {
-  const classYear = 2025;
-  const initialItemsSetup = (classYear: number): Items => {
-    const initial = {};
-    let temp = 0;
-    for (let i = 5; i >= 0; --i) {
-      if (i == 5) {
-        initial[`Fall ${classYear - i + 1}`] = createRange(itemCount, (index) => `balls${temp}`);
-      } else if (i == 0) {
-        initial[`Spring ${classYear}`] = createRange(itemCount, (index) => `nuts${temp}`);
-      } else {
-        initial[`Spring ${classYear - i + 1}`] = createRange(itemCount, (index) => `bolts${temp}`);
-        initial[`Fall ${classYear - i + 1}`] = createRange(
-          itemCount,
-          (index) => `amongus${temp + 10}`
-        );
-      }
-      ++temp;
-    }
-    return initial as Items;
+}: Props) {
+  const classYear = 2025 ?? user.classYear;
+  const generateSemesters = (classYear: number, itemCount: number): Items => {
+    let semesters: Items = {};
+    const startYear = classYear - 4;
+
+  for (let year = startYear; year < classYear; ++year) {
+    semesters[`Fall ${year}`] = [];
+    semesters[`Spring ${year + 1}`] = [];
+  }
+
+  return semesters;
+    // for (let i = 5; i >= 0; --i) {
+    //   const year = classYear - i + 1;
+    //   if (i === 5) {
+    //     semesters[`Fall ${year}`] = createRange(itemCount, (index) => `balls${index}`);
+    //   } else if (i === 0) {
+    //     semesters[`Spring ${classYear}`] = createRange(itemCount, (index) => `nuts${index}`);
+    //   } else {
+    //     initial[`Spring ${year}`] = createRange(itemCount, (index) => `bolts${index}`);
+    //     initial[`Fall ${year}`] = createRange(itemCount, (index) => `amongus${index + 10}`);
+    //   }
+    // }
+    // return initial;
   };
 
-  const [items, setItems] = useState<Items>(initialItemsSetup(classYear));
-  const [searchResults] = useSearchStore((state) => state.searchResults);
-  const [containers, setContainers] = useState<UniqueIdentifier[]>(
-    Object.keys(items) as UniqueIdentifier[]
-  );
+  const initial = initialItems || generateSemesters(classYear, itemCount); // Adjusted to use prop or default
+  const { searchResults } = useSearchStore(); // Assuming useSearchStore is imported
 
+  const [items, setItems] = useState<Items>(() => ({
+    [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
+    ...initial,
+  }));
+
+  useEffect(() => {
+    setItems((prevItems) => ({
+      ...prevItems,
+      [SEARCH_RESULTS_ID]: searchResults.map((course, index) => `course-${index}`),
+    }));
+  }, [searchResults]);
+
+  const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(initial)];
+  const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -469,7 +439,6 @@ export function Canvas({
       coordinateGetter,
     })
   );
-
   const findContainer = (id: UniqueIdentifier) => {
     if (id in items) {
       return id;
@@ -491,6 +460,7 @@ export function Canvas({
   };
 
   const onDragCancel = () => {
+    console.log('Drag canceled');
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -517,10 +487,12 @@ export function Canvas({
         },
       }}
       onDragStart={({ active }) => {
+        console.log('Drag started: ', active.id);
         setActiveId(active.id);
         setClonedItems(items);
       }}
       onDragOver={({ active, over }) => {
+        console.log('Drag over: ', { activeId: active.id, overId: over?.id });
         const overId = over?.id;
 
         if (overId == null || overId === TRASH_ID || active.id in items) {
@@ -571,6 +543,7 @@ export function Canvas({
         }
       }}
       onDragEnd={({ active, over }) => {
+        console.log('Drag end: ', { activeId: active.id, overId: over?.id });
         if (active.id in items && over?.id) {
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
@@ -638,9 +611,7 @@ export function Canvas({
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
-      <Search />
       <div
-        className='min-h-[200px] w-full md:w-[300px] bg-white p-4 m-2 rounded-lg border transition-all duration-300 ease-in-out'
         style={{
           display: 'inline-grid',
           boxSizing: 'border-box',
@@ -648,26 +619,73 @@ export function Canvas({
           gridAutoFlow: vertical ? 'row' : 'column',
         }}
       >
-        {/* TODO: Consider removing this sortable context to fix semester bins in place */}
         <SortableContext
           items={[...containers, PLACEHOLDER_ID]}
           strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
         >
-          {containers.map((containerId) => (
-            <DroppableContainer
-              key={containerId}
-              id={containerId}
-              label={minimal ? undefined : `${containerId}`}
-              columns={columns}
-              items={items[containerId]}
-              scrollable={scrollable}
-              style={containerStyle}
-              unstyled={minimal}
-              onRemove={() => handleRemove(containerId)}
-            >
-              <SortableContext items={items[containerId]} strategy={strategy}>
-                {items[containerId].map((value, index) => {
-                  return (
+          {containers.map((containerId) => {
+            // Conditional rendering for the SEARCH_RESULTS_ID container
+            if (containerId === SEARCH_RESULTS_ID && items[SEARCH_RESULTS_ID].length > 0) {
+              return (
+                <DroppableContainer
+                  key={SEARCH_RESULTS_ID}
+                  id={SEARCH_RESULTS_ID}
+                  label={'Search Results'}
+                  items={items[SEARCH_RESULTS_ID]}
+                  scrollable={scrollable}
+                  style={containerStyle}
+                  unstyled={minimal}
+                  // ... other props if needed ...
+                >
+                  <SortableContext
+                    items={searchResults.map((_, index) => `course-${index}`)}
+                    strategy={strategy}
+                  >
+                    {searchResults.map((course, index) => {
+                      const courseId = `course-${index}`;
+                      return (
+                        <SortableItem
+                          key={courseId}
+                          id={courseId}
+                          index={index}
+                          handle={handle}
+                          style={getItemStyles}
+                          wrapperStyle={wrapperStyle}
+                          renderItem={() => (
+                            <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>
+                              <div className='flex mb-3 rounded'>
+                                <h4 className='text-xs font-semibold text-black'>
+                                  {course.department_code} {course.catalog_number}
+                                </h4>
+                              </div>
+                              <div className='text-sm text-gray-900'>{course.title}</div>
+                            </div>
+                          )}
+                          containerId={SEARCH_RESULTS_ID}
+                          getIndex={getIndex}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                </DroppableContainer>
+              );
+            }
+
+            // Rendering other containers
+            return (
+              <DroppableContainer
+                key={containerId}
+                id={containerId}
+                label={minimal ? undefined : `Ballz ${containerId}`}
+                columns={columns}
+                items={items[containerId]}
+                scrollable={scrollable}
+                style={containerStyle}
+                unstyled={minimal}
+                onRemove={() => handleRemove(containerId)}
+              >
+                <SortableContext items={items[containerId]} strategy={strategy}>
+                  {items[containerId].map((value, index) => (
                     <SortableItem
                       disabled={isSortingContainer}
                       key={value}
@@ -680,12 +698,12 @@ export function Canvas({
                       containerId={containerId}
                       getIndex={getIndex}
                     />
-                  );
-                })}
-              </SortableContext>
-            </DroppableContainer>
-          ))}
-          {minimal ? undefined : (
+                  ))}
+                </SortableContext>
+              </DroppableContainer>
+            );
+          })}
+          {!minimal && (
             <DroppableContainer
               id={PLACEHOLDER_ID}
               disabled={isSortingContainer}
@@ -698,7 +716,6 @@ export function Canvas({
           )}
         </SortableContext>
       </div>
-
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId
@@ -738,7 +755,7 @@ export function Canvas({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`${containerId}`}
+        label={`Column ${containerId}`}
         columns={columns}
         style={{
           height: '100%',
