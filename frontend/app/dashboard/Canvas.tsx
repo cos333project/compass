@@ -183,7 +183,9 @@ const Search: React.FC = () => {
           <ul className="divide-y divide-dashed hover:divide-solid">
             {searchResults.map((course) => (
               <li key={course.catalog_number}>
-                <Course id={course.catalog_number} course={course} />
+                <Item>
+                  <Course id={course.catalog_number} course={course} />
+                </Item>
               </li>
             ))}
           </ul>
@@ -210,7 +212,7 @@ function DroppableContainer({
 }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
-  items: UniqueIdentifier[];
+  items: CourseType[] | UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
   const {
@@ -305,7 +307,7 @@ const empty: UniqueIdentifier[] = [];
 export function Canvas({
   user,
   adjustScale = false,
-  itemCount = 3,
+  itemCount = 1,
   cancelDrop,
   columns,
   handle = false,
@@ -322,19 +324,42 @@ export function Canvas({
   vertical = false,
   scrollable,
 }: Props) {
-  const [items, setItems] = useState<Items>(
-    () =>
-      initialItems ?? {
-        A: createRange(itemCount, (index) => `A${index + 1}`),
-        B: createRange(itemCount, (index) => `B${index + 1}`),
-        C: createRange(itemCount, (index) => `C${index + 1}`),
-        D: createRange(itemCount, (index) => `D${index + 1}`),
+  const classYear = 2025;
+  const initialItemsSetup = (classYear: number): Items => {
+    const initial = {};
+    let temp = 0;
+    for (let i = 5; i >= 0; --i) {
+      if (i == 5) {
+        initial[`Fall ${classYear - i + 1}`] = createRange(
+          itemCount,
+          (index) => `balls${temp}`
+        );
+      } else if (i == 0) {
+        initial[`Spring ${classYear}`] = createRange(
+          itemCount,
+          (index) => `nuts${temp}`
+        );
+      } else {
+        initial[`Spring ${classYear - i + 1}`] = createRange(
+          itemCount,
+          (index) => `bolts${temp}`
+        );
+        initial[`Fall ${classYear - i + 1}`] = createRange(
+          itemCount,
+          (index) => `amongus${temp + 10}`
+        );
       }
-  );
+      ++temp;
+    }
+    return initial as Items;
+  };
+
+  const [items, setItems] = useState<Items>(initialItemsSetup(classYear));
   const [searchResults] = useSearchStore((state) => state.searchResults);
-  const [containers, setContainers] = useState(
+  const [containers, setContainers] = useState<UniqueIdentifier[]>(
     Object.keys(items) as UniqueIdentifier[]
   );
+
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -601,9 +626,6 @@ export function Canvas({
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
-      <div className="w-3/12 bg-white p-2 mr-0 rounded-xl shadow-xl transform transition-all hover:shadow-2xl">
-        <Search />
-      </div>
       <div
         style={{
           display: "inline-grid",
@@ -612,6 +634,7 @@ export function Canvas({
           gridAutoFlow: vertical ? "row" : "column",
         }}
       >
+        <Search />
         <SortableContext
           items={[...containers, PLACEHOLDER_ID]}
           strategy={
@@ -624,7 +647,7 @@ export function Canvas({
             <DroppableContainer
               key={containerId}
               id={containerId}
-              label={minimal ? undefined : `Column ${containerId}`}
+              label={minimal ? undefined : `${containerId}`}
               columns={columns}
               items={items[containerId]}
               scrollable={scrollable}
@@ -665,6 +688,7 @@ export function Canvas({
           )}
         </SortableContext>
       </div>
+
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId
@@ -706,7 +730,7 @@ export function Canvas({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`Column ${containerId}`}
+        label={`${containerId}`}
         columns={columns}
         style={{
           height: "100%",
