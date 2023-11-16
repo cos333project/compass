@@ -56,15 +56,26 @@ req_list:
   min_needed: 2
   explanation: Two of the three math-track intermediate courses. 
     Students do not need to take introductory economics courses.
-  req_list:
-  - name: First Core Course
   double_counting_allowed: false
   max_common_with_major: 1
   pdfs_allowed: 0
-  course_list:
-  - ECO 310
-  - ECO 311
-  - ECO 312
+  req_list:
+  - name: First Core Course
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - ECO 310
+    - ECO 311
+    - ECO 312
+    completed_by_semester: 6
+  - name: Second Core Course
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - ECO 310
+    - ECO 311
+    - ECO 312
+    completed_by_semester: 8
 - name: Elective Courses
   max_counted: 1
   min_needed: 3
@@ -83,15 +94,3 @@ req_list:
   - ECO 418
   - COS 445
   - ORF 405
-- name: Timing and Restrictions
-  max_counted: 1
-  min_needed: 1
-  explanation: Complete at least one required course by the end of 
-    Junior year. Economics majors are ineligible. Only a maximum of two 
-    courses can count towards both the Minor in Quantitative Economics 
-    and the major, or another minor.
-  double_counting_allowed: false
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - [Further details regarding timing and restrictions can be listed here if necessary]
