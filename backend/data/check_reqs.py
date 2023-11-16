@@ -15,7 +15,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 import constants
 from config import django_init
-from compass.models import Course, Department, Degree, Major, Minor, Certificate, Requirement
+from compass.models import Course, Department, Degree, Major, Minor, \
+    Certificate, Requirement, CustomUser, UserCourses
 
 DEFAULT_SCHEDULE = [[] for i in range(8)]
 
@@ -43,27 +44,81 @@ DEFAULT_SCHEDULE = [[] for i in range(8)]
 # Django model instances are cached so this should be at least as
 # efficient as TigerPath code
 
-# Don't forget to add logic for dept_list
 
-# See what happens with req["settled"]
-# trace the code with 2-3 yamls to see how this works. Do it for
-# one minor, one major, one degree.
+def cumulative_time(func):
+    total_time = 0
+
+    def wrapper(*args, **kwargs):
+        nonlocal total_time
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        total_time += end_time - start_time
+        print(f"Current total time for {func.__name__}: {total_time} seconds")
+        return result
+
+    return wrapper
 
 
-def check_user(id):
-    formatted_res = {}
-    return formatted_res
+@cumulative_time
+def check_user(user_id):
+    output = {}
+    user_inst = CustomUser.objects.get(id=user_id)
+    user_courses = create_courses(user_id)
+
+    # get rid of this
+    for sem in user_courses:
+        for course in sem:
+            if course['inst'].catalog_number == '217':
+                course['settled'] = [2514]
+            elif course['inst'].catalog_number == '216':
+                course['settled'] = [2514]
+            elif course['inst'].catalog_number == '218':
+                course['settled'] = [2504]
+            elif course['inst'].catalog_number == '219':
+                course['settled'] = [2516]
+            elif course['inst'].catalog_number == '326':
+                course['settled'] = [2515]
+            elif course['inst'].catalog_number == '520':
+                course['settled'] = [2515]
+
+    if user_inst.major:
+        output[user_inst.major.code] = {}
+        formatted_courses, formatted_req = \
+            check_requirements("Major", user_inst.major.id, user_courses)
+        output[user_inst.major.code]['courses'] = formatted_courses
+        output[user_inst.major.code]['requirements'] = formatted_req
+
+    output['minors'] = {}
+    for minor_inst in user_inst.minors.all():
+        output['minors'][minor_inst.code] = {}
+        formatted_courses, formatted_req = \
+            check_requirements("Minor", minor_inst.id, user_courses)
+        output['minors'][minor_inst.code]['courses'] = formatted_courses
+        output['minors'][minor_inst.code]['requirements'] = formatted_req
+
+    return output
 
 
+@cumulative_time
+def create_courses(user_id):
+    courses = DEFAULT_SCHEDULE
+    course_insts = UserCourses.objects.filter(user_id=user_id)
+    for course_inst in course_insts:
+        courses[course_inst.semester - 1].append({"inst": course_inst.course})
+    return courses
+
+
+@cumulative_time
 # course_dict is a dictionary containing course id: semester pairs.
 def create_dummy_courses(course_dict):
     courses = DEFAULT_SCHEDULE
     for id in course_dict:
-
         courses[course_dict[id] - 1].append({"inst": Course.objects.get(id=id)})
     return courses
 
 
+@cumulative_time
 def check_requirements(table, id, courses):
     """
     Returns information about the requirements satisfied by the courses
@@ -94,15 +149,12 @@ def check_requirements(table, id, courses):
     add_course_lists_to_req(req, courses)
     formatted_courses = format_courses_output(courses)
     formatted_req = format_req_output(req)
-    # for sem in courses:
-    #     for course in sem:
-    #         if course['inst'].catalog_number == '217':
-    #             print(course)
-    return formatted_req["satisfied"], formatted_courses, formatted_req
+    return formatted_courses, formatted_req
 
 
 # These fields could be in the UserCourses table by default
 # possible_reqs, reqs_satisfied, reqs_double_counted would be ManyToManyFields
+@cumulative_time
 def _init_courses(courses):
     if not courses:
         courses = DEFAULT_SCHEDULE
@@ -119,6 +171,8 @@ def _init_courses(courses):
     return courses
 
 
+# cache this: -2.5s. Also, do this at start up.
+@cumulative_time
 def _init_req(req_inst):
     req = {}
     req['inst'] = req_inst
@@ -130,13 +184,20 @@ def _init_req(req_inst):
         for sub_req_inst in req_inst.req_list.all():
             sub_req = _init_req(sub_req_inst)
             req['req_list'].append(sub_req)
+    if (req["inst"]._meta.db_table == 'Requirement'):
+        req['course_list'] = {course_inst.id for course_inst in req["inst"].course_list.all()}
+        req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        if len(req['course_list']) == 0:
+            req.pop('course_list')
+        if len(req['exc_course_list']) == 0:
+            req.pop('exc_course_list')
     return req
 
 
-# RELEVANT?
 # Note: this function assumes that completed_by_semester only shows up
 # in num_courses leaves. To make it more robust, update mark_all and
 # mark_settled to only mark courses if they are completed in time.
+@cumulative_time
 def assign_settled_courses_to_reqs(req, courses):
     """
     Assigns only settled courses and those that can only satify one requirement,
@@ -179,6 +240,7 @@ def assign_settled_courses_to_reqs(req, courses):
         return 0
 
 
+@cumulative_time
 def mark_possible_reqs(req, courses):
     """
     Finds all the requirements that each course can satisfy.
@@ -187,7 +249,7 @@ def mark_possible_reqs(req, courses):
         for sub_req in req["req_list"]:
             mark_possible_reqs(sub_req, courses)
     else:
-        if req["inst"].course_list.exists() or req["inst"].dept_list:
+        if "course_list" in req or req["inst"].dept_list:
             mark_courses(req, courses)
         if req["inst"].dist_req:
             mark_dist(req, courses)
@@ -196,6 +258,7 @@ def mark_possible_reqs(req, courses):
 # This could be done in SQL
 # In UserCourses, get courses where distribution_area_short in json.loads(req["inst"].dist_req)
 # Do operations on search hits
+@cumulative_time
 def mark_dist(req, courses):
     num_marked = 0
     for sem in courses:
@@ -210,21 +273,18 @@ def mark_dist(req, courses):
     return num_marked
 
 
-# RELEVANT
 # This only assigns settleable requirements to courses, and not the
 # other way around.
+@cumulative_time
 def mark_courses(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
             if req["inst"].id in course["possible_reqs"]: # already used
                 continue
-            excluded = False
-            for exc_course_inst in req["inst"].excluded_course_list.all():
-                if exc_course_inst.id == course["inst"].id:
-                    excluded = True
-            if excluded:  # this course cannot count for this req, so skip it
-                continue
+            if "exc_course_list" in req:
+                if course["inst"].id in req["exc_course_list"]:
+                    continue
             if req["inst"].dept_list:
                 for code in json.loads(req["inst"].dept_list):
                     if code == course["inst"].department.code:
@@ -233,17 +293,16 @@ def mark_courses(req, courses):
                         if not req["inst"].double_counting_allowed:
                             course["num_settleable"] += 1
                         break
-            if req["inst"].course_list.exists():
-                for course_inst in req["inst"].course_list.all():
-                    if course_inst.id == course["inst"].id:
-                        num_marked += 1
-                        course["possible_reqs"].append(req["inst"].id)
-                        if not req["inst"].double_counting_allowed:
-                            course["num_settleable"] += 1
-                        break
+            if "course_list" in req:
+                if course["inst"].id in req["course_list"]:
+                    num_marked += 1
+                    course["possible_reqs"].append(req["inst"].id)
+                    if not req["inst"].double_counting_allowed:
+                        course["num_settleable"] += 1
     return num_marked
 
 
+@cumulative_time
 def mark_all(req, courses):
     """
     Finds and marks all courses in 'courses' that satisfy a requirement where
@@ -257,6 +316,8 @@ def mark_all(req, courses):
                 course["reqs_double_counted"].append(req["inst"].id)
     return num_marked
 
+
+@cumulative_time
 def mark_settled(req, courses):
     """
     Finds and marks all courses in 'courses' that have been settled to
@@ -280,6 +341,8 @@ def mark_settled(req, courses):
                 course["settled"].append(req["inst"].id)
     return num_marked
 
+
+@cumulative_time
 def check_degree_progress(req, courses):
     """
     Checks whether the correct number of courses have been completed by the
@@ -293,6 +356,8 @@ def check_degree_progress(req, courses):
         num_courses += len(courses[i])
     return num_courses
 
+
+@cumulative_time
 def add_course_lists_to_req(req, courses):
     """
     Add course lists for each requirement that either
@@ -324,6 +389,7 @@ def add_course_lists_to_req(req, courses):
                         break
 
 
+@cumulative_time
 def format_courses_output(courses):
     """
     Enforce the type and order of fields in the courses output
@@ -340,6 +406,8 @@ def format_courses_output(courses):
                 output[i][j]["settled"] = course["settled"]
     return output
 
+
+@cumulative_time
 def format_req_output(req):
     """
     Enforce the type and order of fields in the req output
@@ -349,8 +417,8 @@ def format_req_output(req):
         output['name'] = req["inst"].name
     if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].code:
         output['code'] = req["inst"].code
-    if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
-        output['degree'] = req['inst'].degree.all()[0]
+    # if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
+    #     output['degree'] = req['inst'].degree.all()[0]
     if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].pdfs_allowed:
         output['pdfs_allowed'] = req['inst'].pdfs_allowed
     if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
@@ -379,32 +447,28 @@ def format_req_output(req):
 def main():
     # course_dict = {61511: 1, 2321: 1, 29481: 1, 2352: 1, 2113: 1,
     #                2303: 2, 7008: 2, 2207: 2, 2131: 2, 2133: 3}
-    course_dict = {29481: 1, 2113: 1, 2137: 1, 7008: 2, 2131: 2,
-                   2133: 3, 13483: 3}
-    courses = create_dummy_courses(course_dict)
-    for sem in courses:
-        for course in sem:
-            if course['inst'].catalog_number == '217':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '216':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '218':
-                course['settled'] = [2504]
-            elif course['inst'].catalog_number == '219':
-                course['settled'] = [2516]
-            elif course['inst'].catalog_number == '326':
-                course['settled'] = [2515]
-            elif course['inst'].catalog_number == '520':
-                course['settled'] = [2515]
+    # course_dict = {29481: 1, 2113: 1, 2137: 1, 7008: 2, 2131: 2,
+    #                2133: 3, 13483: 3}
+    # courses = create_dummy_courses(course_dict)
+    # for sem in courses:
+    #     for course in sem:
+    #         if course['inst'].catalog_number == '217':
+    #             course['settled'] = [2514]
+    #         elif course['inst'].catalog_number == '216':
+    #             course['settled'] = [2514]
+    #         elif course['inst'].catalog_number == '218':
+    #             course['settled'] = [2504]
+    #         elif course['inst'].catalog_number == '219':
+    #             course['settled'] = [2516]
+    #         elif course['inst'].catalog_number == '326':
+    #             course['settled'] = [2515]
+    #         elif course['inst'].catalog_number == '520':
+    #             course['settled'] = [2515]
     # courses = _init_courses(courses)
     # print(courses)
-    # req_inst = Minor.objects.get(id=5)
-    # req = _init_req(req_inst)
-    # print(req)
-    satisfied, formatted_courses, formatted_req = check_requirements("Minor", 5, courses)
-    print(formatted_courses)
-    print("\n–––––––––––––––––––––––––––––––––––––––––––––––––––––––\n")
-    print(formatted_req)
+
+    output = check_user(4)
+    print(output['minors']['CLA']['requirements'])
 
 if __name__ == "__main__":
     main()
