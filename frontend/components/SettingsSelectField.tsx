@@ -14,11 +14,13 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
   };
 
   return (
-    <div className="flex flex-col">
-      <label htmlFor={selectId} className="mb-2 font-bold">{label}</label>
+    <div className='flex flex-col'>
+      <label htmlFor={selectId} className='mb-2 font-bold'>
+        {label}
+      </label>
       <select
         id={selectId}
-        className="p-2 border border-gray-300 rounded"
+        className='p-2 border border-gray-300 rounded'
         value={value}
         onChange={handleChange}
         multiple={multiple}

@@ -6,7 +6,7 @@
   --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
   --background-start-rgb: 102, 51, 153; /* Darkened Princeton Orange */
   --background-end-rgb: 51, 51, 51; /* Softened Black */
-  --system-text-color: #D9D9D9; /* Light Gray */
+  --system-text-color: #d9d9d9; /* Light Gray */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,17 +14,13 @@
     --foreground-rgb: 224, 224, 224; /* Soft White for text */
     --background-start-rgb: 18, 18, 18; /* Near Black */
     --background-end-rgb: 30, 30, 30; /* Dark Gray */
-    --system-text-color: #FAFAFA; /* Soft Blue */
+    --system-text-color: #fafafa; /* Soft Blue */
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb)))
     rgb(var(--background-start-rgb));
 }
 
@@ -84,4 +80,3 @@ body {
     transform: scale(1);
   }
 }
-

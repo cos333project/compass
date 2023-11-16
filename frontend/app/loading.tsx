@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react'; 
+import { Suspense, useEffect } from 'react';
 import * as React from 'react';
 
 import AspectRatio from '@mui/joy/AspectRatio';
@@ -16,17 +16,17 @@ export default function Loading() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);  // Set loading to false after 3 seconds
-    }, 3000);  // 3000 milliseconds = 3 seconds
+      setLoading(false); // Set loading to false after 3 seconds
+    }, 3000); // 3000 milliseconds = 3 seconds
 
-    return () => clearTimeout(timer);  // Clear the timer if the component is unmounted
+    return () => clearTimeout(timer); // Clear the timer if the component is unmounted
   }, []);
 
   return (
     <Suspense fallback={<Skeleton />}>
       <Stack spacing={2} useFlexGap sx={{ alignItems: 'center' }}>
         <Box sx={{ m: 'auto' }}>
-          <AspectRatio variant="plain" sx={{ width: 300 }}>
+          <AspectRatio variant='plain' sx={{ width: 300 }}>
             <Skeleton loading={loading}>
               <img
                 src={
@@ -34,14 +34,14 @@ export default function Loading() {
                     ? 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
                     : './compassLogo.png'
                 }
-                alt="Compass Logo"
+                alt='Compass Logo'
               />
             </Skeleton>
           </AspectRatio>
         </Box>
-        <FormControl orientation="horizontal" sx={{ gap: 1 }}>
+        <FormControl orientation='horizontal' sx={{ gap: 1 }}>
           <Switch
-            size="sm"
+            size='sm'
             checked={loading}
             onChange={(event) => setLoading(event.target.checked)}
           />

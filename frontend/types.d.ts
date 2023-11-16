@@ -1,125 +1,126 @@
 import { devtools } from 'zustand/middleware';
 
-export interface Settings {
+export type Settings = {
   firstName: string;
   lastName: string;
   major?: string;
   minors: string[];
   timeFormat24h: boolean;
   themeDarkMode: boolean;
-}
+};
 
-export interface SettingsProps {
+export type SettingsProps = {
   settings: Settings;
   onClose: () => void;
   onSave: (updatedSettings: Settings) => void;
-}
+};
 
-export interface SettingsModalProps {
+export type SettingsModalProps = {
   children: React.ReactNode;
   onClose: () => void;
-}
+};
 
-export interface SelectFieldProps {
+export type SelectFieldProps = {
   label: string;
   options: string[];
-  value: string | string[] | undefined ;
+  value: string | string[] | undefined;
   onChange: (value: string | string[] | undefined) => void;
   multiple?: boolean;
-}
+};
 
-export interface ToggleSwitchProps {
+export type ToggleSwitchProps = {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
-}
+};
 
-export interface CourseType {
+export type Course = {
+  id: number;
   guid: number;
   department_code: string;
   catalog_number: number;
   title: string;
   originSemesterId?: string;
-}
+};
 
-export interface SearchStoreState {
-  searchResults: CourseType[];
-  setSearchResults: (results: CourseType[]) => void;
+export type SearchStoreState = {
+  searchResults: Course[];
+  setSearchResults: (results: Course[]) => void;
   recentSearches: string[];
   addRecentSearch: (query: string) => void;
-  activeDraggableCourse: CourseType | null;
-  setActiveDraggableCourse: (course: CourseType | null) => void;
+  activeDraggableCourse: Course | null;
+  setActiveDraggableCourse: (course: Course | null) => void;
   error: string | null;
   setError: (error: string | null) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
-}
+};
 
-export interface CourseProps {
+export type CourseProps = {
   id: number;
-  course: CourseType;
-}
+  course: Course;
+};
 
-export interface Semester {
+export type Semester = {
   id: string;
-  courses: CourseType[];
-}
+  courses: Course[];
+};
 
-export interface SemesterBinProps {
+export type SemesterBinProps = {
   children?: React.ReactNode;
   semester: Semester;
   className?: string;
-}
+};
 
-export interface DraggableProps {
+export type DraggableProps = {
   id: number;
   children: React.ReactNode;
   className?: string;
   style?: CSSProperties;
-}
+};
 
-export interface DroppableProps {
+export type DroppableProps = {
   id: string;
   children: React.ReactNode;
   className?: string;
-}
+};
 
-export interface DndState {
+export type DndState = {
   semesters: Semester[];
-  addCourseToSemester: (course: CourseType, semesterId: string) => void;
+  addCourseToSemester: (course: Course, semesterId: string) => void;
   moveCourseWithinSemester: (courseID: string, oldIndex: number, newIndex: number) => void;
-}
+};
 
-export interface DragDropContextProps {
-  searchResults: CourseType[];
-}
+export type DragDropContextProps = {
+  searchResults: Course[];
+};
 
-export interface DropdownMenuProps {
+export type DropdownMenuProps = {
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
-export interface MenuItemProps {
+export type MenuItemProps = {
   isActive: boolean;
   children: React.ReactNode;
   onClick: () => void;
-}
+};
 
-export interface SettingsFormProps {
+export type SettingsFormProps = {
   closeSettings: () => void;
   onSaveSettings: (newMajor: string, newClassYear: string) => void;
   initialMajor: string;
   initialClassYear: string;
-}
+};
 
-export interface User {
+export type User = {
   major: string;
   classYear: number;
-}
+};
 
-export interface Planner {
+export type Planner = {
   classYear: number | null;
   semesters: Record<string, Semester>;
   setClassYear: (classYear: number) => void;
-  addCourseToSemester: (semesterId: string, course: CourseType) => void;
+  addCourseToSemester: (semesterId: string, course: Course) => void;
   removeCourseFromSemester: (semesterId: string, courseId: string) => void;
-}
+};

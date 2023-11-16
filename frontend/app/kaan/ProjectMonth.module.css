@@ -1,0 +1,36 @@
+.wrapper {
+    --dnd-status-color: 180 180 255;
+  
+    transition: background-color 150ms, border-color 150ms;
+  
+    padding: 0.4rem;
+    border: 2px solid rgb(var(--dnd-status-color) / 0.7);
+    background: rgb(var(--dnd-status-color) / 0.2);
+    border-radius: 0.4rem;
+  
+    display: flex;
+    gap: 0.2rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 32px;
+  }
+  
+  .wrapper:hover {
+    --dnd-status-color: 95 95 200;
+  }
+  
+  @keyframes dropped-highlight {
+    from {
+      border-color: rgb(39, 39, 252);
+      background: rgb(39 39 252 / 0.3);
+    }
+    to {
+      border-color: rgb(180 180 255 / 0.7);
+      background: rgb(180 180 255 / 0.2);
+    }
+  }
+  
+  .wrapper:global(.dropped) {
+    animation: dropped-highlight 1.5s 1;
+  }
+  

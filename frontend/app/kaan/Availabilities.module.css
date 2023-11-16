@@ -1,0 +1,38 @@
+.heads {
+    padding-block: 0.4rem;
+  
+    border-radius: 0.4rem;
+  
+    background-color: rgb(var(--availability-bg, 255 255 255) / 0.1);
+    border: 2px solid rgb(var(--availability-bg, 180 180 255) / 0.4);
+  
+    display: flex;
+    gap: 4px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 32px;
+  
+    --gradient-col: var(--availability-bg, 80 80 255);
+    --gradient: rgb(var(--gradient-col) / 0.05) 0,
+      rgb(var(--gradient-col) / 0.05) 14px, rgb(var(--gradient-col) / 0.2) 14px,
+      rgb(var(--gradient-col) / 0.2) 16px, rgb(var(--gradient-col) / 0) 16px,
+      transparent;
+  
+    background-image: radial-gradient(32px at 16px, var(--gradient)),
+      radial-gradient(32px at 52px, var(--gradient)),
+      radial-gradient(32px at 88px, var(--gradient)),
+      radial-gradient(32px at 124px, var(--gradient));
+  
+    background-size: 140px 32px;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+  
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3rem;
+  }
+  

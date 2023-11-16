@@ -1,0 +1,42 @@
+.wrapper {
+    overflow: hidden;
+    display: grid;
+    gap: 1rem;
+  
+    grid-template-rows: auto 1fr;
+    width: 100%;
+  }
+  
+  .scroller {
+    overflow: auto;
+  }
+  
+  .head {
+    display: flex;
+    padding: 0.8rem;
+    background: white;
+    width: 100%;
+    border-radius: 1rem;
+  }
+  
+  .wrapper table {
+    width: max-content;
+  }
+  
+  .wrapper thead {
+    position: sticky;
+    top: 0;
+    background: white;
+  }
+  
+  .wrapper tr td {
+    width: 160px;
+  }
+  
+  .wrapper tr td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    width: 80px;
+  }
+  

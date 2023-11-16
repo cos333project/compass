@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { User } from "../types";
+import { User } from '../types';
 
 type AuthState = {
   user?: User;
@@ -17,8 +17,8 @@ const useAuthStore = create<AuthState>((set) => ({
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      const response = await fetch("http://localhost:8000/authenticate/", {
-        credentials: "include",
+      const response = await fetch('http://localhost:8000/authenticate/', {
+        credentials: 'include',
       });
       const data = await response.json();
       set({
@@ -26,30 +26,30 @@ const useAuthStore = create<AuthState>((set) => ({
         user: data.authenticated ? data.user : undefined,
       });
     } catch (error) {
-      console.error("Error checking authentication:", error);
+      console.error('Error checking authentication:', error);
       set({ isAuthenticated: false, user: undefined });
     }
   },
   login: () => {
-    const nextUrl = encodeURIComponent("http://localhost:3000/dashboard/");
+    const nextUrl = encodeURIComponent('http://localhost:3000/dashboard/');
     window.location.href = `http://localhost:8000/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch("http://localhost:8000/logout/", {
-        credentials: "include",
+      const response = await fetch('http://localhost:8000/logout/', {
+        credentials: 'include',
       });
 
       console.log(response.ok);
       if (response.ok) {
         set({ isAuthenticated: false, user: undefined });
       } else {
-        console.error("Logout failed:", response.statusText);
+        console.error('Logout failed:', response.statusText);
       }
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error('Error during logout:', error);
     }
-    window.location.href = "http://localhost:3000";
+    window.location.href = 'http://localhost:3000';
   },
 }));
 

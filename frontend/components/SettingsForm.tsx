@@ -27,7 +27,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ closeSettings }) => {
   };
 
   const handleMinorsChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const values = Array.from(e.target.selectedOptions, option => option.value);
+    const values = Array.from(e.target.selectedOptions, (option) => option.value);
     setFormData((prevData) => ({ ...prevData, minors: values }));
   };
 
@@ -38,24 +38,28 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ closeSettings }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <form className="bg-white p-5 rounded-lg flex flex-col gap-2.5" onSubmit={handleSubmit}>
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
+      <form className='bg-white p-5 rounded-lg flex flex-col gap-2.5' onSubmit={handleSubmit}>
         {/* Labels and inputs for firstName, lastName, classYear... */}
-        <label htmlFor="major" className="sr-only">Major</label>
+        <label htmlFor='major' className='sr-only'>
+          Major
+        </label>
         <select
-          id="major"
-          name="major"
-          className="p-2.5 rounded-lg border border-gray-200"
+          id='major'
+          name='major'
+          className='p-2.5 rounded-lg border border-gray-200'
           value={formData.major}
           onChange={handleInputChange}
         >
           {/* Options... */}
         </select>
-        <label htmlFor="minors" className="sr-only">Minors</label>
+        <label htmlFor='minors' className='sr-only'>
+          Minors
+        </label>
         <select
-          id="minors"
-          name="minors"
-          className="p-2.5 rounded-lg border border-gray-200"
+          id='minors'
+          name='minors'
+          className='p-2.5 rounded-lg border border-gray-200'
           multiple={true}
           value={formData.minors}
           onChange={handleMinorsChange}

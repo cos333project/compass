@@ -23,22 +23,22 @@ const Canvas: React.FC = () => {
     if (over) {
       const draggedCourseId = active.id.toString();
       const targetSemesterId = over.id.toString();
-      const draggedCourse = searchResults.find(course => course.id === draggedCourseId);
-      
+      const draggedCourse = searchResults.find((course) => course.id === draggedCourseId);
+
       if (draggedCourse) {
         addCourseToSemester(targetSemesterId, draggedCourse); // Update global state
         // Also update local state to reflect changes
         // You'll need to implement logic here to update `localSemesters` based on the drag and drop action
       }
     }
-  };
+  }
 
   return (
-      <div className="grid grid-cols-4 md:grid-cols-2 gap-2 p-5">
-        {localSemesters.map((semester) => (
-          <SemesterBin key={semester.id} semester={semester} className="semester-bin-style" />
-        ))}
-      </div>
+    <div className='grid grid-cols-4 md:grid-cols-2 gap-2 p-5'>
+      {localSemesters.map((semester) => (
+        <SemesterBin key={semester.id} semester={semester} className='semester-bin-style' />
+      ))}
+    </div>
   );
 };
 
