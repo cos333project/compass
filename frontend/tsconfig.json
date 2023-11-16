@@ -38,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "components/DndContextProvider.tsx", "app/plswork/page.jsx"  ],
+, "components/DndContextProvider.tsx", "app/plswork/page.jsx", "app/kaan/Droppable.tsx", "app/kaan/page.tsx"  ],
   "exclude": [
     "node_modules"
   ]

@@ -35,13 +35,11 @@ export interface ToggleSwitchProps {
 }
 
 export interface CourseType {
-  id: string;
+  guid: number;
   department_code: string;
   catalog_number: number;
   title: string;
   originSemesterId?: string;
-  onDragStart?: (e: React.DragEvent<HTMLDivElement>, course: CourseType, originSemesterId: string) => void;
-  onDragEnd?: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
 export interface SearchStoreState {
@@ -59,7 +57,7 @@ export interface SearchStoreState {
 
 export interface CourseProps {
   id: number;
-  course?: CourseType;
+  course: CourseType;
 }
 
 export interface Semester {
@@ -113,9 +111,9 @@ export interface SettingsFormProps {
   initialClassYear: string;
 }
 
-export interface UserProfileState {
+export interface User {
   major: string;
-  classYear: string;
+  classYear: number;
 }
 
 export interface Planner {

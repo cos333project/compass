@@ -62,8 +62,8 @@ def update_profile(request):
 
 
 def authenticate(request):
-    user_is_authenticated = request.user.is_authenticated
-    if user_is_authenticated:
+    is_authenticated = request.user.is_authenticated
+    if is_authenticated:
         user_info = fetch_user_info(request.user)
         logger.info(
             f'User is authenticated. User info: {user_info}. Cookies: {request.COOKIES}'
