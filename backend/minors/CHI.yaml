@@ -19,55 +19,44 @@ contacts:
 req_list:
 - name: Language
   max_counted: 1
-  min_needed: 4
+  min_needed: 6
   explanation: A student majoring in a department other than East Asian 
     studies may earn a language minor in Chinese by completing seven 
     courses, including six language courses (two or more of which must 
     be beyond the second-year level)
-  double_counting_allowed: false
-  max_common_with_major: 4
-  pdfs_allowed: 0
-  course_list:
-  - CHI 1001
-  - CHI 1002
-  - CHI 101
-  - CHI 102
-  - CHI 103
-  - CHI 105
-  - CHI 107
-  - CHI 108
-  - CHI 303
-  - CHI 304
-  - CHI 305
-  - CHI 306
-  - CHI 403
-  - CHI 404
-  - CHI 405
-  - CHI 406
-  - CHI 451
-  deadline:
-- name: Advanced Language
-  max_counted: 1
-  min_needed: 2
-  explanation: A student majoring in a department other than East Asian 
-    studies may earn a language minor in Chinese by completing seven 
-    courses, including six language courses (two or more of which must 
-    be beyond the second-year level)
-  double_counting_allowed: false
-  max_common_with_major: 2
-  pdfs_allowed: 0
-  course_list:
-  - CHI 303
-  - CHI 304
-  - CHI 305
-  - CHI 306
-  - CHI 403
-  - CHI 404
-  - CHI 405
-  - CHI 406
-  - CHI 451
-  deadline:
-- name: EAS
+  req_list:
+  - name: Basic Language
+    max_counted: 4
+    min_needed: 1
+    explanation:
+    max_common_with_major: 1
+    pdfs_allowed: 0
+    course_list:
+    - CHI 1001
+    - CHI 1002
+    - CHI 101
+    - CHI 102
+    - CHI 103
+    - CHI 105
+    - CHI 107
+    - CHI 108
+  - name: Advanced Language
+    max_counted: 6
+    min_needed: 1
+    explanation:
+    max_common_with_major: 1
+    pdfs_allowed: 0
+    course_list:
+    - CHI 303
+    - CHI 304
+    - CHI 305
+    - CHI 306
+    - CHI 403
+    - CHI 404
+    - CHI 405
+    - CHI 406
+    - CHI 451
+- name: EAS or cognate
   max_counted: 1
   min_needed: 1
   explanation: A student majoring in a department other than East Asian 
@@ -80,8 +69,8 @@ req_list:
   - EAS *
   deadline:
 - name: Independent Work
-  max_counted:
-  min_needed:
+  max_counted: 1
+  min_needed: 1
   explanation: Students must also complete a substantial piece of 
     research (20–25 pages) based at least in part on Chinese language 
     sources dealing with aspects of East Asia. The topic must be in the 
@@ -89,11 +78,7 @@ req_list:
     piece of research or a junior paper or senior thesis. If the paper 
     or senior thesis is written for another department, at least half of 
     the work must be on East Asia.
-  double_counting_allowed:
-  max_common_with_major:
-  pdfs_allowed:
-  course_list:
-  deadline:
+  completed_by_semester: 8
 
 # Notes: An East Asian studies major specializing in Japanese or Korean
 # language may earn a language minor in Chinese, but may not also earn

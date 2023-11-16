@@ -1,7 +1,7 @@
 ---
 type: Minor
 name: Climate Science
-code: GEO
+code: CS
 degree:
 urls:
 - https://geosciences.princeton.edu/undergraduate/climate-science-minor
@@ -16,6 +16,8 @@ contacts:
 - type: Director of Undergraduate Studies
   name: Satish C. Myneni
   email: smyneni@princeton.edu
+excluded_majors:
+- GEO
 req_list:
 - name: Core
   max_counted: 1
@@ -38,8 +40,7 @@ req_list:
   - GEO 425
   - GEO 428
   - GEO 470
-  deadline:
-- name: Electives
+- name: Capstone Electives
   max_counted: 1
   min_needed: 1
   explanation:
@@ -60,4 +61,3 @@ req_list:
   - GEO 425
   - GEO 428
   - GEO 470
-  deadline:

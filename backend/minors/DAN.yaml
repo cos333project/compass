@@ -26,7 +26,7 @@ req_list:
   pdfs_allowed: 2
   course_list:
   - DAN *
-  deadline: Sophomore Spring
+  completed_by_semester: 3
 - name: Studio Course
   max_counted: 1
   min_needed: 1
@@ -91,8 +91,8 @@ req_list:
   course_list:
     - DAN *
 - name: Show Support
-  max_counted:
-  min_needed:
+  max_counted: 1
+  min_needed: 1
   explanation: All students planning to earn the minor in dance must 
     complete the show support requirement (formerly referred to as 
     “tech hours”) by supporting one dance program show in a 
@@ -100,8 +100,4 @@ req_list:
     choreographic or performance project during their senior year must 
     have completed the show support requirement by the end of their 
     junior year.
-  double_counting_allowed:
-  max_common_with_major:
-  pdfs_allowed:
-  course_list:
-  deadline:
+  completed_by_semester: 8
