@@ -129,7 +129,7 @@ const Search: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className='relative max-h-[400px] overflow-y-auto'>
+      {/* <div className='relative max-h-[400px] overflow-y-auto'>
         {loading ? (
           // Center the loading spinner in the middle of the search box
           <div className='flex justify-center items-center h-full'>
@@ -155,7 +155,7 @@ const Search: React.FC = () => {
         ) : (
           <div className='text-center py-4 text-gray-500'>No courses found.</div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
