@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SelectFieldProps } from '../types';
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange, multiple }) => {
+  const [selectedValue, setSelectedValue] = useState(value);
   const selectId = `select-${label.replace(/\s+/g, '-').toLowerCase()}`;
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (multiple) {
       const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
+      setSelectedValue(selectedOptions);
       onChange(selectedOptions);
     } else {
+      setSelectedValue(event.target.value);
       onChange(event.target.value);
     }
   };
@@ -21,7 +24,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
       <select
         id={selectId}
         className='p-2 border border-gray-300 rounded'
-        value={value}
+        value={selectedValue}
         onChange={handleChange}
         multiple={multiple}
       >
