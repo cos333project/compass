@@ -36,7 +36,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import debounce from 'lodash/debounce';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
 import { Item, Container, ContainerProps, Draggable } from '../../components';
@@ -84,55 +83,6 @@ const Search: React.FC = () => {
     setLoading: state.setLoading,
   }));
 
-  const debouncedSearch = debounce(async (searchQuery: string) => {
-    if (!searchQuery) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`
-      );
-      if (response.ok) {
-        const data: { courses: Course[] } = await response.json();
-        setSearchResults(data.courses);
-        if (data.courses.length > 0) {
-          addRecentSearch(searchQuery);
-          // Add your searchCache.set logic here
-        }
-      } else {
-        setError(`Server returned ${response.status}: ${response.statusText}`);
-      }
-    } catch (error) {
-      setError('There was an error fetching courses.');
-      console.error('There was an error fetching courses:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, 300);
-
-  // Update the query state and trigger the debounced search function
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setQuery(value);
-    debouncedSearch(query);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && query.trim().length > 0) {
-      debouncedSearch(query);
-    }
-  };
-
-  const handleRecentSearchClick = (search: string) => {
-    // Display dummy popup for now
-    alert(`Displaying course information for: ${search}`);
-    // In the future, you might open a modal or a dedicated component to show the course profile
-  };
-
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, course: Course) => {
-    e.dataTransfer.setData('application/reactflow', JSON.stringify(course));
-    e.dataTransfer.effectAllowed = 'move';
-  };
 
   return (
     <div>
@@ -150,8 +100,6 @@ const Search: React.FC = () => {
           className='block w-full py-1.5 pl-10 pr-3 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm'
           placeholder='Search courses'
           autoComplete='off'
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
         />
       </div>
       {/* Recent Searches */}
@@ -166,7 +114,6 @@ const Search: React.FC = () => {
                 animation: `cascadeFadeIn 500ms ease-out forwards ${index * 150}ms`,
               }}
               className='bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-0.5 px-2 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300'
-              onClick={() => handleRecentSearchClick(search)}
             >
               {search}
             </button>
@@ -292,7 +239,7 @@ interface Props {
 
 export const TRASH_ID = 'void';
 export const PLACEHOLDER_ID = 'placeholder';
-export const SEARCH_RESULTS_ID = 'search-results'; // Corrected the constant name
+export const SEARCH_RESULTS_ID = 'Search Results'; // Corrected the constant name
 
 const empty: UniqueIdentifier[] = [];
 
@@ -322,7 +269,7 @@ export function Canvas({
     const startYear = classYear - 1;
 
   for (let year = startYear; year < classYear; ++year) {
-    semesters[`Fall ${year}`] = createRange(itemCount, (index) => `balls${index}`);
+    semesters[`Fall ${year}`] = [];
     semesters[`Spring ${year + 1}`] = [];
   }
 
@@ -340,7 +287,7 @@ export function Canvas({
   useEffect(() => {
     setItems((prevItems) => ({
       ...prevItems,
-      [SEARCH_RESULTS_ID]: searchResults.map((course, index) => `course-${index}`),
+      [SEARCH_RESULTS_ID]: searchResults.map((course, index) => `${course.department_code} ${course.catalog_number}`),
     }));
   }, [searchResults]);
 
@@ -536,20 +483,17 @@ export function Canvas({
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
             const overIndex = containers.indexOf(over.id);
-
             return arrayMove(containers, activeIndex, overIndex);
           });
         }
-
+        
         const activeContainer = findContainer(active.id);
-
         if (!activeContainer) {
           setActiveId(null);
           return;
         }
 
         const overId = over?.id;
-
         if (overId == null) {
           setActiveId(null);
           return;
@@ -557,7 +501,6 @@ export function Canvas({
 
         if (overId === PLACEHOLDER_ID) {
           const newContainerId = getNextContainerId();
-
           unstable_batchedUpdates(() => {
             setContainers((containers) => [...containers, newContainerId]);
             setItems((items) => ({
@@ -571,11 +514,9 @@ export function Canvas({
         }
 
         const overContainer = findContainer(overId);
-
         if (overContainer) {
           const activeIndex = items[activeContainer].indexOf(active.id);
           const overIndex = items[overContainer].indexOf(overId);
-
           if (activeIndex !== overIndex) {
             setItems((items) => ({
               ...items,
@@ -585,6 +526,17 @@ export function Canvas({
         }
 
         setActiveId(null);
+
+        const courseId = active.id; 
+        const semesterId = activeContainer;
+        fetch('http://localhost:8000/update_user_courses/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId, semesterId })
+        })
+        .then(response => response.json())
+        .then(data => console.log('Update success', data))
+        .catch(error => console.error('Update Error:', error));
       }}
       cancelDrop={cancelDrop}
       onDragCancel={onDragCancel}
@@ -652,7 +604,7 @@ export function Canvas({
               <DroppableContainer
                 key={containerId}
                 id={containerId}
-                label={minimal ? undefined : `Ballz ${containerId}`}
+                label={minimal ? undefined : `${containerId}`}
                 columns={columns}
                 items={items[containerId]}
                 scrollable={scrollable}
@@ -720,7 +672,7 @@ export function Canvas({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`Column ${containerId}`}
+        label={`${containerId}`}
         columns={columns}
         style={{
           height: '100%',

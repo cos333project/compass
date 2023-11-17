@@ -6,8 +6,10 @@ from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
 
-from .models import Course, CustomUser, models
+from .models import Course, CustomUser, models, UserCourses
 from .serializers import CourseSerializer
+import ujson as json
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,6 @@ def profile(request):
     return JsonResponse(user_info)
 
 
-@login_required
 def update_profile(request):
     # TODO: Validate this stuff
     # Assuming the request data is sent as JSON
@@ -91,14 +92,14 @@ class SearchCourses(View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get('course', None)
         if query:
-            if query == '*' or query == '.':
-                courses = Course.objects.select_related('department').all()
-                serialized_courses = CourseSerializer(courses, many=True)
-                return JsonResponse({'courses': serialized_courses.data})
+            # if query == '*' or query == '.':
+            #     courses = Course.objects.select_related('department').all()
+            #     serialized_courses = CourseSerializer(courses, many=True)
+            #     return JsonResponse({'courses': serialized_courses.data})
 
             # process queries
             trimmed_query = re.sub(r'\s', '', query)
-            title = 'nevergoingtomatch'
+            # title = ''
             if DEPT_NUM_SUFFIX_REGEX.match(trimmed_query):
                 result = re.split(r'(\d+[a-zA-Z])', string=trimmed_query, maxsplit=1)
                 dept = result[0]
@@ -113,15 +114,15 @@ class SearchCourses(View):
                 num = result[0]
             elif DEPT_ONLY_REGEX.match(trimmed_query):
                 dept = trimmed_query
-                num = 'nevergoingtomatch'
-                title = query.strip()
+                num = ''
+                # title = query.strip()
             elif NUM_ONLY_REGEX.match(trimmed_query):
-                dept = 'nevergoingtomatch'
+                dept = ''
                 num = trimmed_query
             else:
-                dept = 'nevergoingtomatch'
-                num = 'nevergoingtomatch'
-                title = query.strip()
+                dept = ''
+                num = ''
+                # title = query.strip()
 
             try:
                 exact_match_course = Course.objects.select_related('department').filter(
@@ -131,16 +132,15 @@ class SearchCourses(View):
                     # If an exact match is found, return only that course
                     serialized_course = CourseSerializer(exact_match_course, many=True)
                     return JsonResponse({'courses': serialized_course.data})
-                courses = Course.objects.filter(
+                courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
-                    | Q(catalog_number__icontains=num)
-                    | Q(title__icontains=title)
-                    | Q(distribution_area_short__icontains='')
-                    | Q(distribution_area_long__icontains='')
+                    & Q(catalog_number__icontains=num)
                 )
+                # | Q(title__icontains=title)
+                # | Q(distribution_area_short__icontains='')
+                # | Q(distribution_area_long__icontains='')
                 if not courses.exists():
                     return JsonResponse({'courses': []})
-
                 custom_sorting_field = Case(
                     When(
                         Q(department__code__icontains=dept)
@@ -165,3 +165,30 @@ class SearchCourses(View):
                 return JsonResponse({'error': 'Internal Server Error'}, status=500)
         else:
             return JsonResponse({'courses': []})
+
+
+# ---------------------------- UPDATE USER COURSES -----------------------------------#
+
+
+@csrf_exempt
+def update_user_courses(request):
+    try:
+        data = json.loads(request.body)
+        course_id = data.get('courseId')  # might have to adjust this, print
+        print(data)
+        semester_id = data.get('semesterId')
+        user = request.user
+
+        UserCourses.objects.update_or_create(
+            user=user,
+            course_id=course_id,
+            defaults={
+                'semester_id': semester_id,
+            },
+        )
+        return JsonResponse(
+            {'status': 'success', 'message': 'Course updated successfully.'}
+        )
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})

@@ -29,6 +29,7 @@ urlpatterns = [
     # Profile
     path('profile/', views.profile, name='profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
-    # Search
+    # Canvas
     path('search/', views.SearchCourses.as_view(), name='search'),
+    path('update_user_courses/', views.update_user_courses, name='update_user_courses'),
 ]

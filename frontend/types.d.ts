@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware';
 export type Settings = {
   firstName: string;
   lastName: string;
+  classYear: number;
   major?: string;
   minors: string[];
   timeFormat24h: boolean;

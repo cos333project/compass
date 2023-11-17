@@ -64,17 +64,31 @@ const DropdownMenu: React.FC = () => {
 
   const handleSaveUserSettings = async (updatedUser: Settings) => {
     try {
+      console.log('Sending request to update profile with data:', JSON.stringify(updatedUser));
+      const csrfTokenCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+    if (!csrfTokenCookie) {
+      console.error('CSRF token not found');
+      return; // Exit the function or handle this case as appropriate
+    }
+    const csrfToken = csrfTokenCookie.split('=')[1];
       const response = await fetch('http://localhost:8000/update_profile/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        credentials: 'include',
         body: JSON.stringify(updatedUser),
       });
-
+      
+      console.log('Received response:', response);
       if (!response.ok) {
         // Have a little alert component popup to tell them the error
+        console.error('Response not OK:', response.status, response.statusText);
       }
 
       const updatedData = await response.json();
+      console.log('Updated data:', updatedData);
     } catch (error) {
       console.error('Error updating user:', error);
     }
