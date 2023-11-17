@@ -672,7 +672,7 @@ export function Canvas({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`${containerId}`}
+        label={`Overlay ${containerId}`}
         columns={columns}
         style={{
           height: '100%',
