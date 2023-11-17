@@ -8,7 +8,6 @@ from django.views import View
 from .models import Course, CustomUser, models, UserCourses
 from django.views.decorators.csrf import csrf_exempt
 from .models import Course, CustomUser, models
->>>>>>> origin/fixedsettings
 from .serializers import CourseSerializer
 import ujson as json
 from django.views.decorators.csrf import csrf_exempt

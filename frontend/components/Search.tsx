@@ -91,7 +91,7 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div style={{ maxHeight: '150px', overflow: 'hidden', backgroundColor: 'beige'  }}>
+    <div>
       <label htmlFor='search' className='sr-only'>
         Search courses
       </label>
