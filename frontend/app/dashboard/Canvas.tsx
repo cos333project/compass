@@ -322,7 +322,7 @@ export function Canvas({
     const startYear = classYear - 1;
 
   for (let year = startYear; year < classYear; ++year) {
-    semesters[`Fall ${year}`] = createRange(itemCount, (index) => `balls${index}`);
+    semesters[`Fall ${year}`] = [];
     semesters[`Spring ${year + 1}`] = [];
   }
 
@@ -340,7 +340,7 @@ export function Canvas({
   useEffect(() => {
     setItems((prevItems) => ({
       ...prevItems,
-      [SEARCH_RESULTS_ID]: searchResults.map((course, index) => `course-${index}`),
+      [SEARCH_RESULTS_ID]: searchResults.map((course, index) => `${course.department_code} ${course.catalog_number}`),
     }));
   }, [searchResults]);
 
@@ -652,7 +652,7 @@ export function Canvas({
               <DroppableContainer
                 key={containerId}
                 id={containerId}
-                label={minimal ? undefined : `Ballz ${containerId}`}
+                label={minimal ? undefined : `${containerId}`}
                 columns={columns}
                 items={items[containerId]}
                 scrollable={scrollable}
@@ -720,7 +720,7 @@ export function Canvas({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`Column ${containerId}`}
+        label={`Overlay ${containerId}`}
         columns={columns}
         style={{
           height: '100%',
