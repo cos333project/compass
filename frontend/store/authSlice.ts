@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 
-import { User } from '../types';
+import { Settings} from '../types';
 
 type AuthState = {
-  user?: User;
+  user?: Settings;
   isAuthenticated: boolean | null;
+
   checkAuthentication: () => Promise<void>;
   login: () => void;
   logout: () => Promise<void>;
@@ -14,6 +15,7 @@ type AuthState = {
 const useAuthStore = create<AuthState>((set) => ({
   user: undefined,
   isAuthenticated: null,
+  
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {

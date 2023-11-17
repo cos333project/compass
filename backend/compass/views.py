@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
-
+from django.views.decorators.csrf import csrf_exempt
 from .models import Course, CustomUser, models
 from .serializers import CourseSerializer
 
@@ -22,6 +22,9 @@ def fetch_user_info(user):
         'first_name': getattr(user, 'first_name', None),
         'last_name': getattr(user, 'last_name', None),
         'class_year': getattr(user, 'class_year', None),
+        'department' : getattr(user, 'department', None),
+        'puresidentdepartment' : getattr(user, 'puresidentdepartment', None),
+        'campusid' : getattr(user, 'campusid', None)
     }
 
 
@@ -31,7 +34,7 @@ def profile(request):
     return JsonResponse(user_info)
 
 
-@login_required
+@login_required 
 def update_profile(request):
     # TODO: Validate this stuff
     # Assuming the request data is sent as JSON

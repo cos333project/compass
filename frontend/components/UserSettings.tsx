@@ -1,45 +1,50 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useState } from 'react';
 import SelectField from './SettingsSelectField';
-import { SettingsProps } from '../types';
 import SettingsToggleSwitch from './SettingsToggleSwitch';
+import useUserSlice from '@/store/userSlice'; 
+import {SettingsProps} from '@/store/userSlice'; 
 
 const majorsList = ['Computer Science', 'Biology', 'Economics'];
-
-const minorsList = ['Mathematics', 'History', 'Art'];
+const minorsList = ['Mathematics', 'History', 'Art', 'English', 'ballz'];
+const yearList = ['2024', '2025', '2026', '2027'];
 
 const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) => {
-  const { firstName, lastName, major, minors, timeFormat24h, themeDarkMode } = settings;
-  const [firstNameState, setFirstName] = useState(firstName);
-  const [lastNameState, setLastName] = useState(lastName);
-  const [majorState, setMajor] = useState(major);
-  const [minorsState, setMinors] = useState(minors);
-  const [timeFormat24hState, setTimeFormat] = useState(timeFormat24h);
-  const [themeDarkModeState, setThemeDarkMode] = useState(themeDarkMode);
+  const { update } = useUserSlice();
+  const [localFirstName, setLocalFirstName] = useState(settings.firstName || '');
+  const [localLastName, setLocalLastName] = useState(settings.lastName || '');
+  const [localMajor, setLocalMajor] = useState(settings.major || '');
+  const [localMinors, setLocalMinors] = useState(settings.minors || '');
+  const [localClassYear, setLocalClassYear] = useState(settings.classYear || '');
+  const [localTimeFormat24h, setLocalTimeFormat24h] = useState(settings.timeFormat24h || false);
+  const [localThemeDarkMode, setLocalThemeDarkMode] = useState(settings.themeDarkMode || false);
 
-  const handleMinorsChange = (selectedMinors: string | string[] | undefined) => {
-    if (Array.isArray(selectedMinors)) {
-      setMinors(selectedMinors);
-    }
-  };
-
-  const handleMajorChange = (value: string | string[] | undefined) => {
-    if (typeof value === 'string') {
-      setMajor(value);
-    }
-  };
+  useEffect(() => {
+    setLocalFirstName(settings.firstName || '');
+    setLocalLastName(settings.lastName || '');
+    setLocalMajor(useUserSlice.getState().major);
+    setLocalMinors(useUserSlice.getState().minors);
+    setLocalClassYear(settings.classYear || '');
+    setLocalTimeFormat24h(settings.timeFormat24h || false);
+    setLocalThemeDarkMode(settings.themeDarkMode || false);
+  }, [settings]);
 
   const handleSave = () => {
-    onSave({
-      firstName: firstNameState,
-      lastName: lastNameState,
-      major: majorState,
-      minors: minorsState,
-      timeFormat24h: timeFormat24hState,
-      themeDarkMode: themeDarkModeState,
+    update({
+      firstName: localFirstName,
+      lastName: localLastName,
+      major: localMajor,
+      minors: localMinors,
+      classYear: localClassYear,
+      timeFormat24h: localTimeFormat24h,
+      themeDarkMode: localThemeDarkMode,
     });
+
+    onSave(useUserSlice.getState());
+
+    console.log(localMajor)
+    console.log(useUserSlice.getState().major)
     onClose();
-  };
+  }; 
 
   return (
     <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50'>
@@ -47,43 +52,44 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
         <div className='grid grid-cols-2 gap-4'>
           <input
             type='text'
-            value={firstNameState}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={localFirstName}
+            onChange={(e) => setLocalFirstName(e.target.value)}
             placeholder='First Name'
             className='input-field-class'
           />
           <input
             type='text'
-            value={lastNameState}
-            onChange={(e) => setLastName(e.target.value)}
+            value={localLastName}
+            onChange={(e) => setLocalLastName(e.target.value)}
             placeholder='Last Name'
             className='input-field-class'
           />
-          <SelectField
-            label='Major'
-            options={majorsList}
-            value={majorState}
-            onChange={handleMajorChange}
-          />
-          <SelectField
-            label='Minors'
-            options={minorsList}
-            value={minorsState}
-            onChange={handleMinorsChange}
-            multiple
-          />
+            <input
+              type='text'
+              value={localMajor}
+              onChange={(e) => setLocalMajor(e.target.value)}
+              placeholder='Major'
+              className='input-field-class'
+            />
+            <input
+                type='text'
+                value={localMinors}
+                onChange={(e) => setLocalMinors(e.target.value)}
+                placeholder='Minors'
+                className='input-field-class'
+              />
           <SettingsToggleSwitch
             label='Dark Mode'
-            checked={themeDarkModeState}
-            onChange={setThemeDarkMode}
+            checked={localThemeDarkMode}
+            onChange={() => setLocalThemeDarkMode(!localThemeDarkMode)}
           />
           <SettingsToggleSwitch
             label='24-Hour Time Format'
-            checked={timeFormat24hState}
-            onChange={setTimeFormat}
+            checked={localTimeFormat24h}
+            onChange={() => setLocalTimeFormat24h(!localTimeFormat24h)}
           />
-        </div>
-        <div className='mt-5 text-right'>
+          </div>
+          <div className='mt-5 text-right'>
           <button className='bg-blue-500 text-white rounded px-4 py-2' onClick={handleSave}>
             Save
           </button>
@@ -91,8 +97,8 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
             Close
           </button>
         </div>
+        </div>
       </div>
-    </div>
   );
 };
 

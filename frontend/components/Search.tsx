@@ -91,7 +91,7 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div>
+    <div style={{ maxHeight: '150px', overflow: 'hidden', backgroundColor: 'beige'  }}>
       <label htmlFor='search' className='sr-only'>
         Search courses
       </label>
@@ -135,15 +135,8 @@ const Search: React.FC = () => {
           <div className='flex justify-center items-center h-full'>
             <span className='loading loading-ring loading-lg text-gray-700'></span>
           </div>
-        ) : searchResults.length > 0 ? (
-          // Render the list of search results
-          <ul className='divide-y divide-dashed hover:divide-solid'>
-            {searchResults.map((course, index) => (
-              <li key={index}>Test</li>
-            ))}
-          </ul>
         ) : (
-          <div className='text-center py-4 text-gray-500'>No courses found.</div>
+          <div className='text-center py-4 text-gray-500'></div>
         )}
       </div>
     </div>

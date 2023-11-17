@@ -5,6 +5,7 @@ import UserSettings from './UserSettings';
 import { Logout } from './Logout';
 import { Settings, MenuItemProps } from '../types';
 import SettingsModal from './Modal';
+import useAuthStore from '@/store/authSlice';
 
 const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
@@ -22,51 +23,63 @@ const DropdownMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [blur, setBlur] = useState(false);
   const [username, setUsername] = useState('Profile');
-  const [userSettings, setUserSettings] = useState<Settings>({
+  const user = useAuthStore((state) => state.user);
+  const [userSettings, setUserSettings] = useState({
     firstName: '',
     lastName: '',
     major: '',
     minors: [],
-    timeFormat24h: false, // TODO: will do later, change CustomUser so they have this field
-    themeDarkMode: false, // TODO: will do later, change CustomUser so they have this field
+    classYear: '',
+    timeFormat24h: false,
+    themeDarkMode: false,
   });
+  
+  const firstName = user?.firstName;
+  console.log(firstName)
+  
   const closeMenu = () => setIsMenuOpen(false);
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/profile/', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        console.error('Server response:', response.status, response.statusText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const fullName =
-        data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : 'Profile';
-      localStorage.setItem('username', fullName);
-      setUsername(fullName);
-      setUserSettings({
-        firstName: data.first_name,
-        lastName: data.last_name,
-        major: data.major,
-        minors: data.minors,
-        timeFormat24h: data.timeFormat24h,
-        themeDarkMode: data.themeDarkMode,
-      });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/profile/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          console.error('Server response:', response.status, response.statusText);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const fullName =
+          data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : 'Profile';
+        localStorage.setItem('username', fullName);
+        setUsername(fullName);
+        setUserSettings({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          major: data?.major,
+          minors: data?.minors,
+          classYear: data?.class_year,
+          timeFormat24h: data.timeFormat24h,
+          themeDarkMode: data.themeDarkMode,
+        });
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    fetchProfile();
+  }, []);
+  
   const handleSaveUserSettings = async (updatedUser: Settings) => {
     try {
       const response = await fetch('http://localhost:8000/update_profile/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(updatedUser),
       });
 
@@ -79,15 +92,6 @@ const DropdownMenu: React.FC = () => {
       console.error('Error updating user:', error);
     }
   };
-
-  useEffect(() => {
-    const cachedUsername = localStorage.getItem('username');
-    if (cachedUsername) {
-      setUsername(cachedUsername);
-    } else {
-      fetchProfile();
-    }
-  }, []);
 
   return (
     <div>

@@ -82,6 +82,10 @@ CAS_RENAME_ATTRIBUTES = {
     'givenname': 'first_name',  # Maps to 'first_name'
     'sn': 'last_name',  # Maps to 'last_name'
     'puclassyear': 'class_year',  # Maps to 'class_year'
+    'department' : 'department',   # I question my life's decisions
+    'puresidentdepartment' : 'puresidentdepartment',   # I question my life's decisions
+    'puresidentdepartment' : 'puresidentdepartment' ,  # I question my life's decisions
+    'campusid' : 'campusid'   # I question my life's decisions
 }
 
 HOMEPAGE = 'http://localhost:3000'  # CHANGE FOR PRODUCTION
@@ -89,10 +93,14 @@ DASHBOARD = 'http://localhost:3000/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
-CORS_ALLOW_ALL_ORIGINS = False
+#CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'https://fed.princeton.edu',  # Change for production (hide it)
-    'http://localhost:3000',  # Change for production (hide it)
+       'https://fed.princeton.edu',  # Change for production (hide it)
+       'http://localhost:3000',  # Change for production (hide it)
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000'      # Change for production (hide it)
+    'http://localhost:8000'      # Change for production (hide it)
 ]
 CORS_ALLOW_CREDENTIALS = True
 CAS_REDIRECT_WHITELIST = ['http://localhost:8000/', 'http://127.0.0.1:8000/']
