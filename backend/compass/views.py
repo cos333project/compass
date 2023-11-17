@@ -171,6 +171,27 @@ class SearchCourses(View):
 
 # ---------------------------- UPDATE USER COURSES -----------------------------------#
 
+@csrf_exempt
+def update_user_class_year(request):
+    try:
+        class_year = int(request.body)
+        print(class_year)
+        user = request.user
+        print(user)
+
+        # get user instance from db, update class_year field
+
+        return JsonResponse(
+            {'status': 'success', 'message': 'Class year updated successfully.'}
+        )
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+# def parse_semester(semester_id):
+#     season = semester_id.split(' ')[0]
+#     year = int(semester_id.split(' ')[1])
+
 
 @csrf_exempt
 def update_user_courses(request):

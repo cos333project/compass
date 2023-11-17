@@ -23,7 +23,7 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
     setLocalLastName(settings.lastName || '');
     setLocalMajor(useUserSlice.getState().major);
     setLocalMinors(useUserSlice.getState().minors);
-    setLocalClassYear(settings.classYear || '');
+    setLocalClassYear(useUserSlice.getState().classYear || '');
     setLocalTimeFormat24h(settings.timeFormat24h || false);
     setLocalThemeDarkMode(settings.themeDarkMode || false);
   }, [settings]);
@@ -39,7 +39,20 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
       themeDarkMode: localThemeDarkMode,
     });
 
+
     onSave(useUserSlice.getState());
+
+
+    fetch('http://localhost:8000/update_user_class_year/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Need CSRF token here from Next.js
+      body: useUserSlice.getState().classYear,
+    })
+        .then((response) => response.json())
+        .then((data) => console.log('Update success', data))
+        .catch((error) => console.error('Update Error:', error));
+
 
     console.log(localMajor)
     console.log(useUserSlice.getState().major)
@@ -78,16 +91,23 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
                 placeholder='Minors'
                 className='input-field-class'
               />
+          <input
+                type='text'
+                value={localClassYear}
+                onChange={(e) => setLocalClassYear(e.target.value)}
+                placeholder='Class Year'
+                className='input-field-class'
+              />
           <SettingsToggleSwitch
             label='Dark Mode'
             checked={localThemeDarkMode}
             onChange={() => setLocalThemeDarkMode(!localThemeDarkMode)}
           />
-          <SettingsToggleSwitch
-            label='24-Hour Time Format'
-            checked={localTimeFormat24h}
-            onChange={() => setLocalTimeFormat24h(!localTimeFormat24h)}
-          />
+          {/*<SettingsToggleSwitch*/}
+          {/*  label='24-Hour Time Format'*/}
+          {/*  checked={localTimeFormat24h}*/}
+          {/*  onChange={() => setLocalTimeFormat24h(!localTimeFormat24h)}*/}
+          {/*/>*/}
           </div>
           <div className='mt-5 text-right'>
           <button className='bg-blue-500 text-white rounded px-4 py-2' onClick={handleSave}>

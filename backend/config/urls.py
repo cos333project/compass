@@ -32,4 +32,5 @@ urlpatterns = [
     # Canvas
     path('search/', views.SearchCourses.as_view(), name='search'),
     path('update_user_courses/', views.update_user_courses, name='update_user_courses'),
+    path('update_user_class_year/', views.update_user_class_year, name='update_user_class_year'),
 ]
