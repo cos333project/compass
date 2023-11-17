@@ -36,11 +36,12 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
-
 import { Item, Container, ContainerProps, Draggable } from '../../components';
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 import { createRange, generateSemesters } from '../utilities';
 import useSearchStore from '@/store/searchSlice';
+import Search from '../../components/Search'
+import useUserSlice from '@/store/userSlice'; 
 
 type User = {
   major: string;
@@ -49,6 +50,19 @@ type User = {
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+
+const gridContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // Two columns
+    gridTemplateRows: 'repeat(4, 1fr)', // Four rows
+    gap: '10px', // Space between grid items
+  };
+
+ const gridItemStyle = {
+    border: '1px solid #ccc',
+    padding: '10px',
+    textAlign: 'center',
+  };
 
 function DroppableContainer({
   children,
@@ -155,7 +169,7 @@ export function Canvas({
   adjustScale = false,
   itemCount = 3,
   cancelDrop,
-  columns,
+  columns = 2,
   handle = false,
   initialItems,
   containerStyle,
@@ -170,20 +184,20 @@ export function Canvas({
   vertical = false,
   scrollable,
 }: Props) {
-  const classYear = 2025 ?? user.classYear;
-  const generateSemesters = (classYear: number, itemCount: number): Items => {
+  
+  const classYear = parseInt(useUserSlice.getState().classYear, 10)
+  const generateSemesters = (classYear: number): Items => {
     let semesters: Items = {};
-    const startYear = classYear - 1;
 
-    for (let year = startYear; year < classYear; ++year) {
-      semesters[`Fall ${year}`] = [];
-      semesters[`Spring ${year + 1}`] = [];
+    for (let year = classYear - 4; year < classYear; ++year) {
+      semesters[`Fall ${year - 1}`] = [];
+      semesters[`Spring ${year}`] = [];
     }
 
     return semesters;
   };
 
-  const initial = initialItems || generateSemesters(classYear, itemCount); // Adjusted to use prop or default
+  const initial = initialItems || generateSemesters(classYear); // Adjusted to use prop or default
   const { searchResults } = useSearchStore(); // Assuming useSearchStore is imported
 
   const [items, setItems] = useState<Items>(() => ({
@@ -458,50 +472,81 @@ export function Canvas({
       onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
-      <div
-        style={{
-          display: 'inline-grid',
-          boxSizing: 'border-box',
-          padding: 20,
-          gridAutoFlow: vertical ? 'row' : 'column',
-        }}
-      >
-        <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          {containers.map((containerId) => {
-            // Rendering other containers
-            return (
-              <DroppableContainer
-                key={containerId}
-                id={containerId}
-                label={minimal ? undefined : `${containerId}`}
-                columns={columns}
-                items={items[containerId]}
-                scrollable={scrollable}
-                style={containerStyle}
-                unstyled={minimal}
-                onRemove={() => handleRemove(containerId)}
-              >
-                <SortableContext items={items[containerId]} strategy={strategy}>
-                  {items[containerId].map((value, index) => (
-                    <SortableItem
-                      disabled={isSortingContainer}
-                      key={index}
-                      id={value}
-                      index={index}
-                      handle={handle}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem}
-                      containerId={containerId}
-                      getIndex={getIndex}
-                    />
-                  ))}
-                </SortableContext>
-              </DroppableContainer>
-            );
-          })}
-        </SortableContext>
+      
+      <SortableContext items={[...containers, PLACEHOLDER_ID]}>
+  <div style={{ display: 'flex', flexDirection: 'row' }}>
+    {/* Left Section for Search Results */}
+    {containers.includes('Search Results') && (
+      <div style={{ width: '100%', marginRight: '20px' }}>
+        <Search />
+        <DroppableContainer
+          key="Search Results"
+          id="Search Results"
+          label={minimal ? undefined : 'Search Results'}
+          columns={columns}
+          items={items['Search Results']}
+          scrollable={scrollable}
+          style={containerStyle}
+          unstyled={minimal}
+        >
+          <SortableContext items={items['Search Results']} strategy={strategy}>
+            {items['Search Results'].map((value, index) => (
+              <SortableItem
+                disabled={isSortingContainer}
+                key={index}
+                id={value}
+                index={index}
+                handle={handle}
+                style={getItemStyles}
+                wrapperStyle={wrapperStyle}
+                renderItem={renderItem}
+                containerId="Search Results"
+                getIndex={getIndex}
+              />
+            ))}
+          </SortableContext>
+        </DroppableContainer>
       </div>
+    )}
+
+    {/* Right Section for other containers in a 2x4 grid */}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 1fr', gap: '10px' }}>
+      {containers.filter(id => id !== 'Search Results').map((containerId) => (
+        <DroppableContainer
+          key={containerId}
+          id={containerId}
+          label={minimal ? undefined : `${containerId}`}
+          columns={columns}
+          items={items[containerId]}
+          scrollable={scrollable}
+          style={containerStyle}
+          unstyled={minimal}
+          onRemove={() => handleRemove(containerId)}
+        >
+          <SortableContext items={items[containerId]} strategy={strategy}>
+            {items[containerId].map((value, index) => (
+              <SortableItem
+                disabled={isSortingContainer}
+                key={index}
+                id={value}
+                index={index}
+                handle={handle}
+                style={getItemStyles}
+                wrapperStyle={wrapperStyle}
+                renderItem={renderItem}
+                containerId={containerId}
+                getIndex={getIndex}
+              />
+            ))}
+          </SortableContext>
+        </DroppableContainer>
+      ))}
+    </div>
+  </div>
+</SortableContext>
+
+
+
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId
@@ -514,6 +559,7 @@ export function Canvas({
       )}
       {trashable && activeId && !containers.includes(activeId) ? <Trash id={TRASH_ID} /> : null}
     </DndContext>
+    
   );
 
   function renderSortableItemDragOverlay(id: UniqueIdentifier) {
