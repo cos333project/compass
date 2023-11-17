@@ -319,26 +319,14 @@ export function Canvas({
   const classYear = 2025 ?? user.classYear;
   const generateSemesters = (classYear: number, itemCount: number): Items => {
     let semesters: Items = {};
-    const startYear = classYear - 4;
+    const startYear = classYear - 1;
 
   for (let year = startYear; year < classYear; ++year) {
-    semesters[`Fall ${year}`] = [];
+    semesters[`Fall ${year}`] = createRange(itemCount, (index) => `balls${index}`);
     semesters[`Spring ${year + 1}`] = [];
   }
 
   return semesters;
-    // for (let i = 5; i >= 0; --i) {
-    //   const year = classYear - i + 1;
-    //   if (i === 5) {
-    //     semesters[`Fall ${year}`] = createRange(itemCount, (index) => `balls${index}`);
-    //   } else if (i === 0) {
-    //     semesters[`Spring ${classYear}`] = createRange(itemCount, (index) => `nuts${index}`);
-    //   } else {
-    //     initial[`Spring ${year}`] = createRange(itemCount, (index) => `bolts${index}`);
-    //     initial[`Fall ${year}`] = createRange(itemCount, (index) => `amongus${index + 10}`);
-    //   }
-    // }
-    // return initial;
   };
 
   const initial = initialItems || generateSemesters(classYear, itemCount); // Adjusted to use prop or default
@@ -567,15 +555,6 @@ export function Canvas({
           return;
         }
 
-        if (overId === TRASH_ID) {
-          setItems((items) => ({
-            ...items,
-            [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-          }));
-          setActiveId(null);
-          return;
-        }
-
         if (overId === PLACEHOLDER_ID) {
           const newContainerId = getNextContainerId();
 
@@ -619,57 +598,54 @@ export function Canvas({
           gridAutoFlow: vertical ? 'row' : 'column',
         }}
       >
-        <SortableContext
-          items={[...containers, PLACEHOLDER_ID]}
-          strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
-        >
+        <SortableContext items={[...containers, PLACEHOLDER_ID]}>
           {containers.map((containerId) => {
             // Conditional rendering for the SEARCH_RESULTS_ID container
-            if (containerId === SEARCH_RESULTS_ID && items[SEARCH_RESULTS_ID].length > 0) {
-              return (
-                <DroppableContainer
-                  key={SEARCH_RESULTS_ID}
-                  id={SEARCH_RESULTS_ID}
-                  label={'Search Results'}
-                  items={items[SEARCH_RESULTS_ID]}
-                  scrollable={scrollable}
-                  style={containerStyle}
-                  unstyled={minimal}
-                  // ... other props if needed ...
-                >
-                  <SortableContext
-                    items={searchResults.map((_, index) => `course-${index}`)}
-                    strategy={strategy}
-                  >
-                    {searchResults.map((course, index) => {
-                      const courseId = `course-${index}`;
-                      return (
-                        <SortableItem
-                          key={courseId}
-                          id={courseId}
-                          index={index}
-                          handle={handle}
-                          style={getItemStyles}
-                          wrapperStyle={wrapperStyle}
-                          renderItem={() => (
-                            <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>
-                              <div className='flex mb-3 rounded'>
-                                <h4 className='text-xs font-semibold text-black'>
-                                  {course.department_code} {course.catalog_number}
-                                </h4>
-                              </div>
-                              <div className='text-sm text-gray-900'>{course.title}</div>
-                            </div>
-                          )}
-                          containerId={SEARCH_RESULTS_ID}
-                          getIndex={getIndex}
-                        />
-                      );
-                    })}
-                  </SortableContext>
-                </DroppableContainer>
-              );
-            }
+            // if (containerId === SEARCH_RESULTS_ID && items[SEARCH_RESULTS_ID].length > 0) {
+            //   return (
+            //     <DroppableContainer
+            //       key={SEARCH_RESULTS_ID}
+            //       id={SEARCH_RESULTS_ID}
+            //       label={'Search Results'}
+            //       items={items[SEARCH_RESULTS_ID]}
+            //       scrollable={scrollable}
+            //       style={containerStyle}
+            //       unstyled={minimal}
+            //       // ... other props if needed ...
+            //     >
+            //       <SortableContext
+            //         items={searchResults.map((_, index) => `course-${index}`)}
+            //         strategy={strategy}
+            //       >
+            //         {searchResults.map((course, index) => {
+            //           const courseId = `course-${index}`;
+            //           return (
+            //             <SortableItem
+            //               key={courseId}
+            //               id={courseId}
+            //               index={index}
+            //               handle={handle}
+            //               style={getItemStyles}
+            //               wrapperStyle={wrapperStyle}
+            //               renderItem={() => (
+            //                 <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>
+            //                   <div className='flex mb-3 rounded'>
+            //                     <h4 className='text-xs font-semibold text-black'>
+            //                       {course.department_code} {course.catalog_number}
+            //                     </h4>
+            //                   </div>
+            //                   <div className='text-sm text-gray-900'>{course.title}</div>
+            //                 </div>
+            //               )}
+            //               containerId={SEARCH_RESULTS_ID}
+            //               getIndex={getIndex}
+            //             />
+            //           );
+            //         })}
+            //       </SortableContext>
+            //     </DroppableContainer>
+            //   );
+            // }
 
             // Rendering other containers
             return (
@@ -703,17 +679,6 @@ export function Canvas({
               </DroppableContainer>
             );
           })}
-          {!minimal && (
-            <DroppableContainer
-              id={PLACEHOLDER_ID}
-              disabled={isSortingContainer}
-              items={empty}
-              onClick={handleAddColumn}
-              placeholder
-            >
-              + Add column
-            </DroppableContainer>
-          )}
         </SortableContext>
       </div>
       {createPortal(
