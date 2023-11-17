@@ -1,9 +1,9 @@
+import classNames from 'classnames';
 import { forwardRef } from 'react';
 
-import classNames from 'classnames';
+import { Handle, Remove } from '../Item';
 
 import styles from './Container.module.scss';
-import { Handle, Remove } from '../Item';
 
 export interface ContainerProps {
   children: React.ReactNode;
@@ -46,7 +46,7 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     return (
       <Component
         {...props}
-        ref={ref}
+        ref={{ef as React.RefObject<HTMLDivElement>}
         style={
           {
             ...style,

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+
 import { SelectFieldProps } from '../types';
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange, multiple }) => {

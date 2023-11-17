@@ -1,13 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
-
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import debounce from 'lodash/debounce';
-import { For } from 'million/react';
+import { useState, useEffect } from 'react';
+
+// import debounce from 'lodash/debounce';
+// import { For } from 'million/react';
 import { LRUCache } from 'typescript-lru-cache';
 
-import useSearchStore from '../store/searchSlice';
+import useSearchStore from '@/store/searchSlice';
 import { Course } from '@/types';
-import { Item } from '@/components/Item';
 
 const searchCache = new LRUCache<string, Course[]>({
   maxSize: 50,
@@ -16,14 +15,14 @@ const searchCache = new LRUCache<string, Course[]>({
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>('');
-  const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
+  // const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
   const {
     setSearchResults,
     searchResults,
     addRecentSearch,
     recentSearches,
     setError,
-    loading,
+    // loading,
     setLoading,
   } = useSearchStore((state) => ({
     setSearchResults: state.setSearchResults,

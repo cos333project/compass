@@ -1,5 +1,3 @@
-import { devtools } from 'zustand/middleware';
-
 export type Settings = {
   firstName: string;
   lastName: string;
@@ -77,7 +75,7 @@ export type DraggableProps = {
   id: number;
   children: React.ReactNode;
   className?: string;
-  style?: CSSProperties;
+  style?: React.CSSProperties;
 };
 
 export type DroppableProps = {
@@ -111,11 +109,6 @@ export type SettingsFormProps = {
   onSaveSettings: (newMajor: string, newClassYear: string) => void;
   initialMajor: string;
   initialClassYear: string;
-};
-
-export type User = {
-  major: string;
-  classYear: number;
 };
 
 export type Planner = {

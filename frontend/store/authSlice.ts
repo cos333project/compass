@@ -19,6 +19,7 @@ const useAuthStore = create<AuthState>((set) => ({
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
+      console.log(process.env.BACKEND)
       const response = await fetch(process.env.BACKEND + '/authenticate', {
         credentials: 'include',
       });

@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-
 import {
   CancelDrop,
   closestCenter,
@@ -32,20 +30,17 @@ import {
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
   SortingStrategy,
-  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
-import { Item, Container, ContainerProps, Draggable } from '../../components';
+import { Item, Container, ContainerProps } from '../../components';
+
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
-import { createRange, generateSemesters } from '../utilities';
+
 import useSearchStore from '@/store/searchSlice';
 
-type User = {
-  major: string;
-  classYear: number;
-};
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -112,7 +107,6 @@ const dropAnimation: DropAnimation = {
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
 interface Props {
-  user: User;
   adjustScale?: boolean;
   cancelDrop?: CancelDrop;
   columns?: number;
@@ -151,7 +145,6 @@ export const SEARCH_RESULTS_ID = 'Search Results'; // Corrected the constant nam
 const empty: UniqueIdentifier[] = [];
 
 export function Canvas({
-  user,
   adjustScale = false,
   itemCount = 3,
   cancelDrop,
@@ -170,9 +163,10 @@ export function Canvas({
   vertical = false,
   scrollable,
 }: Props) {
-  const classYear = 2025 ?? user.classYear;
+  // const classYear = 2025 ?? user.classYear;
+  const classYear = 2025;
   const generateSemesters = (classYear: number, itemCount: number): Items => {
-    let semesters: Items = {};
+    const semesters: Items = {};
     const startYear = classYear - 1;
 
     for (let year = startYear; year < classYear; ++year) {
@@ -195,7 +189,7 @@ export function Canvas({
     setItems((prevItems) => ({
       ...prevItems,
       [SEARCH_RESULTS_ID]: searchResults.map(
-        (course, index) => `${course.department_code} ${course.catalog_number}`
+        (course) => `${course.department_code} ${course.catalog_number}`
       ),
     }));
   }, [searchResults]);
@@ -235,7 +229,7 @@ export function Canvas({
           : rectIntersection(args);
       let overId = getFirstCollision(intersections, 'id');
 
-      if (overId != null) {
+      if (overId !== null) {
         if (overId === TRASH_ID) {
           // If the intersecting droppable is the trash, return early
           // Remove this if you're not using trashable functionality in your app
@@ -283,11 +277,13 @@ export function Canvas({
       coordinateGetter,
     })
   );
-  const findContainer = (id: UniqueIdentifier) => {
+  const findContainer = (id?: UniqueIdentifier) => {
+    if (id === null || id === undefined) {
+      return;
+    }
     if (id in items) {
       return id;
     }
-
     return Object.keys(items).find((key) => items[key].includes(id));
   };
 
@@ -339,7 +335,7 @@ export function Canvas({
         console.log('Drag over: ', { activeId: active.id, overId: over?.id });
         const overId = over?.id;
 
-        if (overId == null || overId === TRASH_ID || active.id in items) {
+        if (overId === null || overId === undefined || overId === TRASH_ID || active.id in items) {
           return;
         }
 
@@ -406,7 +402,7 @@ export function Canvas({
 
         const overId = over?.id;
 
-        if (overId == null) {
+        if (overId === null || overId === undefined) {
           setActiveId(null);
           return;
         }
@@ -576,17 +572,17 @@ export function Canvas({
     setContainers((containers) => containers.filter((id) => id !== containerID));
   }
 
-  function handleAddColumn() {
-    const newContainerId = getNextContainerId();
+  // function handleAddColumn() {
+  //   const newContainerId = getNextContainerId();
 
-    unstable_batchedUpdates(() => {
-      setContainers((containers) => [...containers, newContainerId]);
-      setItems((items) => ({
-        ...items,
-        [newContainerId]: [],
-      }));
-    });
-  }
+  //   unstable_batchedUpdates(() => {
+  //     setContainers((containers) => [...containers, newContainerId]);
+  //     setItems((items) => ({
+  //       ...items,
+  //       [newContainerId]: [],
+  //     }));
+  //   });
+  // }
 
   function getNextContainerId() {
     const containerIds = Object.keys(items);
@@ -689,7 +685,7 @@ function SortableItem({
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
-      handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
+      handleProps={handle ? setActivatorNodeRef : undefined}
       index={index}
       wrapperStyle={wrapperStyle({ index })}
       style={style({

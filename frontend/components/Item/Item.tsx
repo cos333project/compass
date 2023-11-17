@@ -1,8 +1,7 @@
-import { memo, forwardRef, useEffect } from 'react';
-
 import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import classNames from 'classnames';
+import { memo, forwardRef, useEffect } from 'react';
 
 import { Handle, Remove } from './components';
 import styles from './Item.module.scss';
@@ -51,7 +50,7 @@ export const Item = memo(
         fadeIn,
         handle,
         handleProps,
-        height,
+        // height,
         index,
         listeners,
         onRemove,

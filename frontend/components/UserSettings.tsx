@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import SelectField from './SettingsSelectField';
-import SettingsToggleSwitch from './SettingsToggleSwitch';
-import useUserSlice from '@/store/userSlice';
-import { SettingsProps } from '@/store/userSlice';
+import { useEffect, useState } from 'react';
 
-const majorsList = ['Computer Science', 'Biology', 'Economics'];
-const minorsList = ['Mathematics', 'History', 'Art', 'English', 'ballz'];
-const yearList = ['2024', '2025', '2026', '2027'];
+import useUserSlice, { SettingsProps } from '@/store/userSlice';
+
+import SettingsToggleSwitch from './SettingsToggleSwitch';
 
 const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) => {
   const { update } = useUserSlice();

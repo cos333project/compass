@@ -1,12 +1,6 @@
 import './globals.scss';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'Compass',

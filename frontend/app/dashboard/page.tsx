@@ -9,7 +9,6 @@ import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
 import Search from '../../components/Search';
 import useAuthStore from '../../store/authSlice';
-import { useAcademicPlannerStore } from '../../store/dndSlice';
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -40,15 +39,13 @@ const Dashboard: React.FC = () => {
       <Navbar />
       <div className='flex flex-col h-screen pt-20 p-2 rounded-xl'>
         <main className='flex p-2 flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
-            <Search />
-     
+          <Search />
+
           {user && (
             <Canvas
-              user={user}
               trashable
               columns={2}
               strategy={rectSortingStrategy}
-
               wrapperStyle={() => ({
                 width: 150,
                 height: 150,

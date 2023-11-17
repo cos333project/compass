@@ -1,21 +1,12 @@
-import { useState } from 'react';
-import { Dialog } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+// import { Dialog } from '@headlessui/react';
+// import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+
 import Footer from '@/components/Footer';
-const navigation = [
-  { name: 'About', href: '#' },
-  { name: 'Planner', href: '#' },
-  { name: 'Courses', href: '#' },
-  { name: 'Schedule', href: '#' },
-  { name: 'Contact Us', href: '#' },
-];
 
 export default function Hero() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
-    // <div className="bg-gray-900">
-    <div className='compass-blue'>
+    // <div className='compass-blue' className="bg-gray-900" />
+    <div>
       {/* <header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1">
@@ -131,13 +122,13 @@ export default function Hero() {
                 </a>
               </div>
             </div>
-            <img
+            {/* <img
               src='https://tailwindui.com/img/component-images/dark-project-app-screenshot.png'
               alt='App screenshot'
               width={2432}
               height={1442}
               className='mt-16 rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 sm:mt-24'
-            />
+            /> */}
           </div>
         </div>
         <div

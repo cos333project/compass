@@ -1,11 +1,12 @@
-import React, { Fragment, useState, useEffect } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import clsx from 'clsx';
-import UserSettings from './UserSettings';
-import { Logout } from './Logout';
-import { Settings, MenuItemProps } from '../types';
-import SettingsModal from './Modal';
+import { Fragment, useState, useEffect } from 'react';
+
 import useAuthStore from '@/store/authSlice';
+import { Settings, MenuItemProps } from '@/types';
+import { Logout } from './Logout';
+import SettingsModal from './Modal';
+import UserSettings from './UserSettings';
 
 const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
@@ -84,7 +85,7 @@ const DropdownMenu: React.FC = () => {
         console.error('CSRF token not found');
         return; // Exit the function or handle this case as appropriate
       }
-      const csrfToken = csrfTokenCookie.split('=')[1];
+      // const csrfToken = csrfTokenCookie.split('=')[1];
       const response = await fetch(process.env.BACKEND + '/update_profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
