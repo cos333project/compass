@@ -139,7 +139,17 @@ const Search: React.FC = () => {
           // Render the list of search results
           <ul className='divide-y divide-dashed hover:divide-solid'>
             {searchResults.map((course, index) => (
-              <li key={index}>Test</li>
+              <li key={index}>
+                <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>
+                  <div className='flex mb-3 rounded'>
+                    <h4 className='text-xs font-semibold text-black'>
+                      {course.department_code} {course.catalog_number}
+                    </h4>
+                  </div>
+                  <div
+                      className='text-sm text-gray-900'>{course.title}</div>
+                </div>
+              </li>
             ))}
           </ul>
         ) : (

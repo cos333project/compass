@@ -49,6 +49,7 @@ const Dashboard: React.FC = () => {
               trashable
               columns={2}
               strategy={rectSortingStrategy}
+
               wrapperStyle={() => ({
                 width: 150,
                 height: 150,

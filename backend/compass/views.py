@@ -91,14 +91,14 @@ class SearchCourses(View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get('course', None)
         if query:
-            if query == '*' or query == '.':
-                courses = Course.objects.select_related('department').all()
-                serialized_courses = CourseSerializer(courses, many=True)
-                return JsonResponse({'courses': serialized_courses.data})
+            # if query == '*' or query == '.':
+            #     courses = Course.objects.select_related('department').all()
+            #     serialized_courses = CourseSerializer(courses, many=True)
+            #     return JsonResponse({'courses': serialized_courses.data})
 
             # process queries
             trimmed_query = re.sub(r'\s', '', query)
-            title = 'nevergoingtomatch'
+            title = ''
             if DEPT_NUM_SUFFIX_REGEX.match(trimmed_query):
                 result = re.split(r'(\d+[a-zA-Z])', string=trimmed_query, maxsplit=1)
                 dept = result[0]
@@ -113,14 +113,14 @@ class SearchCourses(View):
                 num = result[0]
             elif DEPT_ONLY_REGEX.match(trimmed_query):
                 dept = trimmed_query
-                num = 'nevergoingtomatch'
+                num = ''
                 title = query.strip()
             elif NUM_ONLY_REGEX.match(trimmed_query):
-                dept = 'nevergoingtomatch'
+                dept = ''
                 num = trimmed_query
             else:
-                dept = 'nevergoingtomatch'
-                num = 'nevergoingtomatch'
+                dept = ''
+                num = ''
                 title = query.strip()
 
             try:
@@ -131,16 +131,15 @@ class SearchCourses(View):
                     # If an exact match is found, return only that course
                     serialized_course = CourseSerializer(exact_match_course, many=True)
                     return JsonResponse({'courses': serialized_course.data})
-                courses = Course.objects.filter(
+                courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
-                    | Q(catalog_number__icontains=num)
-                    | Q(title__icontains=title)
-                    | Q(distribution_area_short__icontains='')
-                    | Q(distribution_area_long__icontains='')
+                    & Q(catalog_number__icontains=num)
                 )
+                # | Q(title__icontains=title)
+                # | Q(distribution_area_short__icontains='')
+                # | Q(distribution_area_long__icontains='')
                 if not courses.exists():
                     return JsonResponse({'courses': []})
-
                 custom_sorting_field = Case(
                     When(
                         Q(department__code__icontains=dept)
