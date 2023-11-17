@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      window.location.href = 'http://localhost:8000/login';
+      window.location.href = process.env.BACKEND + '/login';
     }
   }, [isAuthenticated, isLoading]);
 

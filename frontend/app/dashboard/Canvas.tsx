@@ -444,7 +444,7 @@ export function Canvas({
 
         const courseId = active.id;
         const semesterId = activeContainer;
-        fetch('http://localhost:8000/update_user_courses/', {
+        fetch(process.env.BACKEND + '/update_user_courses/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           // Need CSRF token here from Next.js

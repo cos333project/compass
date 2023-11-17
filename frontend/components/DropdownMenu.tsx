@@ -33,16 +33,16 @@ const DropdownMenu: React.FC = () => {
     timeFormat24h: false,
     themeDarkMode: false,
   });
-  
+
   const firstName = user?.firstName;
-  console.log(firstName)
-  
+  console.log(firstName);
+
   const closeMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://localhost:8000/profile/', {
+        const response = await fetch(process.env.BACKEND + '/profile', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -73,23 +73,25 @@ const DropdownMenu: React.FC = () => {
     };
     fetchProfile();
   }, []);
-  
+
   const handleSaveUserSettings = async (updatedUser: Settings) => {
     try {
       console.log('Sending request to update profile with data:', JSON.stringify(updatedUser));
-      const csrfTokenCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
-    if (!csrfTokenCookie) {
-      console.error('CSRF token not found');
-      return; // Exit the function or handle this case as appropriate
-    }
-    const csrfToken = csrfTokenCookie.split('=')[1];
-      const response = await fetch('http://localhost:8000/update_profile/', {
+      const csrfTokenCookie = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('csrftoken='));
+      if (!csrfTokenCookie) {
+        console.error('CSRF token not found');
+        return; // Exit the function or handle this case as appropriate
+      }
+      const csrfToken = csrfTokenCookie.split('=')[1];
+      const response = await fetch(process.env.BACKEND + '/update_profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(updatedUser),
       });
-      
+
       console.log('Received response:', response);
       if (!response.ok) {
         // Have a little alert component popup to tell them the error

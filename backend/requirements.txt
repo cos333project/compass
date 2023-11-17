@@ -66,5 +66,6 @@ tzdata==2023.3
 ujson==5.8.0
 urllib3==2.1.0
 virtualenv==20.24.6
+whitenoise==6.6.0
 xattr==0.10.1
 zipp==3.17.0
