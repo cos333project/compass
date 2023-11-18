@@ -23,7 +23,7 @@ const useUserSlice = create<UserState>((set) => ({
   lastName: '',
   major: '',
   minors: '',
-  classYear: '',
+  classYear: '2025',
   timeFormat24h: false,
   themeDarkMode: false,
   update: (updates) => set((state) => ({ ...state, ...updates })),
