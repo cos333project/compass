@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+
 import { SettingsModalProps } from '../types';
 
 const Modal: React.FC<SettingsModalProps> = ({ children, onClose }) => {

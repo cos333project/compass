@@ -1,9 +1,9 @@
+import classNames from 'classnames';
 import { forwardRef } from 'react';
 
-import classNames from 'classnames';
+import { Handle, Remove } from '../Item';
 
 import styles from './Container.module.scss';
-import { Handle, Remove } from '../Item';
 
 export interface ContainerProps {
   children: React.ReactNode;

@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import SelectField from './SettingsSelectField';
-import SettingsToggleSwitch from './SettingsToggleSwitch';
-import useUserSlice from '@/store/userSlice'; 
-import {SettingsProps} from '@/store/userSlice'; 
+import { useEffect, useState } from 'react';
 
-const majorsList = ['Computer Science', 'Biology', 'Economics'];
-const minorsList = ['Mathematics', 'History', 'Art', 'English', 'ballz'];
-const yearList = ['2024', '2025', '2026', '2027'];
+import useUserSlice, { SettingsProps } from '@/store/userSlice';
+
+import SettingsToggleSwitch from './SettingsToggleSwitch';
 
 const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) => {
   const { update } = useUserSlice();
@@ -39,25 +35,22 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
       themeDarkMode: localThemeDarkMode,
     });
 
-
     onSave(useUserSlice.getState());
 
-
-    fetch('http://localhost:8000/update_user_class_year/', {
+    fetch(process.env.BACKEND + '/update_user_class_year', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // Need CSRF token here from Next.js
       body: useUserSlice.getState().classYear,
     })
-        .then((response) => response.json())
-        .then((data) => console.log('Update success', data))
-        .catch((error) => console.error('Update Error:', error));
+      .then((response) => response.json())
+      .then((data) => console.log('Update success', data))
+      .catch((error) => console.error('Update Error:', error));
 
-
-    console.log(localMajor)
-    console.log(useUserSlice.getState().major)
+    console.log(localMajor);
+    console.log(useUserSlice.getState().major);
     onClose();
-  }; 
+  };
 
   return (
     <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50'>
@@ -77,27 +70,27 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
             placeholder='Last Name'
             className='input-field-class'
           />
-            <input
-              type='text'
-              value={localMajor}
-              onChange={(e) => setLocalMajor(e.target.value)}
-              placeholder='Major'
-              className='input-field-class'
-            />
-            <input
-                type='text'
-                value={localMinors}
-                onChange={(e) => setLocalMinors(e.target.value)}
-                placeholder='Minors'
-                className='input-field-class'
-              />
           <input
-                type='text'
-                value={localClassYear}
-                onChange={(e) => setLocalClassYear(e.target.value)}
-                placeholder='Class Year'
-                className='input-field-class'
-              />
+            type='text'
+            value={localMajor}
+            onChange={(e) => setLocalMajor(e.target.value)}
+            placeholder='Major'
+            className='input-field-class'
+          />
+          <input
+            type='text'
+            value={localMinors}
+            onChange={(e) => setLocalMinors(e.target.value)}
+            placeholder='Minors'
+            className='input-field-class'
+          />
+          <input
+            type='text'
+            value={localClassYear}
+            onChange={(e) => setLocalClassYear(e.target.value)}
+            placeholder='Class Year'
+            className='input-field-class'
+          />
           <SettingsToggleSwitch
             label='Dark Mode'
             checked={localThemeDarkMode}
@@ -108,8 +101,8 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
           {/*  checked={localTimeFormat24h}*/}
           {/*  onChange={() => setLocalTimeFormat24h(!localTimeFormat24h)}*/}
           {/*/>*/}
-          </div>
-          <div className='mt-5 text-right'>
+        </div>
+        <div className='mt-5 text-right'>
           <button className='bg-blue-500 text-white rounded px-4 py-2' onClick={handleSave}>
             Save
           </button>
@@ -117,8 +110,8 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
             Close
           </button>
         </div>
-        </div>
       </div>
+    </div>
   );
 };
 
