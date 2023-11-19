@@ -48,12 +48,7 @@ import {
 } from './multipleContainersKeyboardCoordinates';
 import {createRange, generateSemesters} from '../utilities';
 import useSearchStore from '@/store/searchSlice';
-import {Course} from "@/types";
-
-type User = {
-    major: string;
-    classYear: number;
-};
+import {Course, Settings} from "@/types";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
     defaultAnimateLayoutChanges({...args, wasDragging: true});
@@ -129,7 +124,7 @@ const dropAnimation: DropAnimation = {
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
 interface Props {
-    user: User;
+    user: Settings;
     adjustScale?: boolean;
     cancelDrop?: CancelDrop;
     columns?: number;
@@ -147,7 +142,9 @@ interface Props {
         isDragOverlay: boolean;
     }): React.CSSProperties;
 
-    wrapperStyle?(args: { index: number }): React.CSSProperties;
+    wrapperStyle?(args: {
+        index: number
+    }): React.CSSProperties;
 
     itemCount?: number;
     items?: Items;
@@ -188,39 +185,68 @@ export function Canvas({
                            vertical = false,
                            scrollable,
                        }: Props) {
-    const classYear = 2025 ?? user.classYear;
+    const classYear = user.class_year;
+    console.log(user.class_year)
+    console.log(user)
 
-    const user_courses_response = fetch('http://localhost:8000/get_user_courses/', {
-        method: 'GET',
-        credentials: 'include',})
-        .then((user_courses_response) => user_courses_response.json())
-        .then(data => {
-            console.log(data);
-            return data;
-        })
-        .catch((error) => console.error('Update Error:', error));
-    console.log(user_courses_response)
-
-    const generateSemesters = (classYear: number, itemCount: number): Items => {
+    const generateSemesters = (classYear: number): Items => {
         let semesters: Items = {};
         const startYear = classYear - 1;
 
-        let semester = 1
+        let semester = 1;
         for (let year = startYear; year < classYear; ++year) {
             semesters[`Fall ${year}`] = [];
+            semester += 1;
             semesters[`Spring ${year + 1}`] = [];
+            semester += 1;
         }
 
         return semesters;
     };
 
-    const initial = initialItems || generateSemesters(classYear, itemCount); // Adjusted to use prop or default
+
+    const updateSemesters = (prevItems: Items, classYear: number, user_courses: { [key: number]: Course[] }): Items => {
+        const startYear = classYear - 1;
+        console.log("updateSemesters called")
+
+        let semester = 7;
+        for (let year = startYear; year < classYear; ++year) {
+            prevItems[`Fall ${year}`] = user_courses[semester].map(course => `${course.department_code} ${course.catalog_number}`);
+            semester += 1;
+            prevItems[`Spring ${year + 1}`] = user_courses[semester].map(course => `${course.department_code} ${course.catalog_number}`);
+            semester += 1;
+        }
+
+        console.log(user_courses)
+        console.log(prevItems)
+        return prevItems;
+    };
+
+    const initial = initialItems || generateSemesters(classYear); // Adjusted to use prop or default
     const {searchResults} = useSearchStore(); // Assuming useSearchStore is imported
 
     const [items, setItems] = useState<Items>(() => ({
         [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
         ...initial,
     }));
+
+    useEffect(() => {
+        let user_courses: { [key: number]: Course[] } = {};
+
+        fetch('http://localhost:8000/get_user_courses/', {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then((response) => response.json())
+            .then(data => {
+                user_courses = data;
+
+                setItems((prevItems) => ({
+                    ...updateSemesters(prevItems, classYear, user_courses),
+                }))
+            })
+            .catch((error) => console.error('User Courses Error:', error));
+    }, []);
 
     useEffect(() => {
         setItems((prevItems) => ({
@@ -655,7 +681,9 @@ function getColor(id: UniqueIdentifier) {
     return undefined;
 }
 
-function Trash({id}: { id: UniqueIdentifier }) {
+function Trash({id}: {
+    id: UniqueIdentifier
+}) {
     const {setNodeRef, isOver} = useDroppable({
         id,
     });
@@ -696,7 +724,9 @@ interface SortableItemProps {
 
     renderItem(): React.ReactElement;
 
-    wrapperStyle({index}: { index: number }): React.CSSProperties;
+    wrapperStyle({index}: {
+        index: number
+    }): React.CSSProperties;
 }
 
 function SortableItem({

@@ -1,13 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import debounce from 'lodash/debounce';
-import { For } from 'million/react';
 import { LRUCache } from 'typescript-lru-cache';
 
 import useSearchStore from '../store/searchSlice';
 import { Course } from '@/types';
-import { Item } from '@/components/Item';
 
 const searchCache = new LRUCache<string, Course[]>({
   maxSize: 50,

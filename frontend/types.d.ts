@@ -1,11 +1,15 @@
 import { devtools } from 'zustand/middleware';
 
 export type Settings = {
-  firstName: string;
-  lastName: string;
-  classYear: number;
+  first_name: string;
+  last_name: string;
+  class_year: number;
   major?: string;
   minors: string[];
+  net_id: string;
+  university_id: string;
+  email: string;
+  department: string;
   timeFormat24h: boolean;
   themeDarkMode: boolean;
 };
@@ -111,11 +115,6 @@ export type SettingsFormProps = {
   onSaveSettings: (newMajor: string, newClassYear: string) => void;
   initialMajor: string;
   initialClassYear: string;
-};
-
-export type User = {
-  major: string;
-  classYear: number;
 };
 
 export type Planner = {
