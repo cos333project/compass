@@ -1,15 +1,27 @@
-export type Settings = {
-  firstName: string;
-  lastName: string;
-  classYear: number;
-  major?: string;
-  minors: string[];
-  timeFormat24h: boolean;
-  themeDarkMode: boolean;
+export type AuthenticationStatus = {
+  isAuthenticated: boolean;
+}
+
+export type MajorMinorType = {
+  code: string | null;
+  label: string;
 };
 
-export type SettingsProps = {
-  settings: Settings;
+export type Profile = {
+  firstName: string;
+  lastName: string;
+  major?: MajorMinorType;
+  minors?: MajorMinorType[];
+  classYear: string;
+  netid: string;
+  timeFormat24h: boolean;
+  themeDarkMode: boolean;
+  updateProfile: (updates: Partial<Profile>) => void;
+  fetchProfile: () => void;
+};
+
+export type ProfileProps = {
+  profile: Profile;
   onClose: () => void;
   onSave: (updatedSettings: Settings) => void;
 };
@@ -94,8 +106,13 @@ export type DragDropContextProps = {
   searchResults: Course[];
 };
 
-export type DropdownMenuProps = {
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// export type DropdownMenuProps = {
+//   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// };
+
+export type MobileMenuState = {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
 };
 
 export type MenuItemProps = {

@@ -1,8 +1,10 @@
+// May not need this file
 import { produce } from 'immer';
 import { create } from 'zustand';
 
-import { generateSemestersRecord } from './../app/utilities/GenerateSemesters';
 import { Planner, CourseType } from '../types';
+
+import { generateSemestersRecord } from './../app/utilities/GenerateSemesters';
 
 export const useAcademicPlannerStore = create<Planner>((set) => ({
   classYear: null,

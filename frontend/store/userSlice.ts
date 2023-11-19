@@ -1,68 +1,67 @@
+// import { produce } from 'immer';
+// import { cookies } from 'next/headers';
 import { create } from 'zustand';
-import { useEffect } from 'react';
+// import { persist } from 'zustand/middleware';
 
-type UserState = {
-  firstName: string;
-  lastName: string;
-  major: string;
-  minors: string;
-  classYear: string;
-  timeFormat24h: boolean;
-  themeDarkMode: boolean;
-  update: (updates: Partial<UserState>) => void;
-};
+import { Profile } from '../types';
 
-export type SettingsProps = {
-  settings: UserState;
-  onClose: () => void;
-  onSave: (settings: UserState) => void;
-};
-
-const useUserSlice = create<UserState>((set) => ({
+const useUserSlice = create<Profile>((set) => ({
   firstName: '',
   lastName: '',
-  major: '',
-  minors: '',
-  classYear: '2025',
-  timeFormat24h: false,
+  major: undefined,
+  minors: [],
+  classYear: '',
+  netid: '',
   themeDarkMode: false,
-  update: (updates) => set((state) => ({ ...state, ...updates })),
-}));
+  timeFormat24h: false,
+  updateProfile: (updates) => set((state) => ({ ...state, ...updates })),
 
-// Custom hook for fetching user data
-export const useFetchUserProfile = () => {
-  const updateStore = useUserSlice((state) => state.update);
+  fetchProfile: async () => {
+    const abortController = new AbortController();
+    try {
+      const response = await fetch(`${process.env.BACKEND}/profile`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        signal: abortController.signal,
+      });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(process.env.BACKEND + '/profile', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        updateStore({
-          firstName: data.first_name,
-          lastName: data.last_name,
-          major: data.major,
-          minors: data.minors,
-          classYear: data.class_year,
-          timeFormat24h: data.timeFormat24h,
-          themeDarkMode: data.themeDarkMode,
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+      if (!response.ok) {
+        console.error(`HTTP error! Status:`, response.status);
+        // TODO: Add a toast or pop-up to gracefully inform user of the error.
       }
-    };
 
-    fetchProfile();
-  }, [updateStore]);
-};
+      const data = await response.json();
+      set({
+        firstName: data.first_name,
+        lastName: data.last_name,
+        major: data.major,
+        minors: data.minors || [],
+        classYear: data.classYear,
+        timeFormat24h: data.timeFormat24h,
+        themeDarkMode: data.themeDarkMode,
+      });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      abortController.abort();
+    }
+  },
+  updateSettings: async (updates) => {
+    const csrfToken = cookies.get('csrfToken')?.value;
+    const response = await fetch(`${process.env.BACKEND}/profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'CSRF-Token': csrfToken,
+      },
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+
+    const updatedSettings = await response.json();
+    set({ ...updatedSettings });
+  },
+}));
 
 export default useUserSlice;

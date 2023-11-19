@@ -7,7 +7,7 @@ import { rectSortingStrategy } from '@dnd-kit/sortable';
 import { Canvas } from './Canvas';
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
-import Search from '../../components/Search';
+import Search from '../../components/Search/Search';
 import useAuthStore from '../../store/authSlice';
 
 const Dashboard: React.FC = () => {

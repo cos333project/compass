@@ -1,0 +1,75 @@
+{
+    "env": {
+      "es2022": true,
+      "browser": true,
+      "node": true
+    },
+    "settings": {
+      "import/resolver": {
+        "typescript": {}
+      },
+      "react": {
+        "version": "detect"
+      }
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "next/core-web-vitals",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:import/typescript",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": ["react", "@typescript-eslint", "prettier", "import"],
+    "rules": {
+      "import/order": [
+        "error",
+        {
+          "groups": [["builtin", "external"], "internal", "parent", "sibling", "index"],
+          "pathGroups": [
+            {
+              "pattern": "react",
+              "group": "external",
+              "position": "before"
+            }
+          ],
+          "pathGroupsExcludedImportTypes": ["builtin"],
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ],
+      "prettier/prettier": ["error"],
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "no-console": "warn",
+      "no-unused-vars": "off",
+      "no-var": "error",
+      "prefer-const": "error",
+      "eqeqeq": ["error", "always"],
+      "curly": "error"
+    },
+    "overrides": [
+      {
+        "files": ["**/*.ts", "**/*.tsx"],
+        "rules": {
+          "@typescript-eslint/no-unused-vars": ["error"],
+        }
+      }
+    ]
+  }
+  
