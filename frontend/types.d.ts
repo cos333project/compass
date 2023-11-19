@@ -1,5 +1,3 @@
-import { devtools } from 'zustand/middleware';
-
 export type Settings = {
   first_name: string;
   last_name: string;
@@ -81,7 +79,7 @@ export type DraggableProps = {
   id: number;
   children: React.ReactNode;
   className?: string;
-  style?: CSSProperties;
+  style?: React.CSSProperties;
 };
 
 export type DroppableProps = {

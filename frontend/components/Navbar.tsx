@@ -1,23 +1,24 @@
-import React from 'react';
-import { useState } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog } from '@headlessui/react';
-import { Login } from './Login';
-import DropdownMenu from './DropdownMenu';
-import useAuthStore from '../store/authSlice';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import React, { useState } from 'react';
+
+import useAuthStore from '../store/authSlice';
+
+import DropdownMenu from './DropdownMenu';
+import { Login } from './Login';
 
 const navigation = [
-  { name: 'About', href: '#' },
+  { name: 'About', href: '/' },
   { name: 'Dashboard', href: '/dashboard' }, // Should be protected path and not auto-redirect
   { name: 'Contact Us', href: '/' },
 ];
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, login, logout } = useAuthStore((state) => ({
+  const { isAuthenticated, login } = useAuthStore((state) => ({
     isAuthenticated: state.isAuthenticated,
     login: state.login,
-    logout: state.logout,
+    // logout: state.logout
   }));
   console.log('Navbar component rendering, isAuthenticated:', isAuthenticated);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,7 +47,7 @@ const Navbar: React.FC = () => {
         <div className='flex lg:flex-1'>
           <a href='.' className='-m-1.5 p-1.5'>
             <span className='sr-only'>Compass</span>
-            <img className='h-9 w-auto' src={'./logo.png'} alt='Compass Logo' />
+            <Image src='/logo.png' height={45} width={45} alt='Compass Logo' />
           </a>
         </div>
         <div className='flex lg:hidden'>
@@ -88,12 +89,8 @@ const Navbar: React.FC = () => {
         <Dialog.Panel className='fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10'>
           <div className='flex items-center justify-between'>
             <a href='#' className='-m-1.5 p-1.5'>
-              <span className='sr-only'>Your Company</span>
-              <img
-                className='h-8 w-auto'
-                src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
-                alt=''
-              />
+              <span className='sr-only'>Compass</span>
+              <Image src='/logo.png' height={45} width={45} alt='Compass Logo' />
             </a>
             <button
               type='button'

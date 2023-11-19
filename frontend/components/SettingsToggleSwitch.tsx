@@ -1,4 +1,3 @@
-import React from 'react';
 import { ToggleSwitchProps } from '../types';
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {

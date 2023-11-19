@@ -46,12 +46,25 @@ import {
 import {
     coordinateGetter as multipleContainersCoordinateGetter
 } from './multipleContainersKeyboardCoordinates';
-import {createRange, generateSemesters} from '../utilities';
 import useSearchStore from '@/store/searchSlice';
 import {Course, Settings} from "@/types";
 
+
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
     defaultAnimateLayoutChanges({...args, wasDragging: true});
+
+const gridContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // Two columns
+    gridTemplateRows: 'repeat(4, 1fr)', // Four rows
+    gap: '10px', // Space between grid items
+};
+
+const gridItemStyle = {
+    border: '1px solid #ccc',
+    padding: '10px',
+    textAlign: 'center',
+};
 
 function DroppableContainer({
                                 children,
@@ -164,7 +177,6 @@ export const SEARCH_RESULTS_ID = 'Search Results'; // Corrected the constant nam
 
 const empty: UniqueIdentifier[] = [];
 
-
 export function Canvas({
                            user,
                            adjustScale = false,
@@ -193,17 +205,13 @@ export function Canvas({
         let semesters: Items = {};
         const startYear = classYear - 1;
 
-        let semester = 1;
         for (let year = startYear; year < classYear; ++year) {
             semesters[`Fall ${year}`] = [];
-            semester += 1;
             semesters[`Spring ${year + 1}`] = [];
-            semester += 1;
         }
 
         return semesters;
     };
-
 
     const updateSemesters = (prevItems: Items, classYear: number, user_courses: { [key: number]: Course[] }): Items => {
         const startYear = classYear - 1;
@@ -229,6 +237,7 @@ export function Canvas({
         [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
         ...initial,
     }));
+
 
     useEffect(() => {
         let user_courses: { [key: number]: Course[] } = {};
@@ -366,6 +375,7 @@ export function Canvas({
             // Reset items to their original state in case items have been
             // Dragged across containers
             setItems(clonedItems);
+
         }
 
         setActiveId(null);
@@ -642,6 +652,7 @@ export function Canvas({
         );
     }
 
+
     function handleRemove(containerID: UniqueIdentifier) {
         setContainers((containers) => containers.filter((id) => id !== containerID));
     }
@@ -657,6 +668,7 @@ export function Canvas({
             }));
         });
     }
+
 
     function getNextContainerId() {
         const containerIds = Object.keys(items);
