@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": ["dom", "dom.iterable", "es2022", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2022",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -21,14 +26,34 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/store/*": ["store/*"],
-      "@/app/*": ["app/*"],
-      "@/hooks/*": ["app/hooks/*"],
-      "@/utilities/*": ["app/utilities/*"],
-      "@/types": ["types.d.ts"]
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/store/*": [
+        "store/*"
+      ],
+      "@/app/*": [
+        "app/*"
+      ],
+      "@/hooks/*": [
+        "app/hooks/*"
+      ],
+      "@/utilities/*": [
+        "app/utilities/*"
+      ],
+      "@/types": [
+        "types.d.ts"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.mjs", ".next/types/**/*.ts", "app/dashboard/Canvas.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "postcss.config.mjs",
+    ".next/types/**/*.ts"
+, "app/kaan/page.jsx"  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

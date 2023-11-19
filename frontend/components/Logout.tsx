@@ -1,3 +1,4 @@
+import React from 'react';
 import useAuthStore from '../store/authSlice';
 
 export const Logout: React.FC = () => {

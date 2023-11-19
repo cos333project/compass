@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { Settings } from '../types';
+import { Settings} from '../types';
 
 type AuthState = {
   user?: Settings;
@@ -15,12 +15,11 @@ type AuthState = {
 const useAuthStore = create<AuthState>((set) => ({
   user: undefined,
   isAuthenticated: null,
-
+  
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      console.log(process.env.BACKEND)
-      const response = await fetch(process.env.BACKEND + '/authenticate', {
+      const response = await fetch('http://localhost:8000/authenticate/', {
         credentials: 'include',
       });
       const data = await response.json();
@@ -34,12 +33,12 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   login: () => {
-    const nextUrl = encodeURIComponent(process.env.COMPASS + '/dashboard');
-    window.location.href = process.env.BACKEND + `/login?next=${nextUrl}`;
+    const nextUrl = encodeURIComponent('http://localhost:3000/dashboard/');
+    window.location.href = `http://localhost:8000/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch(process.env.BACKEND + '/logout', {
+      const response = await fetch('http://localhost:8000/logout/', {
         credentials: 'include',
       });
 
@@ -52,7 +51,7 @@ const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       console.error('Error during logout:', error);
     }
-    window.location.href = process.env.COMPASS + ``;
+    window.location.href = 'http://localhost:3000';
   },
 }));
 

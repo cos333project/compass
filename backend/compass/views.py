@@ -25,9 +25,7 @@ def fetch_user_info(user):
         'first_name': getattr(user, 'first_name', None),
         'last_name': getattr(user, 'last_name', None),
         'class_year': getattr(user, 'class_year', None),
-        'department' : getattr(user, 'department', None),
-        'puresidentdepartment' : getattr(user, 'puresidentdepartment', None),
-        'campusid' : getattr(user, 'campusid', None)
+        'department' : getattr(user, 'department', None)
     }
 
 

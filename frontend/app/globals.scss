@@ -3,14 +3,10 @@
 @import 'tailwindcss/utilities';
 
 :root {
-  // --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
-  // --background-start-rgb: 102, 51, 153; /* Darkened Princeton Orange */
-  // --background-end-rgb: 51, 51, 51; /* Softened Black */
-  // --system-text-color: #d9d9d9; /* Light Gray */
-  --foreground-rgb: 224, 224, 224; /* Soft White for text */
-  --background-start-rgb: 18, 18, 18; /* Near Black */
-  --background-end-rgb: 30, 30, 30; /* Dark Gray */
-  --system-text-color: #fafafa; /* Soft Blue */
+  --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
+  --background-start-rgb: 102, 51, 153; /* Darkened Princeton Orange */
+  --background-end-rgb: 51, 51, 51; /* Softened Black */
+  --system-text-color: #d9d9d9; /* Light Gray */
 }
 
 @media (prefers-color-scheme: dark) {
