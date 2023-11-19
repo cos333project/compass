@@ -1,8 +1,9 @@
+import { useState, useCallback, useEffect } from 'react';
+
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { useState, useEffect } from 'react';
 import { LRUCache } from 'typescript-lru-cache';
 
-import useSearchStore from '@/store/searchSlice';
+import useSearchStore from '../store/searchSlice';
 import { Course } from '@/types';
 
 const searchCache = new LRUCache<string, Course[]>({
@@ -12,14 +13,14 @@ const searchCache = new LRUCache<string, Course[]>({
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>('');
-  // const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
+  const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
   const {
     setSearchResults,
     searchResults,
     addRecentSearch,
     recentSearches,
     setError,
-    // loading,
+    loading,
     setLoading,
   } = useSearchStore((state) => ({
     setSearchResults: state.setSearchResults,
@@ -49,7 +50,7 @@ const Search: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        process.env.BACKEND + `/search/?course=${encodeURIComponent(searchQuery)}`
+        `http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`
       );
       if (response.ok) {
         const data: { courses: Course[] } = await response.json();
