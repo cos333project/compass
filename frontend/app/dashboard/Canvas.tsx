@@ -55,8 +55,22 @@ type User = {
     classYear: number;
 };
 
+
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
     defaultAnimateLayoutChanges({...args, wasDragging: true});
+
+const gridContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // Two columns
+    gridTemplateRows: 'repeat(4, 1fr)', // Four rows
+    gap: '10px', // Space between grid items
+  };
+
+ const gridItemStyle = {
+    border: '1px solid #ccc',
+    padding: '10px',
+    textAlign: 'center',
+  };
 
 function DroppableContainer({
                                 children,
@@ -167,7 +181,6 @@ export const SEARCH_RESULTS_ID = 'Search Results'; // Corrected the constant nam
 
 const empty: UniqueIdentifier[] = [];
 
-
 export function Canvas({
                            user,
                            adjustScale = false,
@@ -204,7 +217,6 @@ export function Canvas({
     const generateSemesters = (classYear: number, itemCount: number): Items => {
         let semesters: Items = {};
         const startYear = classYear - 1;
-
         let semester = 1
         for (let year = startYear; year < classYear; ++year) {
             semesters[`Fall ${year}`] = [];
@@ -214,29 +226,21 @@ export function Canvas({
         return semesters;
     };
 
-    const initial = initialItems || generateSemesters(classYear, itemCount); // Adjusted to use prop or default
-    const {searchResults} = useSearchStore(); // Assuming useSearchStore is imported
-
-    const [items, setItems] = useState<Items>(() => ({
-        [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
-        ...initial,
+  useEffect(() => {
+    setItems((prevItems) => ({
+      ...prevItems,
+      [SEARCH_RESULTS_ID]: searchResults.map(
+        (course) => `${course.department_code} ${course.catalog_number}`
+      ),
     }));
+  }, [searchResults]);
 
-    useEffect(() => {
-        setItems((prevItems) => ({
-            ...prevItems,
-            [SEARCH_RESULTS_ID]: searchResults.map(
-                (course, index) => `${course.department_code} ${course.catalog_number}`
-            ),
-        }));
-    }, [searchResults]);
-
-    const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(initial)];
-    const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
-    const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-    const lastOverId = useRef<UniqueIdentifier | null>(null);
-    const recentlyMovedToNewContainer = useRef(false);
-    const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(initial)];
+  const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const recentlyMovedToNewContainer = useRef(false);
+  const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
     /**
      * Custom collision detection strategy optimized for multiple containers
@@ -340,6 +344,7 @@ export function Canvas({
             // Reset items to their original state in case items have been
             // Dragged across containers
             setItems(clonedItems);
+
         }
 
         setActiveId(null);
@@ -616,6 +621,7 @@ export function Canvas({
         );
     }
 
+
     function handleRemove(containerID: UniqueIdentifier) {
         setContainers((containers) => containers.filter((id) => id !== containerID));
     }
@@ -631,6 +637,7 @@ export function Canvas({
             }));
         });
     }
+
 
     function getNextContainerId() {
         const containerIds = Object.keys(items);

@@ -8,7 +8,7 @@ export type DroppableProps = {
   children: React.ReactNode;
   dragging: boolean;
   id: UniqueIdentifier;
-}
+};
 
 export function Droppable({ children, id, dragging }: DroppableProps) {
   const { isOver, setNodeRef } = useDroppable({
