@@ -39,6 +39,7 @@ const UserSettings: React.FC<SettingsProps> = ({ settings, onClose, onSave }) =>
 
     fetch(process.env.BACKEND + '/update_user_class_year', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       // Need CSRF token here from Next.js
       body: useUserSlice.getState().classYear,

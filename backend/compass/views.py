@@ -169,17 +169,45 @@ class SearchCourses(View):
             return JsonResponse({'courses': []})
 
 
+class GetUserCourses(View):
+    """
+    Retrieves user's courses for frontend
+    """
+    def get(self, request, *args, **kwargs):
+        net_id = fetch_user_info(request.user)['net_id']
+        user_inst = CustomUser.objects.get(net_id=net_id)
+        user_course_dict = {}
+
+        if net_id:
+            try:
+                for semester in range(1, 9):
+                    user_courses = Course.objects.filter(usercourses__user=user_inst, usercourses__semester=semester)
+                    serialized_courses = CourseSerializer(user_courses, many=True)
+                    user_course_dict[semester] = serialized_courses.data
+
+                return JsonResponse(user_course_dict)
+
+            except Exception as e:
+                logger.error(f'An error occurred while retrieving courses: {e}')
+                return JsonResponse({'error': 'Internal Server Error'}, status=500)
+        else:
+            return JsonResponse({})
+
+
 # ---------------------------- UPDATE USER COURSES -----------------------------------#
 
 @csrf_exempt
 def update_user_class_year(request):
     try:
         class_year = int(request.body)
-        print(class_year)
-        user = request.user
-        print(user)
 
-        # get user instance from db, update class_year field
+        if (class_year > 2030) or (class_year < 2023):
+            raise ValueError("Class year out of range")
+
+        net_id = fetch_user_info(request.user)['net_id']
+        user_inst = CustomUser.objects.get(net_id=net_id)
+        user_inst.class_year = class_year
+        user_inst.save()
 
         return JsonResponse(
             {'status': 'success', 'message': 'Class year updated successfully.'}
@@ -188,29 +216,57 @@ def update_user_class_year(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-# def parse_semester(semester_id):
-#     season = semester_id.split(' ')[0]
-#     year = int(semester_id.split(' ')[1])
+
+def parse_semester(semester_id, class_year):
+    season = semester_id.split(' ')[0]
+    year = int(semester_id.split(' ')[1])
+    is_Fall = 1 if (season == "Fall") else 0
+    semester_num = 8 - ((class_year - year) * 2 - is_Fall)
+
+    return semester_num
+
+
+# This needs to be changed.
+def get_first_course_inst(course_code):
+    department_code = course_code.split(" ")[0]
+    catalog_number = course_code.split(" ")[1]
+    course_inst = Course.objects.filter(department__code=department_code,
+                                        catalog_number=catalog_number)[0]
+    return course_inst
 
 
 @csrf_exempt
 def update_user_courses(request):
     try:
         data = json.loads(request.body)
-        course_id = data.get('courseId')  # might have to adjust this, print
-        print(data)
-        semester_id = data.get('semesterId')
-        user = request.user
+        course_code = data.get('courseId')  # might have to adjust this, print
+        container = data.get('semesterId')
+        net_id = fetch_user_info(request.user)['net_id']
+        user_inst = CustomUser.objects.get(net_id=net_id)
+        class_year = user_inst.class_year
+        course_inst = get_first_course_inst(course_code)
 
-        UserCourses.objects.update_or_create(
-            user=user,
-            course_id=course_id,
-            defaults={
-                'semester_id': semester_id,
-            },
-        )
+        if container == 'Search Results':
+            user_course = UserCourses.objects.get(user=user_inst,
+                                                  course=course_inst)
+            user_course.delete()
+            message = f"User course deleted: {course_inst.id}, {net_id}"
+
+        else:
+            semester = parse_semester(container, class_year)
+
+            user_course, created = UserCourses.objects.update_or_create(
+                user=user_inst,
+                course=course_inst,
+                defaults={'semester': semester}
+            )
+            if created:
+                message = f"User course added: {semester}, {course_inst.id}, {net_id}"
+            else:
+                message = f"User course updated: {semester}, {course_inst.id}, {net_id}"
+
         return JsonResponse(
-            {'status': 'success', 'message': 'Course updated successfully.'}
+            {'status': 'success', 'message': message}
         )
 
     except Exception as e:
