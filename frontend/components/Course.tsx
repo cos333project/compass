@@ -1,4 +1,4 @@
-import { CourseType, CourseProps } from '../types';
+import { CourseProps } from '../types';
 
 const CourseItem: React.FC<CourseProps> = ({ id, course }) => {
   // This component now just needs to handle the rendering of the course

@@ -1,25 +1,22 @@
 import { create } from 'zustand';
 
-import { Settings} from '../types';
+import { Profile } from '@/types';
 
 type AuthState = {
-  user?: Settings;
+  user?: Profile;
   isAuthenticated: boolean | null;
 
   checkAuthentication: () => Promise<void>;
   login: () => void;
   logout: () => Promise<void>;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
 };
 
 const useAuthStore = create<AuthState>((set) => ({
   user: undefined,
   isAuthenticated: null,
-  
-  setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      const response = await fetch('http://localhost:8000/authenticate/', {
+      const response = await fetch(`${process.env.BACKEND}/authenticate`, {
         credentials: 'include',
       });
       const data = await response.json();
@@ -29,16 +26,19 @@ const useAuthStore = create<AuthState>((set) => ({
       });
     } catch (error) {
       console.error('Error checking authentication:', error);
-      set({ isAuthenticated: false, user: undefined });
+      set({
+        isAuthenticated: false,
+        user: undefined
+      });
     }
   },
   login: () => {
-    const nextUrl = encodeURIComponent('http://localhost:3000/dashboard/');
-    window.location.href = `http://localhost:8000/login?next=${nextUrl}`;
+    const nextUrl = `${process.env.COMPASS}/dashboard`;
+    window.location.href = `${process.env.BACKEND}/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch('http://localhost:8000/logout/', {
+      const response = await fetch(`${process.env.BACKEND}/logout`, {
         credentials: 'include',
       });
 
@@ -51,7 +51,7 @@ const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       console.error('Error during logout:', error);
     }
-    window.location.href = 'http://localhost:3000';
+    window.location.href = `${process.env.COMPASS}`;
   },
 }));
 

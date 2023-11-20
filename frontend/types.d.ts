@@ -1,21 +1,29 @@
-import { devtools } from 'zustand/middleware';
+export type AuthenticationStatus = {
+  isAuthenticated: boolean;
+}
 
-export type Settings = {
-  first_name: string;
-  last_name: string;
+export type MajorMinorType = {
+  code: string | null;
+  label: string;
+};
+
+export type Profile = {
+  firstName: string;
+  lastName: string;
   class_year: number;
-  major?: string;
-  minors: string[];
-  net_id: string;
-  university_id: string;
+  major?: MajorMinorType;
+  minors?: MajorMinorType[];
+  netId: string;
+  universityId: string;
   email: string;
   department: string;
   timeFormat24h: boolean;
   themeDarkMode: boolean;
+  updateProfile: (updates: Partial<Profile>) => void;
 };
 
-export type SettingsProps = {
-  settings: Settings;
+export type ProfileProps = {
+  profile: Profile;
   onClose: () => void;
   onSave: (updatedSettings: Settings) => void;
 };
@@ -100,8 +108,13 @@ export type DragDropContextProps = {
   searchResults: Course[];
 };
 
-export type DropdownMenuProps = {
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// export type DropdownMenuProps = {
+//   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// };
+
+export type MobileMenuState = {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
 };
 
 export type MenuItemProps = {

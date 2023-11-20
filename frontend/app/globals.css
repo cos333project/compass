@@ -4,8 +4,8 @@
 
 :root {
   --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
-  --background-start-rgb: 102, 51, 153; /* Darkened Princeton Orange */
-  --background-end-rgb: 51, 51, 51; /* Softened Black */
+  --background-start-rgb: 1f354e; /* compass-blue but darker */
+  --background-end-rgb: 0f1e2f; /* Change to compass-blue */
   --system-text-color: #d9d9d9; /* Light Gray */
 }
 
@@ -67,7 +67,7 @@ body {
   animation: modalEntrance 0.4s ease forwards;
 }
 
-// TODO: Double check if this is needed
+/* TODO: Double check if this is needed */
 @keyframes backdropFadeIn {
   to {
     opacity: 1;

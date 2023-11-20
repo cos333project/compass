@@ -1,11 +1,10 @@
 import React from 'react';
-import { useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog } from '@headlessui/react';
 import { Login } from './Login';
 import DropdownMenu from './DropdownMenu';
 import useAuthStore from '../store/authSlice';
-import Image from 'next/image';
+import useMobileMenuStore from '../store/mobileMenuSlice';
 
 const navigation = [
   { name: 'About', href: '#' },
@@ -20,7 +19,7 @@ const Navbar: React.FC = () => {
     logout: state.logout,
   }));
   console.log('Navbar component rendering, isAuthenticated:', isAuthenticated);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { mobileMenuOpen, setMobileMenuOpen } = useMobileMenuStore();
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // TODO: Change this to a proper route guard instead of onclick event

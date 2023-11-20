@@ -1,7 +1,5 @@
-import { forwardRef } from 'react';
-
 import classNames from 'classnames';
-
+import { forwardRef, Ref } from 'react';
 import styles from './Container.module.scss';
 import { Handle, Remove } from '../Item';
 
@@ -21,7 +19,7 @@ export interface ContainerProps {
   onRemove?(): void;
 }
 
-export const Container = forwardRef<HTMLDivElement, ContainerProps>(
+export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, ContainerProps>(
   (
     {
       children,
@@ -39,14 +37,14 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       unstyled,
       ...props
     }: ContainerProps,
-    ref
+    ref: Ref<HTMLDivElement | HTMLButtonElement>
   ) => {
     const Component = onClick ? 'button' : 'div';
 
     return (
       <Component
         {...props}
-        ref={ref}
+        ref={ref as any}
         style={
           {
             ...style,

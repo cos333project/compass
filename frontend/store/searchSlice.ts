@@ -12,7 +12,9 @@ const useSearchStore = create<SearchStoreState>((set) => ({
   setActiveDraggableCourse: (course) => set({ activeDraggableCourse: course }),
   addRecentSearch: (query) => {
     let trimmedQuery = query.trim();
-    if (trimmedQuery.length === 0) return;
+    if (trimmedQuery.length === 0) {
+      return;
+    }
     trimmedQuery = trimmedQuery.length > 120 ? trimmedQuery.slice(0, 120) : trimmedQuery;
     set((state) => {
       const updatedRecentSearches = [...new Set([trimmedQuery, ...state.recentSearches])].slice(
