@@ -180,7 +180,7 @@ export function Canvas({
                            vertical = false,
                            scrollable,
                        }: Props) {
-    const classYear = user.class_year;
+    const classYear = user.class_year ?? 2025;
     console.log(user.class_year)
     console.log(user)
 
@@ -200,10 +200,10 @@ export function Canvas({
 
 
     const updateSemesters = (prevItems: Items, classYear: number, user_courses: { [key: number]: Course[] }): Items => {
-        const startYear = classYear - 1;
+        const startYear = classYear - 4;
         console.log("updateSemesters called")
 
-        let semester = 7;
+        let semester = 1;
         for (let year = startYear; year < classYear; ++year) {
             prevItems[`Fall ${year}`] = user_courses[semester].map(course => `${course.department_code} ${course.catalog_number}`);
             semester += 1;
@@ -501,6 +501,7 @@ export function Canvas({
         fetch(process.env.BACKEND + '/update_user_courses/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           // Need CSRF token here from Next.js
           body: JSON.stringify({ courseId, semesterId }),
         })

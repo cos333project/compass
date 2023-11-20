@@ -39,30 +39,30 @@ def profile(request):
 @login_required
 def update_profile(request):
     # TODO: Validate this stuff
-    # Assuming the request data is sent as JSON
-    data = json.loads(request.body)
-    update_settings(request) # patch for now, 
-    # will have to make this more modular and elegant smh --windsor
-
-    # Validate and extract the new fields
-    new_first_name = data.get('firstName', '')
-    new_last_name = data.get('lastName', '')
-    new_major = data.get('major', '')
-    new_minors = data.get('minors', '')  # Assuming minors is a comma-separated string
-
-    # Fetch the user's profile
-    net_id = request.user.net_id  # or however you get the net_id
-    user_profile = CustomUser.objects.get(net_id=net_id)
-
-    user_profile.first_name = data.get('firstName', '')
-    user_profile.last_name = data.get('lastName', '')
-    user_profile.major = data.get('major', {}).get('code')
-    # user_profile.minors = [minor.get('code') for minor in minor.set()]
-    user_profile.class_year = data.get('classYear', {}).get('code')
-    user_profile.timeFormat24h = data.get('timeFormat24h', False)
-    user_profile.themeDarkMode = data.get('themeDarkMode', False)
-
-    user_profile.save()
+    # # Assuming the request data is sent as JSON
+    # data = json.loads(request.body)
+    # update_settings(request) # patch for now,
+    # # will have to make this more modular and elegant smh --windsor
+    #
+    # # Validate and extract the new fields
+    # new_first_name = data.get('firstName', '')
+    # new_last_name = data.get('lastName', '')
+    # new_major = data.get('major', '')
+    # new_minors = data.get('minors', '')  # Assuming minors is a comma-separated string
+    #
+    # # Fetch the user's profile
+    # net_id = request.user.net_id  # or however you get the net_id
+    # user_profile = CustomUser.objects.get(net_id=net_id)
+    #
+    # user_profile.first_name = data.get('firstName', '')
+    # user_profile.last_name = data.get('lastName', '')
+    # user_profile.major = data.get('major', {}).get('code')
+    # # user_profile.minors = [minor.get('code') for minor in minor.set()]
+    # user_profile.class_year = data.get('classYear', {}).get('code')
+    # user_profile.timeFormat24h = data.get('timeFormat24h', False)
+    # user_profile.themeDarkMode = data.get('themeDarkMode', False)
+    #
+    # user_profile.save()
     updated_user_info = fetch_user_info(request.user)
     return JsonResponse(updated_user_info)
 
@@ -199,26 +199,6 @@ class GetUserCourses(View):
 
 # ---------------------------- UPDATE USER COURSES -----------------------------------#
 
-@csrf_exempt
-def update_settings(request):
-    try:
-        class_year = int(request.body)
-
-        if (class_year > 2030) or (class_year < 2023):
-            raise ValueError("Class year out of range")
-
-        net_id = fetch_user_info(request.user)['net_id']
-        user_inst = CustomUser.objects.get(net_id=net_id)
-        user_inst.class_year = class_year
-        user_inst.save()
-
-        return JsonResponse(
-            {'status': 'success', 'message': 'Class year updated successfully.'}
-        )
-
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-
 
 def parse_semester(semester_id, class_year):
     season = semester_id.split(' ')[0]
@@ -271,6 +251,27 @@ def update_user_courses(request):
 
         return JsonResponse(
             {'status': 'success', 'message': message}
+        )
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+@csrf_exempt
+def update_user(request):
+    try:
+        class_year = int(request.body)
+
+        if (class_year > 2030) or (class_year < 2023):
+            raise ValueError("Class year out of range")
+
+        net_id = fetch_user_info(request.user)['net_id']
+        user_inst = CustomUser.objects.get(net_id=net_id)
+        user_inst.class_year = class_year
+        user_inst.save()
+
+        return JsonResponse(
+            {'status': 'success', 'message': 'Class year updated successfully.'}
         )
 
     except Exception as e:

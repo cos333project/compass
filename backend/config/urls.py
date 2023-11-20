@@ -33,5 +33,5 @@ urlpatterns = [
     path('search/', views.SearchCourses.as_view(), name='search'),
     path('get_user_courses/', views.GetUserCourses.as_view(), name='get_user_courses'),
     path('update_user_courses/', views.update_user_courses, name='update_user_courses'),
-    path('update_settings/', views.update_settings, name='update_settings'),
+    path('update_user/', views.update_user, name='update_settings'),
 ]

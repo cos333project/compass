@@ -8,7 +8,7 @@ const useUserSlice = create<Profile>((set) => ({
   lastName: '',
   major: undefined,
   minors: [],
-  class_year: -1,
+  class_year: undefined,
   netId: '',
   universityId: '',
   email: '',

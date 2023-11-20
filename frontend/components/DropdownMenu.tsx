@@ -91,7 +91,7 @@ const DropdownMenu: React.FC = () => {
         return; // Exit the function or handle this case as appropriate
       }
       // const csrfToken = csrfTokenCookie.split('=')[1];
-      const response = await fetch(`${process.env.BACKEND}/update_profile`, {
+      const response = await fetch(`${process.env.BACKEND}/update_profile/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

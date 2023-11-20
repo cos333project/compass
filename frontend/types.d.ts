@@ -10,7 +10,7 @@ export type MajorMinorType = {
 export type Profile = {
   firstName: string;
   lastName: string;
-  class_year: number;
+  class_year: number | undefined;
   major?: MajorMinorType;
   minors?: MajorMinorType[];
   netId: string;
