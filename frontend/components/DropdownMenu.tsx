@@ -29,9 +29,13 @@ const DropdownMenu: React.FC = () => {
     lastName: "",
     major: "",
     minors: [],
+    netId: "",
+    universityId: "",
+    email: "",
+    department: "",
     class_year: "",
     timeFormat24h: false,
-    themeDarkMode: false
+    themeDarkMode: false,
   });
 
   const firstName = user?.firstName;
@@ -64,8 +68,12 @@ const DropdownMenu: React.FC = () => {
           major: data?.major,
           minors: data?.minors,
           class_year: data?.class_year,
+          netId: "",
+          universityId: "",
+          email: "",
+          department: "",
           timeFormat24h: data.timeFormat24h,
-          themeDarkMode: data.themeDarkMode
+          themeDarkMode: data.themeDarkMode,
         });
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -153,7 +161,7 @@ const DropdownMenu: React.FC = () => {
       {blur && (
         <SettingsModal onClose={() => setBlur(false)}>
           <UserSettings
-            settings={userSettings}
+            profile= {userSettings}
             onClose={() => setBlur(false)}
             onSave={handleSaveUserSettings}
           />
