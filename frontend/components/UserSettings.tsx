@@ -1,6 +1,6 @@
 import useUserSlice from '@/store/userSlice';
 import { MajorMinorType, ProfileProps } from '@/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Autocomplete,
@@ -51,6 +51,16 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [localTimeFormat24h, setLocalTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
   const [localThemeDarkMode, setLocalThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
 
+  // this might be useless
+  useEffect(() => {
+    setLocalFirstName(profile.firstName || '');
+    setLocalLastName(profile.lastName || '');
+    setLocalMajor(useUserSlice.getState().major);
+    setLocalMinors(useUserSlice.getState().minors);
+    setLocalClassYear(useUserSlice.getState().class_year || undefined);
+    setLocalTimeFormat24h(profile.timeFormat24h || false);
+    setLocalThemeDarkMode(profile.themeDarkMode || false);
+  }, [profile]);
 
   const handleSave = async () => {
     updateProfile({

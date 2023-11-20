@@ -2,19 +2,24 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+
 :root {
-  --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
-  --background-start-rgb: 1f354e; /* compass-blue but darker */
-  --background-end-rgb: 0f1e2f; /* Change to compass-blue */
-  --system-text-color: #d9d9d9; /* Light Gray */
+  --foreground-rgb: 30, 30, 30; /* Dark Gray for text */
+  --background-start-rgb: 31, 53, 78; /* compass-blue but darker */
+  --background-end-rgb: 15, 30, 47; /* Change to compass-blue */
+  --system-text-color: #f6efec; /* Light Gray */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 224, 224, 224; /* Soft White for text */
+    /*--foreground-rgb: 224, 224, 224; !* Soft White for text *!*/
+    /*--background-start-rgb: 18, 18, 18; !* Near Black *!*/
+    /*--background-end-rgb: 30, 30, 30; !* Dark Gray *!*/
+    /*--system-text-color: #fafafa; !* Soft Blue *!*/
+    --foreground-rgb: 0, 0, 0; /* Dark Gray for text */
     --background-start-rgb: 18, 18, 18; /* Near Black */
-    --background-end-rgb: 30, 30, 30; /* Dark Gray */
-    --system-text-color: #fafafa; /* Soft Blue */
+    --background-end-rgb: 30, 30, 30; /* Change to compass-blue */
+    --system-text-color:#f6efec; /* Light Gray */
   }
 }
 

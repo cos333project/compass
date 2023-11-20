@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`absolute bg---system-text-colorabsolute inset-x-0 top-0 z-50 transform ${
+      className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform ${
         isAuthInitialized ? fadeIn : hidden
       } ${!isAuthInitialized ? fadeOut : ''}`}
     >
@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
             <Bars3Icon className='h-6 w-6' aria-hidden='true' />
           </button>
         </div>
-        <div className='hidden lg:flex lg:gap-x-12'>
+        <div className='hidden lg:flex lg:gap-x-12 '>
           {navigation.map((item) =>
             item.name === 'Dashboard' ? (
               <a

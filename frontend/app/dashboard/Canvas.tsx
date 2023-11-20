@@ -186,7 +186,7 @@ export function Canvas({
 
     const generateSemesters = (classYear: number): Items => {
         let semesters: Items = {};
-        const startYear = classYear - 1;
+        const startYear = classYear - 4;
 
         let semester = 1;
         for (let year = startYear; year < classYear; ++year) {

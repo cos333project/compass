@@ -241,6 +241,7 @@ def get_first_course_inst(course_code):
 @csrf_exempt
 def update_user_courses(request):
     try:
+        print(request.user)
         data = json.loads(request.body)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
