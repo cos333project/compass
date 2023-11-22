@@ -5,12 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
-from .models import Course, CustomUser, models, UserCourses
+from .models import Course, CustomUser, models, UserCourses, Minor
 from django.views.decorators.csrf import csrf_exempt
-from .models import Course, CustomUser, models, Minor
 from .serializers import CourseSerializer
 import ujson as json
-from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +45,13 @@ def update_profile(request):
     updated_major = data.get('major', '')
     updated_minors = data.get('minors', [])
     updated_class_year = data.get('classYear', '')
-    
+
     # Fetch the user's profile
     net_id = request.user.net_id
     user_profile = CustomUser.objects.get(net_id=net_id)
-    print(f'USER PROFILE: {user_profile.first_name} {user_profile.last_name} {user_profile.major_id} {user_profile.minors} {user_profile.class_year}')
+    print(
+        f'USER PROFILE: {user_profile.first_name} {user_profile.last_name} {user_profile.major_id} {user_profile.minors} {user_profile.class_year}'
+    )
     # Update user's profile
     user_profile.first_name = updated_first_name
     user_profile.last_name = updated_last_name
@@ -59,9 +59,11 @@ def update_profile(request):
 
     if isinstance(updated_minors, list):
         # Assuming each minor is represented by its 'code' and you have Minor models
-        minor_objects = [Minor.objects.get(code=minor.get('code', '')) for minor in updated_minors]
+        minor_objects = [
+            Minor.objects.get(code=minor.get('code', '')) for minor in updated_minors
+        ]
         user_profile.minors.set(minor_objects)
-        
+
     user_profile.classYear = updated_class_year
     user_profile.timeFormat24h = data.get('timeFormat24h', False)
     user_profile.themeDarkMode = data.get('themeDarkMode', False)
