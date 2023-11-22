@@ -258,7 +258,13 @@ def update_user_courses(request):
         return JsonResponse({'status': 'success', 'message': message})
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        # Log the detailed error internally
+        logger.error(f'An internal error occurred: {e}', exc_info=True)
+
+        # Return a generic error message to the user
+        return JsonResponse(
+            {'status': 'error', 'message': 'An internal error has occurred!'}
+        )
 
 
 @csrf_exempt
@@ -279,4 +285,10 @@ def update_user(request):
         )
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        # Log the detailed error internally
+        logger.error(f'An internal error occurred: {e}', exc_info=True)
+
+        # Return a generic error message to the user
+        return JsonResponse(
+            {'status': 'error', 'message': 'An internal error has occurred!'}
+        )
