@@ -7,12 +7,14 @@ import { rectSortingStrategy } from '@dnd-kit/sortable';
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
 import useAuthStore from '../../store/authSlice';
+import UserState from '../../store/userSlice';
 
 import { Canvas } from './Canvas';
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { user, isAuthenticated, checkAuthentication } = useAuthStore((state) => state);
+  const userProfile = UserState((state) => state.profile);
 
   useEffect(() => {
     checkAuthentication()
@@ -41,7 +43,7 @@ const Dashboard: React.FC = () => {
         <main className='flex p-2 flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
           {user && (
             <Canvas
-              user={user}
+              user={userProfile}
               trashable
               columns={2}
               strategy={rectSortingStrategy}

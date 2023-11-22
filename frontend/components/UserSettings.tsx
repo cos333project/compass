@@ -40,7 +40,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [localFirstName, setLocalFirstName] = useState<string>(profile.firstName);
   const [localLastName, setLocalLastName] = useState<string>(profile.lastName);
   const [localClassYear, setLocalClassYear] = useState<number | undefined>(
-    generateClassYears().find((year) => year === profile.class_year) ?? new Date().getFullYear() + 1
+    generateClassYears().find((year) => year === profile.classYear) ?? new Date().getFullYear() + 1
   );
   const [localMajor, setLocalMajor] = useState<MajorMinorType | undefined>(
     profile.major ?? undefined
@@ -89,14 +89,12 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             variant='soft'
             value={localFirstName}
             onChange={(e) => setLocalFirstName(e.target.value)}
-            fullWidth
           />
           <Input
             placeholder='Last name'
             variant='soft'
             value={localLastName}
             onChange={(e) => setLocalLastName(e.target.value)}
-            fullWidth
           />
           <Autocomplete
             autoHighlight

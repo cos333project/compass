@@ -4,13 +4,13 @@ import { create } from 'zustand';
 
 import { UserState } from '../types';
 
-const useUserSlice = create<UserState>((set) => ({
+export const useUserSlice = create<UserState>((set) => ({
   profile: {
     firstName: '',
     lastName: '',
     major: undefined,
     minors: [],
-    class_year: undefined,
+    classYear: undefined,
     netId: '',
     universityId: '',
     email: '',
@@ -39,12 +39,13 @@ export const useFetchUserProfile = () => {
         }
 
         const data = await response.json();
+        console.log(data);
         updateStore({
           firstName: data.first_name,
           lastName: data.last_name,
           major: data.major,
           minors: data.minors,
-          class_year: data.class_year, // set timeFormat24h and themeDarkMode
+          classYear: data.class_year, // set timeFormat24h and themeDarkMode in CustomUser
         });
       } catch (error) {
         console.error('Error fetching profile:', error);

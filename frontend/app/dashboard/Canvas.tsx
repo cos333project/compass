@@ -180,8 +180,8 @@ export function Canvas({
   // vertical = false,
   scrollable,
 }: Props) {
-  const classYear = user.class_year ?? 2025;
-  console.log(user.class_year);
+  const classYear = user.classYear ?? 2025;
+  console.log(user.classYear);
   console.log(user);
 
   const generateSemesters = (classYear: number): Items => {
