@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views import View
 from .models import Course, CustomUser, models, UserCourses
 from django.views.decorators.csrf import csrf_exempt
-from .models import Course, CustomUser, models
+from .models import Course, CustomUser, models, Minor
 from .serializers import CourseSerializer
 import ujson as json
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +25,7 @@ def fetch_user_info(user):
         'first_name': getattr(user, 'first_name', None),
         'last_name': getattr(user, 'last_name', None),
         'class_year': getattr(user, 'class_year', None),
-        'department' : getattr(user, 'department', None)
+        'department': getattr(user, 'department', None),
     }
 
 
@@ -34,36 +34,40 @@ def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
 
+
 # TODO: Need to give csrf token instead of exempting it in production
 @csrf_exempt
 @login_required
 def update_profile(request):
     # TODO: Validate this stuff
-    # # Assuming the request data is sent as JSON
-    # data = json.loads(request.body)
-    # update_settings(request) # patch for now,
-    # # will have to make this more modular and elegant smh --windsor
-    #
-    # # Validate and extract the new fields
-    # new_first_name = data.get('firstName', '')
-    # new_last_name = data.get('lastName', '')
-    # new_major = data.get('major', '')
-    # new_minors = data.get('minors', '')  # Assuming minors is a comma-separated string
-    #
-    # # Fetch the user's profile
-    # net_id = request.user.net_id  # or however you get the net_id
-    # user_profile = CustomUser.objects.get(net_id=net_id)
-    #
-    # user_profile.first_name = data.get('firstName', '')
-    # user_profile.last_name = data.get('lastName', '')
-    # user_profile.major = data.get('major', {}).get('code')
-    # # user_profile.minors = [minor.get('code') for minor in minor.set()]
-    # user_profile.class_year = data.get('classYear', {}).get('code')
-    # user_profile.timeFormat24h = data.get('timeFormat24h', False)
-    # user_profile.themeDarkMode = data.get('themeDarkMode', False)
-    #
-    # user_profile.save()
+    print(f'YOU ARE HERE {request.body}')
+    data = json.loads(request.body)
+    updated_first_name = data.get('firstName', '')
+    updated_last_name = data.get('lastName', '')
+    updated_major = data.get('major', '')
+    updated_minors = data.get('minors', [])
+    updated_class_year = data.get('classYear', '')
+    
+    # Fetch the user's profile
+    net_id = request.user.net_id
+    user_profile = CustomUser.objects.get(net_id=net_id)
+    print(f'USER PROFILE: {user_profile.first_name} {user_profile.last_name} {user_profile.major_id} {user_profile.minors} {user_profile.class_year}')
+    # Update user's profile
+    user_profile.first_name = updated_first_name
+    user_profile.last_name = updated_last_name
+    user_profile.major_id = updated_major
+
+    if isinstance(updated_minors, list):
+        # Assuming each minor is represented by its 'code' and you have Minor models
+        minor_objects = [Minor.objects.get(code=minor.get('code', '')) for minor in updated_minors]
+        user_profile.minors.set(minor_objects)
+        
+    user_profile.classYear = updated_class_year
+    user_profile.timeFormat24h = data.get('timeFormat24h', False)
+    user_profile.themeDarkMode = data.get('themeDarkMode', False)
+    user_profile.save()
     updated_user_info = fetch_user_info(request.user)
+    print(f'UPDATED USER INFO: {updated_user_info}')
     return JsonResponse(updated_user_info)
 
 
@@ -176,6 +180,7 @@ class GetUserCourses(View):
     """
     Retrieves user's courses for frontend
     """
+
     def get(self, request, *args, **kwargs):
         net_id = fetch_user_info(request.user)['net_id']
         user_inst = CustomUser.objects.get(net_id=net_id)
@@ -184,7 +189,9 @@ class GetUserCourses(View):
         if net_id:
             try:
                 for semester in range(1, 9):
-                    user_courses = Course.objects.filter(usercourses__user=user_inst, usercourses__semester=semester)
+                    user_courses = Course.objects.filter(
+                        usercourses__user=user_inst, usercourses__semester=semester
+                    )
                     serialized_courses = CourseSerializer(user_courses, many=True)
                     user_course_dict[semester] = serialized_courses.data
 
@@ -203,7 +210,7 @@ class GetUserCourses(View):
 def parse_semester(semester_id, class_year):
     season = semester_id.split(' ')[0]
     year = int(semester_id.split(' ')[1])
-    is_Fall = 1 if (season == "Fall") else 0
+    is_Fall = 1 if (season == 'Fall') else 0
     semester_num = 8 - ((class_year - year) * 2 - is_Fall)
 
     return semester_num
@@ -211,17 +218,17 @@ def parse_semester(semester_id, class_year):
 
 # This needs to be changed.
 def get_first_course_inst(course_code):
-    department_code = course_code.split(" ")[0]
-    catalog_number = course_code.split(" ")[1]
-    course_inst = Course.objects.filter(department__code=department_code,
-                                        catalog_number=catalog_number)[0]
+    department_code = course_code.split(' ')[0]
+    catalog_number = course_code.split(' ')[1]
+    course_inst = Course.objects.filter(
+        department__code=department_code, catalog_number=catalog_number
+    )[0]
     return course_inst
 
 
 @csrf_exempt
 def update_user_courses(request):
     try:
-        print(request.user)
         data = json.loads(request.body)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
@@ -231,27 +238,22 @@ def update_user_courses(request):
         course_inst = get_first_course_inst(course_code)
 
         if container == 'Search Results':
-            user_course = UserCourses.objects.get(user=user_inst,
-                                                  course=course_inst)
+            user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
-            message = f"User course deleted: {course_inst.id}, {net_id}"
+            message = f'User course deleted: {course_inst.id}, {net_id}'
 
         else:
             semester = parse_semester(container, class_year)
 
             user_course, created = UserCourses.objects.update_or_create(
-                user=user_inst,
-                course=course_inst,
-                defaults={'semester': semester}
+                user=user_inst, course=course_inst, defaults={'semester': semester}
             )
             if created:
-                message = f"User course added: {semester}, {course_inst.id}, {net_id}"
+                message = f'User course added: {semester}, {course_inst.id}, {net_id}'
             else:
-                message = f"User course updated: {semester}, {course_inst.id}, {net_id}"
+                message = f'User course updated: {semester}, {course_inst.id}, {net_id}'
 
-        return JsonResponse(
-            {'status': 'success', 'message': message}
-        )
+        return JsonResponse({'status': 'success', 'message': message})
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
@@ -263,7 +265,7 @@ def update_user(request):
         class_year = int(request.body)
 
         if (class_year > 2030) or (class_year < 2023):
-            raise ValueError("Class year out of range")
+            raise ValueError('Class year out of range')
 
         net_id = fetch_user_info(request.user)['net_id']
         user_inst = CustomUser.objects.get(net_id=net_id)

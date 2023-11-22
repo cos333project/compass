@@ -1,22 +1,14 @@
 import { create } from 'zustand';
 
-import { Profile } from '@/types';
-
-type AuthState = {
-  user?: Profile;
-  isAuthenticated: boolean | null;
-
-  checkAuthentication: () => Promise<void>;
-  login: () => void;
-  logout: () => Promise<void>;
-};
+import { AuthState } from '../types';
 
 const useAuthStore = create<AuthState>((set) => ({
   user: undefined,
   isAuthenticated: null,
+  setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      const response = await fetch(`${process.env.BACKEND}/authenticate`, {
+      const response = await fetch(`${process.env.BACKEND}/authenticate/`, {
         credentials: 'include',
       });
       const data = await response.json();
@@ -26,23 +18,18 @@ const useAuthStore = create<AuthState>((set) => ({
       });
     } catch (error) {
       console.error('Error checking authentication:', error);
-      set({
-        isAuthenticated: false,
-        user: undefined
-      });
+      set({ isAuthenticated: false, user: undefined });
     }
   },
   login: () => {
-    const nextUrl = `${process.env.COMPASS}/dashboard`;
+    const nextUrl = encodeURIComponent(`${process.env.COMPASS}/dashboard/`);
     window.location.href = `${process.env.BACKEND}/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch(`${process.env.BACKEND}/logout`, {
+      const response = await fetch(`${process.env.BACKEND}/logout/`, {
         credentials: 'include',
       });
-
-      console.log(response.ok);
       if (response.ok) {
         set({ isAuthenticated: false, user: undefined });
       } else {

@@ -1,23 +1,25 @@
+import { useEffect } from 'react';
+
 import { create } from 'zustand';
-import { useEffect }  from 'react';
 
-import { Profile } from '../types';
+import { UserState } from '../types';
 
-const useUserSlice = create<Profile>((set) => ({
-  firstName: '',
-  lastName: '',
-  major: undefined,
-  minors: [],
-  class_year: undefined,
-  netId: '',
-  universityId: '',
-  email: '',
-  department: '',
-  themeDarkMode: false,
-  timeFormat24h: false,
-  updateProfile: (updates) => set((state) => ({ ...state, ...updates })),
+const useUserSlice = create<UserState>((set) => ({
+  profile: {
+    firstName: '',
+    lastName: '',
+    major: undefined,
+    minors: [],
+    class_year: undefined,
+    netId: '',
+    universityId: '',
+    email: '',
+    department: '',
+    themeDarkMode: false,
+    timeFormat24h: false,
+  },
+  updateProfile: (updates) => set((state) => ({ profile: { ...state.profile, ...updates } })),
 }));
-
 
 // Custom hook for fetching user data
 export const useFetchUserProfile = () => {
@@ -44,7 +46,6 @@ export const useFetchUserProfile = () => {
           minors: data.minors,
           class_year: data.class_year, // set timeFormat24h and themeDarkMode
         });
-
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
@@ -53,6 +54,5 @@ export const useFetchUserProfile = () => {
     fetchProfile();
   }, [updateStore]);
 };
-
 
 export default useUserSlice;

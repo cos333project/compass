@@ -13,7 +13,7 @@ export interface Props {
   disabled?: boolean;
   dragging?: boolean;
   handle?: boolean;
-  handleProps?: any;
+  handleProps?: (element: HTMLElement | null) => void | undefined;
   height?: number;
   index?: number;
   fadeIn?: boolean;
@@ -51,7 +51,7 @@ export const Item = memo(
         fadeIn,
         handle,
         handleProps,
-        height,
+        // TODO: need?: height,
         index,
         listeners,
         onRemove,

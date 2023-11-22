@@ -1,5 +1,6 @@
-import classNames from 'classnames';
 import { forwardRef } from 'react';
+
+import classNames from 'classnames';
 
 import styles from './List.module.scss';
 

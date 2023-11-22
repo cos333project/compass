@@ -7,9 +7,11 @@ import useAuthStore from '../store/authSlice';
 
 const Home = () => {
   const { checkAuthentication } = useAuthStore();
+
   useEffect(() => {
     checkAuthentication();
   }, [checkAuthentication]);
+
   return (
     <>
       <Navbar />

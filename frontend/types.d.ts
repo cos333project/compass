@@ -1,6 +1,16 @@
-export type AuthenticationStatus = {
-  isAuthenticated: boolean;
-}
+export type AuthState = {
+  user?: Profile;
+  isAuthenticated: boolean | null;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  checkAuthentication: () => Promise<void>;
+  login: () => void;
+  logout: () => Promise<void>;
+};
+
+export type UserState = {
+  profile: Profile;
+  updateProfile: (updates: Partial<Profile>) => void;
+};
 
 export type MajorMinorType = {
   code: string | null;
@@ -10,7 +20,7 @@ export type MajorMinorType = {
 export type Profile = {
   firstName: string;
   lastName: string;
-  class_year: number | undefined;
+  classYear: number | undefined;
   major?: MajorMinorType;
   minors?: MajorMinorType[];
   netId: string;
@@ -19,7 +29,6 @@ export type Profile = {
   department: string;
   timeFormat24h: boolean;
   themeDarkMode: boolean;
-  updateProfile: (updates: Partial<Profile>) => void;
 };
 
 export type ProfileProps = {

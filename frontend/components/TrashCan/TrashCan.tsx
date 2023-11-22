@@ -3,7 +3,7 @@ import './TrashCan.module.scss';
 
 export type TrashCanProps = {
   id: UniqueIdentifier;
-}
+};
 
 export const TrashCan: React.FC<TrashCanProps> = ({ id }) => {
   const { setNodeRef, isOver } = useDroppable({

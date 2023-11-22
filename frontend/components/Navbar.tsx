@@ -1,22 +1,25 @@
-import React from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { memo } from 'react';
+
 import { Dialog } from '@headlessui/react';
-import { Login } from './Login';
-import DropdownMenu from './DropdownMenu';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
+
 import useAuthStore from '../store/authSlice';
 import useMobileMenuStore from '../store/mobileMenuSlice';
 
+import DropdownMenu from './DropdownMenu';
+import { Login } from './Login';
+
 const navigation = [
-  { name: 'About', href: '#' },
-  { name: 'Dashboard', href: '/dashboard' }, // Should be protected path and not auto-redirect
+  { name: 'About', href: '/' },
+  { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
   { name: 'Contact Us', href: '/' },
 ];
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, login, logout } = useAuthStore((state) => ({
+  const { isAuthenticated, login } = useAuthStore((state) => ({
     isAuthenticated: state.isAuthenticated,
     login: state.login,
-    logout: state.logout,
   }));
   console.log('Navbar component rendering, isAuthenticated:', isAuthenticated);
   const { mobileMenuOpen, setMobileMenuOpen } = useMobileMenuStore();
@@ -45,7 +48,7 @@ const Navbar: React.FC = () => {
         <div className='flex lg:flex-1'>
           <a href='.' className='-m-1.5 p-1.5'>
             <span className='sr-only'>Compass</span>
-            <img className='h-9 w-auto' src={'./logo.png'} alt='Compass Logo' />
+            <Image src='/logo.png' height={45} width={45} alt='Compass Logo' />
           </a>
         </div>
         <div className='flex lg:hidden'>
@@ -125,4 +128,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default React.memo(Navbar);
+export default memo(Navbar);

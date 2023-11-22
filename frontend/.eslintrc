@@ -41,6 +41,26 @@
             "pattern": "react",
             "group": "external",
             "position": "before"
+          },
+          {
+            "pattern": "@/*",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "../*/*",
+            "group": "parent",
+            "position": "after"
+          },
+          {
+            "pattern": "./*",
+            "group": "sibling",
+            "position": "after"
           }
         ],
         "pathGroupsExcludedImportTypes": ["builtin"],

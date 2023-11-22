@@ -1,5 +1,7 @@
 'use client';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import {
   CancelDrop,
   closestCenter,
@@ -32,33 +34,33 @@ import {
   SortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
+
+import { Course, Profile } from '@/types';
+
+import Search from '@/components/Search';
+import useSearchStore from '@/store/searchSlice';
 
 import { Item, Container, ContainerProps } from '../../components';
 
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
-import {Course, Profile} from "@/types";
-import useSearchStore from '@/store/searchSlice';
-import Search from '@/components/Search';
-import useUserSliceStore from '@/store/userSlice';
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
+// TODO: Might be needed for styling
+// const gridContainerStyle = {
+//   display: 'grid',
+//   gridTemplateColumns: '1fr 1fr', // Two columns
+//   gridTemplateRows: 'repeat(4, 1fr)', // Four rows
+//   gap: '10px', // Space between grid items
+// };
 
-const gridContainerStyle = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr', // Two columns
-  gridTemplateRows: 'repeat(4, 1fr)', // Four rows
-  gap: '10px', // Space between grid items
-};
-
-const gridItemStyle = {
-  border: '1px solid #ccc',
-  padding: '10px',
-  textAlign: 'center',
-};
+// const gridItemStyle = {
+//   border: '1px solid #ccc',
+//   padding: '10px',
+//   textAlign: 'center',
+// };
 
 function DroppableContainer({
   children,
@@ -122,13 +124,13 @@ const dropAnimation: DropAnimation = {
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
 interface Props {
-    user: Profile;
-    adjustScale?: boolean;
-    cancelDrop?: CancelDrop;
-    columns?: number;
-    initialItems?: Items; // Consider removing since we populate semester bins based on classyear
-    containerStyle?: React.CSSProperties;
-    coordinateGetter?: KeyboardCoordinateGetter;
+  user: Profile;
+  adjustScale?: boolean;
+  cancelDrop?: CancelDrop;
+  columns?: number;
+  initialItems?: Items; // Consider removing since we populate semester bins based on classyear
+  containerStyle?: React.CSSProperties;
+  coordinateGetter?: KeyboardCoordinateGetter;
 
   getItemStyles?(args: {
     value: UniqueIdentifier;
@@ -139,12 +141,13 @@ interface Props {
     isSorting: boolean;
     isDragOverlay: boolean;
   }): React.CSSProperties;
+
   wrapperStyle?(args: { index: number }): React.CSSProperties;
 
   itemCount?: number;
   items?: Items;
   handle?: boolean;
-  renderItem?: any;
+  renderItem?(): React.ReactElement;
   strategy?: SortingStrategy;
   modifiers?: Modifiers;
   minimal?: boolean;
@@ -157,105 +160,106 @@ export const TRASH_ID = 'void';
 export const PLACEHOLDER_ID = 'placeholder';
 export const SEARCH_RESULTS_ID = 'Search Results';
 
-const empty: UniqueIdentifier[] = [];
-
-
 export function Canvas({
-                           user,
-                           adjustScale = false,
-                           itemCount = 3, // remove this?
-                           cancelDrop,
-                           columns = 2,
-                           handle = false,
-                           initialItems, // remove
-                           containerStyle,
-                           coordinateGetter = multipleContainersCoordinateGetter,
-                           getItemStyles = () => ({}),
-                           wrapperStyle = () => ({}),
-                           minimal = false,
-                           modifiers,
-                           renderItem,
-                           strategy = verticalListSortingStrategy,
-                           trashable = false,
-                           vertical = false,
-                           scrollable,
-                       }: Props) {
-    const classYear = user.class_year ?? 2025;
-    console.log(user.class_year)
-    console.log(user)
+  user,
+  adjustScale = false,
+  // itemCount = 3, // remove this?
+  cancelDrop,
+  columns = 2,
+  handle = false,
+  // initialItems, // remove
+  containerStyle,
+  coordinateGetter = multipleContainersCoordinateGetter,
+  getItemStyles = () => ({}),
+  wrapperStyle = () => ({}),
+  minimal = false,
+  modifiers,
+  renderItem,
+  strategy = verticalListSortingStrategy,
+  trashable = false,
+  // vertical = false,
+  scrollable,
+}: Props) {
+  const classYear = user.class_year ?? 2025;
+  console.log(user.class_year);
+  console.log(user);
 
-    const generateSemesters = (classYear: number): Items => {
-        let semesters: Items = {};
-        const startYear = classYear - 4;
+  const generateSemesters = (classYear: number): Items => {
+    const semesters: Items = {};
+    const startYear = classYear - 4;
 
-        let semester = 1;
-        for (let year = startYear; year < classYear; ++year) {
-            semesters[`Fall ${year}`] = [];
-            semester += 1;
-            semesters[`Spring ${year + 1}`] = [];
-            semester += 1;
-        }
+    for (let year = startYear; year < classYear; ++year) {
+      semesters[`Fall ${year}`] = [];
+      semesters[`Spring ${year + 1}`] = [];
+    }
     return semesters;
   };
 
+  const updateSemesters = (
+    prevItems: Items,
+    classYear: number,
+    user_courses: { [key: number]: Course[] }
+  ): Items => {
+    const startYear = classYear - 4;
+    console.log('updateSemesters called');
 
-    const updateSemesters = (prevItems: Items, classYear: number, user_courses: { [key: number]: Course[] }): Items => {
-        const startYear = classYear - 4;
-        console.log("updateSemesters called")
+    let semester = 1;
+    for (let year = startYear; year < classYear; ++year) {
+      prevItems[`Fall ${year}`] = user_courses[semester].map(
+        (course) => `${course.department_code} ${course.catalog_number}`
+      );
+      semester += 1;
+      prevItems[`Spring ${year + 1}`] = user_courses[semester].map(
+        (course) => `${course.department_code} ${course.catalog_number}`
+      );
+      semester += 1;
+    }
 
-        let semester = 1;
-        for (let year = startYear; year < classYear; ++year) {
-            prevItems[`Fall ${year}`] = user_courses[semester].map(course => `${course.department_code} ${course.catalog_number}`);
-            semester += 1;
-            prevItems[`Spring ${year + 1}`] = user_courses[semester].map(course => `${course.department_code} ${course.catalog_number}`);
-            semester += 1;
-        }
+    console.log(user_courses);
+    console.log(prevItems);
+    return prevItems;
+  };
 
-        console.log(user_courses)
-        console.log(prevItems)
-        return prevItems;
-    };
+  const semesters = generateSemesters(classYear);
+  const [items, setItems] = useState<Items>(() => ({
+    [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
+    ...semesters,
+  }));
 
-    const semesters = generateSemesters(classYear);
-    const [items, setItems] = useState<Items>(() => ({
-        [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
-        ...semesters,
-    }));
+  useEffect(() => {
+    let user_courses: { [key: number]: Course[] } = {};
 
-    useEffect(() => {
-        let user_courses: { [key: number]: Course[] } = {};
+    fetch('http://localhost:8000/get_user_courses/', {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        user_courses = data;
 
-        fetch('http://localhost:8000/get_user_courses/', {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then((response) => response.json())
-            .then(data => {
-                user_courses = data;
-
-                setItems((prevItems) => ({
-                    ...updateSemesters(prevItems, classYear, user_courses),
-                }))
-            })
-            .catch((error) => console.error('User Courses Error:', error));
-    }, []);
-
-    const {searchResults} = useSearchStore();
-    useEffect(() => {
         setItems((prevItems) => ({
-            ...prevItems,
-            [SEARCH_RESULTS_ID]: searchResults.map(
-                (course) => `${course.department_code} ${course.catalog_number}`
-            ),
+          ...updateSemesters(prevItems, classYear, user_courses),
         }));
-    }, [searchResults]);
+      })
+      .catch((error) => console.error('User Courses Error:', error));
+  }, []);
 
-    const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(semesters)];
-    const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
-    const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-    const lastOverId = useRef<UniqueIdentifier | null>(null);
-    const recentlyMovedToNewContainer = useRef(false);
-    const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  const { searchResults } = useSearchStore();
+  useEffect(() => {
+    setItems((prevItems) => ({
+      ...prevItems,
+      [SEARCH_RESULTS_ID]: searchResults.map(
+        (course) => `${course.department_code} ${course.catalog_number}`
+      ),
+    }));
+  }, [searchResults]);
+
+  const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(semesters)];
+  const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const recentlyMovedToNewContainer = useRef(false);
+  const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
   /**
    * Custom collision detection strategy optimized for multiple containers
@@ -411,7 +415,6 @@ export function Canvas({
 
             let newIndex: number;
 
-
             if (overId in items) {
               newIndex = overItems.length + 1;
             } else {
@@ -493,12 +496,11 @@ export function Canvas({
           }
         }
 
-
         setActiveId(null);
 
         const courseId = active.id;
         const semesterId = activeContainer;
-        fetch(process.env.BACKEND + '/update_user_courses/', {
+        fetch(`${process.env.BACKEND}/update_user_courses/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -668,7 +670,6 @@ export function Canvas({
     setContainers((containers) => containers.filter((id) => id !== containerID));
   }
 
-
   function getNextContainerId() {
     const containerIds = Object.keys(items);
     const lastContainerId = containerIds[containerIds.length - 1];
@@ -691,7 +692,6 @@ function getColor(id: UniqueIdentifier) {
 
   return undefined;
 }
-
 
 function Trash({ id }: { id: UniqueIdentifier }) {
   const { setNodeRef, isOver } = useDroppable({
@@ -728,11 +728,19 @@ interface SortableItemProps {
   handle: boolean;
   disabled?: boolean;
 
-  style(args: any): React.CSSProperties;
+  style(args: {
+    value: UniqueIdentifier;
+    index: number;
+    overIndex: number;
+    isDragging: boolean;
+    containerId: UniqueIdentifier;
+    isSorting: boolean;
+    isDragOverlay?: boolean;
+  }): React.CSSProperties;
 
   getIndex(id: UniqueIdentifier): number;
 
-  renderItem(): React.ReactElement;
+  renderItem?(): React.ReactElement;
 
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
 }

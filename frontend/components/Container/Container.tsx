@@ -1,7 +1,10 @@
+import { forwardRef, Ref, RefCallback } from 'react';
+
 import classNames from 'classnames';
-import { forwardRef, Ref } from 'react';
-import styles from './Container.module.scss';
+
 import { Handle, Remove } from '../Item';
+
+import styles from './Container.module.scss';
 
 export interface ContainerProps {
   children: React.ReactNode;
@@ -10,7 +13,7 @@ export interface ContainerProps {
   style?: React.CSSProperties;
   horizontal?: boolean;
   hover?: boolean;
-  handleProps?: React.HTMLAttributes<any>;
+  handleProps?: React.HTMLAttributes<HTMLDivElement | HTMLButtonElement>;
   scrollable?: boolean;
   shadow?: boolean;
   placeholder?: boolean;
@@ -40,11 +43,16 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
     ref: Ref<HTMLDivElement | HTMLButtonElement>
   ) => {
     const Component = onClick ? 'button' : 'div';
+    const setRef: RefCallback<HTMLDivElement | HTMLButtonElement> = (instance) => {
+      if (typeof ref === 'function') {
+        ref(instance);
+      }
+    };
 
     return (
       <Component
         {...props}
-        ref={ref as any}
+        ref={setRef}
         style={
           {
             ...style,

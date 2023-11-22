@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 
 import { rectSortingStrategy } from '@dnd-kit/sortable';
 
-import { Canvas } from './Canvas';
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
 import useAuthStore from '../../store/authSlice';
-import { useAcademicPlannerStore } from '../../store/dndSlice';
+
+import { Canvas } from './Canvas';
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      window.location.href = 'http://localhost:8000/login';
+      window.location.href = `${process.env.BACKEND}/login`;
     }
   }, [isAuthenticated, isLoading]);
 
@@ -45,7 +45,6 @@ const Dashboard: React.FC = () => {
               trashable
               columns={2}
               strategy={rectSortingStrategy}
-
               wrapperStyle={() => ({
                 width: 150,
                 height: 150,
