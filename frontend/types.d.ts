@@ -1,15 +1,38 @@
-export type Settings = {
+export type AuthState = {
+  user?: Profile;
+  isAuthenticated: boolean | null;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  checkAuthentication: () => Promise<void>;
+  login: () => void;
+  logout: () => Promise<void>;
+};
+
+export type UserState = {
+  profile: Profile;
+  updateProfile: (updates: Partial<Profile>) => void;
+};
+
+export type MajorMinorType = {
+  code: string | null;
+  label: string;
+};
+
+export type Profile = {
   firstName: string;
   lastName: string;
-  classYear: number;
-  major?: string;
-  minors: string[];
+  classYear: number | undefined;
+  major?: MajorMinorType;
+  minors?: MajorMinorType[];
+  netId: string;
+  universityId: string;
+  email: string;
+  department: string;
   timeFormat24h: boolean;
   themeDarkMode: boolean;
 };
 
-export type SettingsProps = {
-  settings: Settings;
+export type ProfileProps = {
+  profile: Profile;
   onClose: () => void;
   onSave: (updatedSettings: Settings) => void;
 };
@@ -75,7 +98,7 @@ export type DraggableProps = {
   id: number;
   children: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 export type DroppableProps = {
@@ -94,8 +117,13 @@ export type DragDropContextProps = {
   searchResults: Course[];
 };
 
-export type DropdownMenuProps = {
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// export type DropdownMenuProps = {
+//   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+// };
+
+export type MobileMenuState = {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
 };
 
 export type MenuItemProps = {

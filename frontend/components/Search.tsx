@@ -1,12 +1,11 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { useState, useEffect } from 'react';
 
-// import debounce from 'lodash/debounce';
-// import { For } from 'million/react';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { LRUCache } from 'typescript-lru-cache';
 
-import useSearchStore from '@/store/searchSlice';
 import { Course } from '@/types';
+
+import useSearchStore from '../store/searchSlice';
 
 const searchCache = new LRUCache<string, Course[]>({
   maxSize: 50,
@@ -22,7 +21,7 @@ const Search: React.FC = () => {
     addRecentSearch,
     recentSearches,
     setError,
-    // loading,
+    // TODO: get rid of loading?: loading,
     setLoading,
   } = useSearchStore((state) => ({
     setSearchResults: state.setSearchResults,
@@ -36,9 +35,8 @@ const Search: React.FC = () => {
 
   // Check search results data
   useEffect(() => {
-    console.log('Search results:', searchResults);
     setSearchResults(searchResults);
-  }, [searchResults]);
+  }, [searchResults, setSearchResults]);
 
   const search = async (searchQuery: string) => {
     // if (!searchQuery) return;
@@ -52,7 +50,7 @@ const Search: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        process.env.BACKEND + `/search/?course=${encodeURIComponent(searchQuery)}`
+        `http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`
       );
       if (response.ok) {
         const data: { courses: Course[] } = await response.json();

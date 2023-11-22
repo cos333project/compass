@@ -1,3 +1,5 @@
+import { SVGProps } from 'react';
+
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import {
   BookmarkSquareIcon,
@@ -5,7 +7,6 @@ import {
   QueueListIcon,
   RssIcon,
 } from '@heroicons/react/24/solid';
-import { SVGProps } from 'react';
 
 const links = [
   {

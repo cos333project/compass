@@ -1,42 +1,34 @@
-import { create } from 'zustand';
 import { useEffect } from 'react';
 
-type UserState = {
-  firstName: string;
-  lastName: string;
-  major: string;
-  minors: string;
-  classYear: string;
-  timeFormat24h: boolean;
-  themeDarkMode: boolean;
-  update: (updates: Partial<UserState>) => void;
-};
+import { create } from 'zustand';
 
-export type SettingsProps = {
-  settings: UserState;
-  onClose: () => void;
-  onSave: (settings: UserState) => void;
-};
+import { UserState } from '../types';
 
-const useUserSlice = create<UserState>((set) => ({
-  firstName: '',
-  lastName: '',
-  major: '',
-  minors: '',
-  classYear: '',
-  timeFormat24h: false,
-  themeDarkMode: false,
-  update: (updates) => set((state) => ({ ...state, ...updates })),
+export const useUserSlice = create<UserState>((set) => ({
+  profile: {
+    firstName: '',
+    lastName: '',
+    major: undefined,
+    minors: [],
+    classYear: undefined,
+    netId: '',
+    universityId: '',
+    email: '',
+    department: '',
+    themeDarkMode: false,
+    timeFormat24h: false,
+  },
+  updateProfile: (updates) => set((state) => ({ profile: { ...state.profile, ...updates } })),
 }));
 
 // Custom hook for fetching user data
 export const useFetchUserProfile = () => {
-  const updateStore = useUserSlice((state) => state.update);
+  const updateStore = useUserSlice((state) => state.updateProfile);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(process.env.BACKEND + '/profile', {
+        const response = await fetch(`${process.env.BACKEND}/profile`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -47,14 +39,13 @@ export const useFetchUserProfile = () => {
         }
 
         const data = await response.json();
+        console.log(data);
         updateStore({
           firstName: data.first_name,
           lastName: data.last_name,
           major: data.major,
           minors: data.minors,
-          classYear: data.class_year,
-          timeFormat24h: data.timeFormat24h,
-          themeDarkMode: data.themeDarkMode,
+          classYear: data.class_year, // set timeFormat24h and themeDarkMode in CustomUser
         });
       } catch (error) {
         console.error('Error fetching profile:', error);

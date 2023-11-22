@@ -1,26 +1,14 @@
 import { create } from 'zustand';
 
-import { Settings } from '../types';
-
-type AuthState = {
-  user?: Settings;
-  isAuthenticated: boolean | null;
-
-  checkAuthentication: () => Promise<void>;
-  login: () => void;
-  logout: () => Promise<void>;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-};
+import { AuthState } from '../types';
 
 const useAuthStore = create<AuthState>((set) => ({
   user: undefined,
   isAuthenticated: null,
-
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      console.log(process.env.BACKEND)
-      const response = await fetch(process.env.BACKEND + '/authenticate', {
+      const response = await fetch(`${process.env.BACKEND}/authenticate/`, {
         credentials: 'include',
       });
       const data = await response.json();
@@ -34,16 +22,14 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   login: () => {
-    const nextUrl = encodeURIComponent(process.env.COMPASS + '/dashboard');
-    window.location.href = process.env.BACKEND + `/login?next=${nextUrl}`;
+    const nextUrl = encodeURIComponent(`${process.env.COMPASS}/dashboard/`);
+    window.location.href = `${process.env.BACKEND}/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch(process.env.BACKEND + '/logout', {
+      const response = await fetch(`${process.env.BACKEND}/logout/`, {
         credentials: 'include',
       });
-
-      console.log(response.ok);
       if (response.ok) {
         set({ isAuthenticated: false, user: undefined });
       } else {
@@ -52,7 +38,7 @@ const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       console.error('Error during logout:', error);
     }
-    window.location.href = process.env.COMPASS + ``;
+    window.location.href = `${process.env.COMPASS}`;
   },
 }));
 

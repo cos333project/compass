@@ -1,4 +1,5 @@
 import base64
+import os
 
 
 def generate_encoded_token(consumer_key, consumer_secret):
@@ -11,8 +12,8 @@ def generate_encoded_token(consumer_key, consumer_secret):
 
 
 if __name__ == '__main__':
-    consumer_key = input('Enter your consumer key: ')
-    consumer_secret = input('Enter your consumer secret: ')
-
+    consumer_key = os.environ.get('CONSUMER_KEY')
+    consumer_secret = os.environ.get('CONSUMER_SECRET')
     encoded_token = generate_encoded_token(consumer_key, consumer_secret)
-    print(f'Your encoded token is: {encoded_token}')
+    # For security reasons, we will not print the encoded token here.
+    # Future developers, add a print statement to reveal the token locally.

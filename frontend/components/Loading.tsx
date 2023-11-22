@@ -1,7 +1,10 @@
+// TODO: Edit this to match UI
+
+import * as React from 'react';
+
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import * as React from 'react';
 
 export default function Variants() {
   return (

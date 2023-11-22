@@ -1,5 +1,8 @@
 'use client';
 
+import * as React from 'react';
+import { Suspense, useEffect } from 'react';
+
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
 import FormControl from '@mui/joy/FormControl';
@@ -7,8 +10,6 @@ import FormLabel from '@mui/joy/FormLabel';
 import Skeleton from '@mui/joy/Skeleton';
 import Stack from '@mui/joy/Stack';
 import Switch from '@mui/joy/Switch';
-import * as React from 'react';
-import { Suspense, useEffect } from 'react';
 
 export default function Loading() {
   const [loading, setLoading] = React.useState(true);

@@ -1,6 +1,7 @@
-import { CourseType, CourseProps } from '../types';
+import { CourseProps } from '../types';
 
-const CourseItem: React.FC<CourseProps> = ({ id, course }) => {
+// TODO: Is this file used anymore?
+const CourseItem: React.FC<CourseProps> = ({ course }) => {
   // This component now just needs to handle the rendering of the course
   return (
     <div className='w-full p-5 rounded-lg hover:bg-gray-200 hover:shadow-md transition duration-300 ease-in-out cursor-pointer'>

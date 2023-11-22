@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
+import django_heroku
 import dj_database_url
+import os
+from urllib.parse import urljoin
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -25,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production! Toggle in .env
 DEBUG = os.environ.get('DEBUG') == 'True'
@@ -55,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_cas_ng.middleware.CASMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -66,11 +67,15 @@ AUTHENTICATION_BACKENDS = (
     'django_cas_ng.backends.CASBackend',
 )
 
-CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'
+HOMEPAGE = os.environ.get('COMPASS')
+DASHBOARD = urljoin(os.environ.get('COMPASS'), 'dashboard')
+CAS = os.environ.get('CAS_URL')
+
+CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'  # .env this?
 CAS_CREATE_USER = True
 CAS_CREATE_USER_ID = True
-CAS_REDIRECT_URL = os.getenv('COMPASS') + '/dashboard'
-CAS_LOGOUT_NEXT_PAGE = os.getenv('COMPASS')
+CAS_REDIRECT_URL = DASHBOARD
+CAS_LOGOUT_NEXT_PAGE = HOMEPAGE
 CAS_VERSION = 3
 CAS_APPLY_ATTRIBUTES_TO_USER = True
 CAS_LOGIN_URL_NAME = 'login'
@@ -83,27 +88,20 @@ CAS_RENAME_ATTRIBUTES = {
     'givenname': 'first_name',  # Maps to 'first_name'
     'sn': 'last_name',  # Maps to 'last_name'
     'puclassyear': 'class_year',  # Maps to 'class_year'
-    'department': 'department',  # I question my life's decisions
-    'puresidentdepartment': 'puresidentdepartment',  # I question my life's decisions
-    'campusid': 'campusid',  # I question my life's decisions
+    'department': 'department',
 }
 
-HOMEPAGE = os.getenv('COMPASS')  # CHANGE FOR PRODUCTION
-DASHBOARD = os.getenv('COMPASS') + '/dashboard'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'https://fed.princeton.edu',  # Change for production (hide it)
-    os.getenv('COMPASS'),  # Change for production (hide it)
+    CAS,
+    os.environ.get('COMPASS'),
 ]
-CSRF_TRUSTED_ORIGINS = [
-    os.getenv('COMPASS'),  # Change for production (hide it)
-    os.getenv('BACKEND'),  # Change for production (hide it)
-]
+CSRF_TRUSTED_ORIGINS = [os.environ.get('COMPASS'), os.environ.get('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
-CAS_REDIRECT_WHITELIST = [os.getenv('BACKEND')]
+CAS_REDIRECT_WHITELIST = os.environ.get('BACKEND')
 CAS_CHECK_NEXT = False
 
 
@@ -146,13 +144,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db_test.sqlite3',
-#     }
-# }
 
 
 AUTH_USER_MODEL = 'compass.CustomUser'
@@ -198,3 +189,6 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configure Django App for Heroku.
+django_heroku.settings(locals())

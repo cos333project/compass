@@ -2,7 +2,7 @@ aniso8601==9.0.1
 asgiref==3.7.2
 build==1.0.3
 CacheControl==0.13.1
-certifi==2023.7.22
+certifi==2023.11.17
 cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
@@ -18,9 +18,8 @@ dulwich==0.21.6
 fastjsonschema==2.19.0
 filelock==3.13.1
 gunicorn==21.2.0
-identify==2.5.31
+identify==2.5.32
 idna==3.4
-importlib-metadata==6.8.0
 installer==0.7.0
 jaraco.classes==3.3.0
 keyring==24.3.0
@@ -53,7 +52,8 @@ PyYAML==6.0.1
 rapidfuzz==3.5.2
 requests==2.31.0
 requests-toolbelt==1.0.0
-ruff==0.1.5
+ruff==0.1.6
+setuptools==69.0.2
 shellingham==1.5.4
 six==1.16.0
 sqlparse==0.4.4
@@ -65,7 +65,6 @@ typing_extensions==4.8.0
 tzdata==2023.3
 ujson==5.8.0
 urllib3==2.1.0
-virtualenv==20.24.6
+virtualenv==20.24.7
 whitenoise==6.6.0
 xattr==0.10.1
-zipp==3.17.0

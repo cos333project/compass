@@ -24,11 +24,18 @@
       "@/components/*": ["components/*"],
       "@/store/*": ["store/*"],
       "@/app/*": ["app/*"],
-      "@/hooks/*": ["app/hooks/*"],
-      "@/utilities/*": ["app/utilities/*"],
+      "@/hooks/*": ["app/hooks/*"], // TODO: Might not need
+      "@/utilities/*": ["app/utilities/*"], // TODO: Might not need
       "@/types": ["types.d.ts"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.mjs", ".next/types/**/*.ts", "app/dashboard/Canvas.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "postcss.config.mjs",
+    ".next/types/**/*.ts",
+    "app/kaan/page.jsx"
+  ],
   "exclude": ["node_modules"]
 }

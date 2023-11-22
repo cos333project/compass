@@ -1,16 +1,18 @@
+import { memo } from 'react';
+
 import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import React, { useState } from 'react';
 
 import useAuthStore from '../store/authSlice';
+import useMobileMenuStore from '../store/mobileMenuSlice';
 
 import DropdownMenu from './DropdownMenu';
 import { Login } from './Login';
 
 const navigation = [
   { name: 'About', href: '/' },
-  { name: 'Dashboard', href: '/dashboard' }, // Should be protected path and not auto-redirect
+  { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
   { name: 'Contact Us', href: '/' },
 ];
 
@@ -18,10 +20,9 @@ const Navbar: React.FC = () => {
   const { isAuthenticated, login } = useAuthStore((state) => ({
     isAuthenticated: state.isAuthenticated,
     login: state.login,
-    // logout: state.logout
   }));
   console.log('Navbar component rendering, isAuthenticated:', isAuthenticated);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { mobileMenuOpen, setMobileMenuOpen } = useMobileMenuStore();
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // TODO: Change this to a proper route guard instead of onclick event
@@ -39,7 +40,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`absolute bg---system-text-colorabsolute inset-x-0 top-0 z-50 transform ${
+      className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform ${
         isAuthInitialized ? fadeIn : hidden
       } ${!isAuthInitialized ? fadeOut : ''}`}
     >
@@ -60,7 +61,7 @@ const Navbar: React.FC = () => {
             <Bars3Icon className='h-6 w-6' aria-hidden='true' />
           </button>
         </div>
-        <div className='hidden lg:flex lg:gap-x-12'>
+        <div className='hidden lg:flex lg:gap-x-12 '>
           {navigation.map((item) =>
             item.name === 'Dashboard' ? (
               <a
@@ -89,8 +90,12 @@ const Navbar: React.FC = () => {
         <Dialog.Panel className='fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10'>
           <div className='flex items-center justify-between'>
             <a href='#' className='-m-1.5 p-1.5'>
-              <span className='sr-only'>Compass</span>
-              <Image src='/logo.png' height={45} width={45} alt='Compass Logo' />
+              <span className='sr-only'>Your Company</span>
+              <img
+                className='h-8 w-auto'
+                src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
+                alt=''
+              />
             </a>
             <button
               type='button'
@@ -123,4 +128,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default React.memo(Navbar);
+export default memo(Navbar);

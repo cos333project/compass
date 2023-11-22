@@ -1,9 +1,13 @@
-import { Menu, Transition } from '@headlessui/react';
-import clsx from 'clsx';
 import { Fragment, useState, useEffect } from 'react';
 
-import useAuthStore from '@/store/authSlice';
-import { Settings, MenuItemProps } from '@/types';
+import { Menu, Transition } from '@headlessui/react';
+import clsx from 'clsx';
+
+import { Profile, MenuItemProps } from '../types';
+
+import useAuthStore from '../store/authSlice';
+import useUserSlice from '../store/userSlice';
+
 import { Logout } from './Logout';
 import SettingsModal from './Modal';
 import UserSettings from './UserSettings';
@@ -25,15 +29,10 @@ const DropdownMenu: React.FC = () => {
   const [blur, setBlur] = useState(false);
   const [username, setUsername] = useState('Profile');
   const user = useAuthStore((state) => state.user);
-  const [userSettings, setUserSettings] = useState({
-    firstName: '',
-    lastName: '',
-    major: '',
-    minors: [],
-    classYear: '',
-    timeFormat24h: false,
-    themeDarkMode: false,
-  });
+  const [userProfile, updateProfile] = useUserSlice((state) => [
+    state.profile,
+    state.updateProfile,
+  ]);
 
   const firstName = user?.firstName;
   console.log(firstName);
@@ -43,7 +42,7 @@ const DropdownMenu: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(process.env.BACKEND + '/profile', {
+        const response = await fetch(`${process.env.BACKEND}/profile/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -59,12 +58,16 @@ const DropdownMenu: React.FC = () => {
           data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : 'Profile';
         localStorage.setItem('username', fullName);
         setUsername(fullName);
-        setUserSettings({
+        updateProfile({
           firstName: data.first_name,
           lastName: data.last_name,
           major: data?.major,
           minors: data?.minors,
-          classYear: data?.class_year,
+          classYear: data?.classYear,
+          netId: '',
+          universityId: '',
+          email: '',
+          department: '',
           timeFormat24h: data.timeFormat24h,
           themeDarkMode: data.themeDarkMode,
         });
@@ -73,9 +76,9 @@ const DropdownMenu: React.FC = () => {
       }
     };
     fetchProfile();
-  }, []);
+  }, [updateProfile]);
 
-  const handleSaveUserSettings = async (updatedUser: Settings) => {
+  const handleSaveUserSettings = async (updatedUser: Profile) => {
     try {
       console.log('Sending request to update profile with data:', JSON.stringify(updatedUser));
       const csrfTokenCookie = document.cookie
@@ -86,7 +89,7 @@ const DropdownMenu: React.FC = () => {
         return; // Exit the function or handle this case as appropriate
       }
       // const csrfToken = csrfTokenCookie.split('=')[1];
-      const response = await fetch(process.env.BACKEND + '/update_profile', {
+      const response = await fetch(`${process.env.BACKEND}/update_profile/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -155,7 +158,7 @@ const DropdownMenu: React.FC = () => {
       {blur && (
         <SettingsModal onClose={() => setBlur(false)}>
           <UserSettings
-            settings={userSettings}
+            profile={userProfile}
             onClose={() => setBlur(false)}
             onSave={handleSaveUserSettings}
           />
