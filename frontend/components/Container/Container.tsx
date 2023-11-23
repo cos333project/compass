@@ -1,9 +1,6 @@
 import { forwardRef, Ref, RefCallback } from 'react';
-
 import classNames from 'classnames';
-
 import { Handle, Remove } from '../Item';
-
 import styles from './Container.module.scss';
 
 export interface ContainerProps {
@@ -18,6 +15,7 @@ export interface ContainerProps {
   shadow?: boolean;
   placeholder?: boolean;
   unstyled?: boolean;
+  height?: string | number; 
   onClick?(): void;
   onRemove?(): void;
 }
@@ -38,6 +36,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
       scrollable,
       shadow,
       unstyled,
+      height, // Destructure height prop
       ...props
     }: ContainerProps,
     ref: Ref<HTMLDivElement | HTMLButtonElement>
@@ -57,6 +56,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
           {
             ...style,
             '--columns': columns,
+            height: height, // Apply height to style
           } as React.CSSProperties
         }
         className={classNames(

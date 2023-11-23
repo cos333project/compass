@@ -519,7 +519,7 @@ export function Canvas({
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           {/* Left Section for Search Results */}
           {containers.includes('Search Results') && (
-            <div style={{ width: '100%', marginRight: '20px' }}>
+            <div style={{ width: '100%', marginRight: '20px'}}>
               <Search />
               <DroppableContainer
                 key='Search Results'
@@ -530,6 +530,7 @@ export function Canvas({
                 scrollable={scrollable}
                 style={containerStyle}
                 unstyled={minimal}
+                height="500px"
               >
                 <SortableContext items={items['Search Results']} strategy={strategy}>
                   {items['Search Results'].map((value, index) => (
@@ -557,7 +558,7 @@ export function Canvas({
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gridTemplateRows: '1fr 1fr 1fr 1fr',
-              gap: '10px',
+              gap: '0px',
             }}
           >
             {containers
@@ -573,6 +574,7 @@ export function Canvas({
                   style={containerStyle}
                   unstyled={minimal}
                   onRemove={() => handleRemove(containerId)}
+                  height="135px"
                 >
                   <SortableContext items={items[containerId]} strategy={strategy}>
                     {items[containerId].map((value, index) => (
