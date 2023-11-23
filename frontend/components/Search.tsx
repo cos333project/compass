@@ -50,7 +50,7 @@ const Search: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8000/search/?course=${encodeURIComponent(searchQuery)}`
+        `${process.env.BACKEND}/search/?course=${encodeURIComponent(searchQuery)}`
       );
       if (response.ok) {
         const data: { courses: Course[] } = await response.json();

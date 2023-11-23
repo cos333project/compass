@@ -68,7 +68,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     const classYear = userProfile.classYear;
 
     if (classYear !== undefined) {
-      fetch('http://localhost:8000/update_user/', {
+      fetch(`${process.env.BACKEND}/update_user/`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

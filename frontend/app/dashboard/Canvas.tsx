@@ -229,7 +229,7 @@ export function Canvas({
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
 
-    fetch('http://localhost:8000/get_user_courses/', {
+    fetch(`${process.env.BACKEND}/get_user_courses/`, {
       method: 'GET',
       credentials: 'include',
     })

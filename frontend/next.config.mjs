@@ -10,8 +10,8 @@ const nextConfig = {
     includePaths: [path.join(__dirname, 'styles')],
   },
   env: {
-    COMPASS: 'http://localhost:3000',
-    BACKEND: 'http://localhost:8000'
+    COMPASS: process.env.COMPASS,
+    BACKEND: process.env.BACKEND,
   },
 };
 
