@@ -1,5 +1,4 @@
-import React, { useState, Fragment, FormEvent, ChangeEvent } from 'react';
-import { Transition } from '@headlessui/react';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 
 interface FormData {
   firstName: string;
@@ -22,60 +21,54 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ closeSettings }) => {
     minors: [],
   });
 
-  const [isFormVisible, setIsFormVisible] = useState(true);
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setIsFormVisible(false);
-    // Delay closing to allow for transition
-    setTimeout(() => closeSettings(), 200); // Adjusted duration for fade-out effect
+  const handleMinorsChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const values = Array.from(e.target.selectedOptions, (option) => option.value);
+    setFormData((prevData) => ({ ...prevData, minors: values }));
   };
 
-  const handleCancel = () => {
-    setIsFormVisible(false);
-    setTimeout(() => closeSettings(), 200); // Adjusted duration for fade-out effect
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log('Form Data Submitted:', formData);
+    closeSettings();
   };
 
   return (
-    <Transition
-      as={Fragment}
-      show={isFormVisible}
-      enter='transition ease-out duration-1000'
-      enterFrom='transform opacity-0 scale-95'
-      enterTo='transform opacity-100 scale-100'
-      leave='transition ease-out duration-1000'
-      leaveFrom='transform opacity-100 scale-100'
-      leaveTo='transform opacity-0 scale-95'
-    >
-      <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
-        <form className='bg-white p-5 rounded-lg flex flex-col gap-2.5' onSubmit={handleSubmit}>
-          <input 
-            type="text" 
-            name="firstName" 
-            placeholder="First Name" 
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className='p-2.5 rounded-lg border border-gray-200'
-          />
-          <input 
-            type="text" 
-            name="lastName" 
-            placeholder="Last Name" 
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className='p-2.5 rounded-lg border border-gray-200'
-          />
-          {/* Additional input fields */}
-          <button type="submit" className='p-2.5 rounded-lg border border-gray-200'>Save</button>
-          <button type="button" onClick={handleCancel} className='p-2.5 rounded-lg border border-gray-200'>Cancel</button>
-        </form>
-      </div>
-    </Transition>
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
+      <form className='bg-white p-5 rounded-lg flex flex-col gap-2.5' onSubmit={handleSubmit}>
+        {/* Labels and inputs for firstName, lastName, classYear... */}
+        <label htmlFor='major' className='sr-only'>
+          Major
+        </label>
+        <select
+          id='major'
+          name='major'
+          className='p-2.5 rounded-lg border border-gray-200'
+          value={formData.major}
+          onChange={handleInputChange}
+        >
+          {/* Options... */}
+        </select>
+        <label htmlFor='minors' className='sr-only'>
+          Minors
+        </label>
+        <select
+          id='minors'
+          name='minors'
+          className='p-2.5 rounded-lg border border-gray-200'
+          multiple={true}
+          value={formData.minors}
+          onChange={handleMinorsChange}
+        >
+          {/* Options... */}
+        </select>
+        {/* Submit and Cancel buttons... */}
+      </form>
+    </div>
   );
 };
 
