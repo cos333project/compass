@@ -520,17 +520,16 @@ export function Canvas({
           {/* Left Section for Search Results */}
           {containers.includes('Search Results') && (
             <div style={{ width: '100%', marginRight: '20px'}}>
-              <Search />
               <DroppableContainer
                 key='Search Results'
                 id='Search Results'
-                label={minimal ? undefined : 'Search Results'}
+                label={<Search />}
                 columns={columns}
                 items={items['Search Results']}
                 scrollable={scrollable}
                 style={containerStyle}
                 unstyled={minimal}
-                height="500px"
+                height="600px"
               >
                 <SortableContext items={items['Search Results']} strategy={strategy}>
                   {items['Search Results'].map((value, index) => (

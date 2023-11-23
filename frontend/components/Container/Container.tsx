@@ -6,7 +6,7 @@ import styles from './Container.module.scss';
 export interface ContainerProps {
   children: React.ReactNode;
   columns?: number;
-  label?: string;
+  label?: string | React.ReactNode; // Modified to accept string or component
   style?: React.CSSProperties;
   horizontal?: boolean;
   hover?: boolean;
@@ -15,7 +15,7 @@ export interface ContainerProps {
   shadow?: boolean;
   placeholder?: boolean;
   unstyled?: boolean;
-  height?: string | number; 
+  height?: string | number;
   onClick?(): void;
   onRemove?(): void;
 }
@@ -36,7 +36,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
       scrollable,
       shadow,
       unstyled,
-      height, // Destructure height prop
+      height,
       ...props
     }: ContainerProps,
     ref: Ref<HTMLDivElement | HTMLButtonElement>
@@ -45,6 +45,8 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
     const setRef: RefCallback<HTMLDivElement | HTMLButtonElement> = (instance) => {
       if (typeof ref === 'function') {
         ref(instance);
+      } else if (ref) {
+        ref.current = instance;
       }
     };
 
@@ -52,13 +54,11 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
       <Component
         {...props}
         ref={setRef}
-        style={
-          {
-            ...style,
-            '--columns': columns,
-            height: height, // Apply height to style
-          } as React.CSSProperties
-        }
+        style={{
+          ...style,
+          '--columns': columns,
+          height: height,
+        }}
         className={classNames(
           styles.Container,
           unstyled && styles.unstyled,
@@ -71,7 +71,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
         onClick={onClick}
         tabIndex={onClick ? 0 : undefined}
       >
-        {label ? (
+        {label && (
           <div className={styles.Header}>
             {label}
             <div className={styles.Actions}>
@@ -79,7 +79,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
               <Handle {...handleProps} />
             </div>
           </div>
-        ) : null}
+        )}
         {placeholder ? children : <ul>{children}</ul>}
       </Component>
     );
