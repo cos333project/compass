@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
-from .models import Course, CustomUser, models, UserCourses, Minor
+from .models import Course, CustomUser, models, UserCourses, Minor, Major
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CourseSerializer
 import ujson as json
@@ -16,14 +16,33 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_user_info(user):
+    net_id = getattr(user, 'net_id', None)
+    user_inst = CustomUser.objects.get(net_id=net_id)
+    major_inst = user_inst.major
+    minors_list = []
+
+    if major_inst is not None:
+        major = {'code': major_inst.code, 'name': major_inst.name}
+        major_name = major_inst.name
+        major_code = major_inst.code
+    else:
+        major = None
+        major_name = None
+        major_code = None
+
+    for minor_inst in user_inst.minors.all():
+        minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
+
     return {
-        'net_id': getattr(user, 'net_id', None),
+        'net_id': net_id,
         'university_id': getattr(user, 'university_id', None),
         'email': getattr(user, 'email', None),
         'first_name': getattr(user, 'first_name', None),
         'last_name': getattr(user, 'last_name', None),
         'class_year': getattr(user, 'class_year', None),
         'department': getattr(user, 'department', None),
+        'major': major,
+        'minors': minors_list,
     }
 
 
@@ -38,36 +57,38 @@ def profile(request):
 @login_required
 def update_profile(request):
     # TODO: Validate this stuff
-    print(f'YOU ARE HERE {request.body}')
     data = json.loads(request.body)
     updated_first_name = data.get('firstName', '')
     updated_last_name = data.get('lastName', '')
     updated_major = data.get('major', '')
     updated_minors = data.get('minors', [])
-    updated_class_year = data.get('classYear', '')
+    updated_class_year = data.get('classYear', None)
+    print("Updated class year: ", updated_class_year)
 
     # Fetch the user's profile
     net_id = request.user.net_id
-    user_profile = CustomUser.objects.get(net_id=net_id)
+    user_inst = CustomUser.objects.get(net_id=net_id)
     print(
-        f'USER PROFILE: {user_profile.first_name} {user_profile.last_name} {user_profile.major_id} {user_profile.minors} {user_profile.class_year}'
+        f'USER PROFILE: {user_inst.first_name} {user_inst.last_name} {user_inst.major_id} {user_inst.minors} {user_inst.class_year}'
     )
+
     # Update user's profile
-    user_profile.first_name = updated_first_name
-    user_profile.last_name = updated_last_name
-    user_profile.major_id = updated_major
+    user_inst.first_name = updated_first_name
+    user_inst.last_name = updated_last_name
+    if updated_major != '':
+        user_inst.major = Major.objects.get(code=updated_major['code'])
+    else:
+        user_inst.major = None
 
     if isinstance(updated_minors, list):
         # Assuming each minor is represented by its 'code' and you have Minor models
         minor_objects = [
             Minor.objects.get(code=minor.get('code', '')) for minor in updated_minors
         ]
-        user_profile.minors.set(minor_objects)
+        user_inst.minors.set(minor_objects)
 
-    user_profile.classYear = updated_class_year
-    user_profile.timeFormat24h = data.get('timeFormat24h', False)
-    user_profile.themeDarkMode = data.get('themeDarkMode', False)
-    user_profile.save()
+    user_inst.class_year = updated_class_year
+    user_inst.save()
     updated_user_info = fetch_user_info(request.user)
     print(f'UPDATED USER INFO: {updated_user_info}')
     return JsonResponse(updated_user_info)

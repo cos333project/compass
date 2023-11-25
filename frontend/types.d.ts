@@ -14,7 +14,7 @@ export type UserState = {
 
 export type MajorMinorType = {
   code: string | null;
-  label: string;
+  name: string;
 };
 
 export type Profile = {
@@ -34,7 +34,7 @@ export type Profile = {
 export type ProfileProps = {
   profile: Profile;
   onClose: () => void;
-  onSave: (updatedSettings: Settings) => void;
+  onSave: (updatedProfile: Profile) => void;
 };
 
 export type SettingsModalProps = {

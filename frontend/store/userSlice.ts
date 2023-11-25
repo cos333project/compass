@@ -22,6 +22,7 @@ export const useUserSlice = create<UserState>((set) => ({
 }));
 
 // Custom hook for fetching user data
+// This is not used anywhere yet
 export const useFetchUserProfile = () => {
   const updateStore = useUserSlice((state) => state.updateProfile);
 
@@ -45,7 +46,9 @@ export const useFetchUserProfile = () => {
           lastName: data.last_name,
           major: data.major,
           minors: data.minors,
-          classYear: data.class_year, // set timeFormat24h and themeDarkMode in CustomUser
+          classYear: data.class_year,
+          timeFormat24h: data.timeFormat24h,
+          themeDarkMode: data.themeDarkMode,
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
