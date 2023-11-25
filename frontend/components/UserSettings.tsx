@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   Autocomplete,
@@ -9,12 +9,12 @@ import {
   Input,
   Typography,
   FormLabel,
-  Switch,
-} from '@mui/joy';
+  Switch
+} from "@mui/joy";
 
-import { MajorMinorType, ProfileProps } from '@/types';
+import { MajorMinorType, ProfileProps } from "@/types";
 
-import useUserSlice from '@/store/userSlice';
+import useUserSlice from "@/store/userSlice";
 
 function generateClassYears() {
   const currentYear = new Date().getFullYear() + 1;
@@ -24,23 +24,23 @@ function generateClassYears() {
 
 // Should probably id these corresponding to the ids in the database
 const majors = [
-  { code: 'COS AB', label: 'Computer Science' },
-  { code: 'COS BSE', label: 'Computer Science' },
-  { code: 'MAE', label: 'Mechanical and Aerospace Engineering' },
+  { code: "COS-AB", name: "Computer Science - AB" },
+  { code: "COS-BSE", name: "Computer Science - BSE" },
+  { code: "MAE", name: "Mechanical and Aerospace Engineering" }
 ];
 
 const minors = [
-  { code: 'FIN', label: 'Finance' },
-  { code: 'SML', label: 'Statistics and Machine Learning' },
-  { code: 'OQDS', label: 'Optimization and Quantitative Decision Science' },
+  { code: "FIN", name: "Finance" },
+  { code: "SML", name: "Statistics and Machine Learning" },
+  { code: "CLA", name: "Classics" }
 ];
 
 const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
-  const { profile: userProfile, updateProfile } = useUserSlice((state) => state);
+  const { profile: _, updateProfile } = useUserSlice((state) => state);
   const [localFirstName, setLocalFirstName] = useState<string>(profile.firstName);
   const [localLastName, setLocalLastName] = useState<string>(profile.lastName);
   const [localClassYear, setLocalClassYear] = useState<number | undefined>(
-    generateClassYears().find((year) => year === profile.classYear) ?? new Date().getFullYear() + 1
+    profile.classYear ?? undefined
   );
   const [localMajor, setLocalMajor] = useState<MajorMinorType | undefined>(
     profile.major ?? undefined
@@ -51,7 +51,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [localTimeFormat24h, setLocalTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
   const [localThemeDarkMode, setLocalThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
 
+
   const handleSave = async () => {
+
+    // Updates useUserSlice.getState().profile
     updateProfile({
       firstName: localFirstName,
       lastName: localLastName,
@@ -59,57 +62,66 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
       minors: localMinors,
       classYear: localClassYear,
       timeFormat24h: localTimeFormat24h,
-      themeDarkMode: localThemeDarkMode,
+      themeDarkMode: localThemeDarkMode
     });
 
-    onSave(userProfile);
-    onClose();
+    // Updates local profile. Do we even need a local profile?
+    profile = useUserSlice.getState().profile;
 
-    const classYear = userProfile.classYear;
-
-    if (classYear !== undefined) {
-      fetch(`${process.env.BACKEND}/update_user/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+    console.log("Sending request to update profile with data:", JSON.stringify(profile));
+    const csrfTokenCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="));
+    if (!csrfTokenCookie) {
+      console.error("CSRF token not found");
+    } else {
+      fetch(`${process.env.BACKEND}/update_profile/`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         // Need CSRF token here from Next.js
-        body: classYear.toString(),
+        body: JSON.stringify(profile)
       })
         .then((response) => response.json())
-        .then((data) => console.log('Update success', data))
-        .catch((error) => console.error('Update Error:', error));
+        .then((data) => console.log("Update success", data))
+        .catch((error) => console.error("Update Error:", error));
     }
+
+    onSave(profile);
+    onClose();
   };
   return (
-    <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50'>
-      <div className='bg-white p-5 rounded-lg max-w-md w-1/2 shadow-lg'>
-        <div className='grid grid-cols-2 gap-4'>
+    <div
+      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50">
+      <div className="bg-white p-5 rounded-lg max-w-md w-1/2 shadow-lg">
+        <div className="grid grid-cols-2 gap-4">
           <Input
-            placeholder='First name'
-            variant='soft'
+            placeholder="First name"
+            variant="soft"
             value={localFirstName}
             onChange={(e) => setLocalFirstName(e.target.value)}
           />
           <Input
-            placeholder='Last name'
-            variant='soft'
+            placeholder="Last name"
+            variant="soft"
             value={localLastName}
             onChange={(e) => setLocalLastName(e.target.value)}
           />
           <Autocomplete
             autoHighlight
             options={majors}
-            placeholder='Select your major'
-            variant='soft'
+            placeholder="Select your major"
+            variant="soft"
             value={localMajor}
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, e) => setLocalMajor(e ?? undefined)}
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => option.name}
             renderOption={(props, option) => (
               <AutocompleteOption {...props} key={option.code}>
                 <ListItemContent>
-                  {option.label}
-                  <Typography level='body-xs'>({option.code})</Typography>
+                  {option.name}
+                  <Typography
+                    level="body-xs">({option.code})</Typography>
                 </ListItemContent>
               </AutocompleteOption>
             )}
@@ -118,17 +130,18 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             multiple
             autoHighlight
             options={minors}
-            placeholder={'Select your minor(s)'}
-            variant='soft'
+            placeholder={"Select your minor(s)"}
+            variant="soft"
             value={localMinors}
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, e) => setLocalMinors(e)}
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => option.name}
             renderOption={(props, option) => (
               <AutocompleteOption {...props} key={option.code}>
                 <ListItemContent>
-                  {option.label}
-                  <Typography level='body-xs'>({option.code})</Typography>
+                  {option.name}
+                  <Typography
+                    level="body-xs">({option.code})</Typography>
                 </ListItemContent>
               </AutocompleteOption>
             )}
@@ -136,8 +149,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
           <Autocomplete
             autoHighlight
             options={generateClassYears()}
-            placeholder='Class year'
-            variant='soft'
+            placeholder="Class year"
+            variant="soft"
             value={localClassYear}
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, e) => setLocalClassYear(e ?? undefined)}
@@ -149,8 +162,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             )}
           />
           <FormControl
-            orientation='horizontal'
-            sx={{ width: '100%', justifyContent: 'space-between' }}
+            orientation="horizontal"
+            sx={{ width: "100%", justifyContent: "space-between" }}
           >
             <div>
               <FormLabel>Dark Mode</FormLabel>
@@ -158,13 +171,13 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <Switch
               checked={localThemeDarkMode}
               onChange={(e) => setLocalThemeDarkMode(e.target.checked)}
-              color={localThemeDarkMode ? 'success' : 'neutral'}
-              variant={localThemeDarkMode ? 'solid' : 'outlined'}
+              color={localThemeDarkMode ? "success" : "neutral"}
+              variant={localThemeDarkMode ? "solid" : "outlined"}
             />
           </FormControl>
           <FormControl
-            orientation='horizontal'
-            sx={{ width: '100%', justifyContent: 'space-between' }}
+            orientation="horizontal"
+            sx={{ width: "100%", justifyContent: "space-between" }}
           >
             <div>
               <FormLabel>24-Hour Time Format</FormLabel>
@@ -172,16 +185,18 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <Switch
               checked={localTimeFormat24h}
               onChange={(e) => setLocalTimeFormat24h(e.target.checked)}
-              color={localTimeFormat24h ? 'success' : 'neutral'}
-              variant={localTimeFormat24h ? 'solid' : 'outlined'}
+              color={localTimeFormat24h ? "success" : "neutral"}
+              variant={localTimeFormat24h ? "solid" : "outlined"}
             />
           </FormControl>
         </div>
-        <div className='mt-5 text-right'>
-          <Button variant='solid' color='primary' onClick={handleSave} size='md'>
+        <div className="mt-5 text-right">
+          <Button variant="solid" color="primary" onClick={handleSave}
+                  size="md">
             Save
           </Button>
-          <Button variant='outlined' color='neutral' onClick={onClose} sx={{ ml: 2 }} size='sm'>
+          <Button variant="outlined" color="neutral" onClick={onClose}
+                  sx={{ ml: 2 }} size="sm">
             Close
           </Button>
         </div>
