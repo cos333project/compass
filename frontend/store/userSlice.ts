@@ -10,7 +10,7 @@ export const useUserSlice = create<UserState>((set) => ({
     lastName: '',
     major: undefined,
     minors: [],
-    classYear: undefined,
+    classYear: -1,
     netId: '',
     universityId: '',
     email: '',
@@ -22,7 +22,7 @@ export const useUserSlice = create<UserState>((set) => ({
 }));
 
 // Custom hook for fetching user data
-// This is not used anywhere yet
+// TODO: This is not used anywhere yet
 export const useFetchUserProfile = () => {
   const updateStore = useUserSlice((state) => state.updateProfile);
 
@@ -42,11 +42,11 @@ export const useFetchUserProfile = () => {
         const data = await response.json();
         console.log(data);
         updateStore({
-          firstName: data.first_name,
-          lastName: data.last_name,
+          firstName: data.firstName,
+          lastName: data.lastName,
           major: data.major,
           minors: data.minors,
-          classYear: data.class_year,
+          classYear: data.classYear,
           timeFormat24h: data.timeFormat24h,
           themeDarkMode: data.themeDarkMode,
         });

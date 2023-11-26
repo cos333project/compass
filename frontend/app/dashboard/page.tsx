@@ -15,7 +15,6 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { user, isAuthenticated, checkAuthentication } = useAuthStore((state) => state);
   const userProfile = UserState((state) => state.profile);
-
   useEffect(() => {
     checkAuthentication()
       .then(() => setIsLoading(false))

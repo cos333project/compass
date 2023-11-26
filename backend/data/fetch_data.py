@@ -4,6 +4,8 @@ from req_lib import ReqLib
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+# Note to future developers: This script can be made much faster if made asynchronous.
+
 # -------------------------------------------------------------------------------------#
 
 
@@ -124,8 +126,6 @@ def extract_common_data(term, subject, course):
     data = {
         'Term Code': term.get('code', ''),
         'Term Name': term.get('suffix', ''),
-        'Term Start Date': term.get('start_date', ''),
-        'Term End Date': term.get('end_date', ''),
         'Subject Code': subject.get('code', ''),
         'Subject Name': subject.get('name', ''),
         'Course ID': course.get('course_id', ''),
@@ -199,16 +199,21 @@ def extract_class_data(course_class, seat_mapping):
     )
 
     if class_info_found:
+        # Handle both cases: single dictionary and list of dictionaries
+        enrollments = class_info_found.get('class_year_enrollments', [])
+        if isinstance(enrollments, dict):
+            # If it's a dictionary, convert it to a list of one dictionary
+            enrollments = [enrollments]
+
         # Extract and format class year enrollments
         class_year_enrollments = [
             f"Year {enrollment['class_year']}: {enrollment['enrl_seats']} students"
-            for enrollment in class_info_found.get('class_year_enrollments', [])
+            for enrollment in enrollments
         ]
     else:
         class_year_enrollments = []
 
     class_year_enrollments_str = ', '.join(class_year_enrollments) or 'N/A'
-    print(f'Class year enrollment: {class_year_enrollments_str}')
 
     return {
         'Class Number': class_number,
@@ -261,7 +266,6 @@ def extract_course_details(course_details):
         'Grading Lab Reports': course_detail.get('grading_lab_reports', ''),
         'Other Requirements': course_detail.get('other_requirements', ''),
         'Other Restrictions': course_detail.get('other_restrictions', ''),
-        'Course Head NetID': course_detail.get('course_head_netid', ''),
         'Grading Paper Final Exam': course_detail.get('grading_paper_final_exam', ''),
         'Grading Paper Midterm Exam': course_detail.get('grading_paper_mid_exam', ''),
         'Crosslistings': course_detail.get('crosslistings', ''),
@@ -285,8 +289,8 @@ def extract_course_details(course_details):
     for i in range(1, max_reading_lists + 1):
         title_key = f'Reading List Title {i}'
         author_key = f'Reading List Author {i}'
-        data[title_key] = course_detail.get(title_key, '')
-        data[author_key] = course_detail.get(author_key, '')
+        data[title_key] = course_detail.get(f'reading_list_title_{i}', '')
+        data[author_key] = course_detail.get(f'reading_list_author_{i}', '')
 
     # Handle newline characters
     for key, value in data.items():
@@ -395,8 +399,10 @@ def main():
         'CHM',
         'CHV',
         'CLA',
+        'CLG',
         'COM',
         'COS',
+        'CSE',
         'CWR',
         'CZE',
         'DAN',
@@ -482,7 +488,7 @@ def main():
         'WRI',
     ]
 
-    term_fields = ['Term Code', 'Term Name', 'Term Start Date', 'Term End Date']
+    term_fields = ['Term Code', 'Term Name']
 
     subject_fields = ['Subject Code', 'Subject Name']
 
@@ -546,7 +552,6 @@ def main():
         'Grading Lab Reports',
         'Other Requirements',
         'Other Restrictions',
-        'Course Head NetID',
         'Grading Paper Final Exam',
         'Grading Paper Midterm Exam',
         'Crosslistings',

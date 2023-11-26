@@ -180,14 +180,13 @@ export function Canvas({
   // vertical = false,
   scrollable,
 }: Props) {
-  const classYear = user.classYear ?? 2025;
-  console.log(user.classYear);
+  const classYear = user.classYear;
+  const startYear = classYear - 4;
+  console.log('User class year is ', user.classYear);
   console.log(user);
 
   const generateSemesters = (classYear: number): Items => {
     const semesters: Items = {};
-    const startYear = classYear - 4;
-
     for (let year = startYear; year < classYear; ++year) {
       semesters[`Fall ${year}`] = [];
       semesters[`Spring ${year + 1}`] = [];
@@ -200,19 +199,15 @@ export function Canvas({
     classYear: number,
     user_courses: { [key: number]: Course[] }
   ): Items => {
-    const startYear = classYear - 4;
     console.log('updateSemesters called');
 
-    let semester = 1;
-    for (let year = startYear; year < classYear; ++year) {
-      prevItems[`Fall ${year}`] = user_courses[semester].map(
+    for (let year = startYear, semester = 1; year < classYear; ++year) {
+      prevItems[`Fall ${year}`] = user_courses[semester++].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
-      semester += 1;
-      prevItems[`Spring ${year + 1}`] = user_courses[semester].map(
+      prevItems[`Spring ${year + 1}`] = user_courses[semester++].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
-      semester += 1;
     }
 
     console.log(user_courses);
@@ -222,7 +217,7 @@ export function Canvas({
 
   const semesters = generateSemesters(classYear);
   const [items, setItems] = useState<Items>(() => ({
-    [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
+    [SEARCH_RESULTS_ID]: [],
     ...semesters,
   }));
 
@@ -242,7 +237,7 @@ export function Canvas({
         }));
       })
       .catch((error) => console.error('User Courses Error:', error));
-  }, []);
+  }, [classYear, updateSemesters]);
 
   const { searchResults } = useSearchStore();
   useEffect(() => {

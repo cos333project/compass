@@ -87,7 +87,6 @@ CAS_RENAME_ATTRIBUTES = {
     'mail': 'email',  # Maps to 'email'
     'givenname': 'first_name',  # Maps to 'first_name'
     'sn': 'last_name',  # Maps to 'last_name'
-    'puclassyear': 'class_year',  # Maps to 'class_year'
     'department': 'department',
 }
 
