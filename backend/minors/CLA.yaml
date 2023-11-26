@@ -217,6 +217,13 @@ req_list:
         - CLA *
         - LAT *
         - HUM *
+        - ART *
+        - ARC *
+        - HLS *
+        - REL *
+        - PHI *
+        - CDH *
+        - PAW *
 - name: Reflection Paper
   max_counted: 1
   min_needed: 1

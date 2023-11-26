@@ -1,17 +1,19 @@
 type: Minor
 name: Statistics and Machine Learning
 code: SML
-degree:
 description: |
-  This minor, under the guidance of the Center for Statistics and Machine Learning (CSML), enables students to grasp the core principles of statistics, coding, and machine learning. It prepares them to apply these skills across various domains. Students are encouraged to enroll by spring of sophomore year, but no later than the start of senior year, with a declared major.
-
+  This minor, under the guidance of the Center for Statistics and 
+  Machine Learning (CSML), enables students to grasp the core principles 
+  of statistics, coding, and machine learning. It prepares them to apply 
+  these skills across various domains. Students are encouraged to enroll 
+  by spring of sophomore year, but no later than the start of senior 
+  year, with a declared major.
 urls:
-- [CSML URL]
+- https://csml.princeton.edu/undergraduate/certificate-program
 contacts:
-- type: Program Coordinator
+- type: Executive Committee
   name: [Program Coordinator's Name]
   email: [Program Coordinator's Email]
-
 req_list:
 - name: Coding
   max_counted: 1
@@ -25,7 +27,6 @@ req_list:
   - COS 126
   - POL 345
   - SML 201
-
 - name: Mathematics
   max_counted: 2
   min_needed: 2
@@ -40,7 +41,6 @@ req_list:
   - SML 305
   - MAT 201
   - MAT 103
-
 - name: Probability
   max_counted: 1
   min_needed: 1
@@ -53,7 +53,6 @@ req_list:
   - ORF 309
   - SML 305
   - [Core statistics course]
-
 - name: Required Course Work
   max_counted: 5
   min_needed: 5
@@ -64,7 +63,6 @@ req_list:
   pdfs_allowed: 0
   course_list:
   - [List of approved courses]
-
 - name: Independent Work
   max_counted: 1
   min_needed: 1
@@ -75,6 +73,5 @@ req_list:
   pdfs_allowed: 0
   course_list:
   - [Details of independent work]
-
 courses:
 - [List of courses as provided, each on a new line]
