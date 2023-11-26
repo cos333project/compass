@@ -5,7 +5,13 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+project_dir = './compass/backend'
+sys.path.append(project_dir)
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
 import django
+django.setup()
 from django.db import transaction
 from compass.models import (
     Department,
@@ -20,9 +26,6 @@ from compass.models import (
 
 logging.basicConfig(level=logging.INFO)
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
 
 # -------------------------------------------------------------------------------------#
 
@@ -73,8 +76,6 @@ def insert_academic_term(rows):
         (
             int(row['Term Code'].strip()),
             row['Term Name'],
-            parse_date(row['Term Start Date']),
-            parse_date(row['Term End Date']),
         )
         for row in rows
     }
@@ -114,7 +115,7 @@ def insert_course(rows):
             continue
 
         if not Course.objects.filter(course_id=course_id).exists():
-            course = Course(
+            course_data = Course(
                 course_id=course_id,
                 department=department,
                 title=title,
@@ -123,15 +124,25 @@ def insert_course(rows):
                 drop_consent=row.get('Drop Consent'),
                 add_consent=row.get('Add Consent'),
                 web_address=row.get('Web Address'),
-                pu_flag=row.get('PU Flag'),
                 transcript_title=row.get('Transcript Title'),
                 long_title=row.get('Long Title'),
                 distribution_area_long=row.get('Distribution Area Long'),
                 distribution_area_short=row.get('Distribution Area Short'),
                 reading_writing_assignment=row.get('Reading Writing Assignment'),
                 grading_basis=row.get('Grading Basis'),
-                reading_list=row.get('Reading List'),
             )
+            # Dynamically add reading list authors and titles
+            for i in range(1, 7):  # For each pair of author and title
+                author_key = f'Reading List Author {i}'
+                title_key = f'Reading List Title {i}'
+
+                if row.get(author_key):
+                    course_data[f'reading_list_author_{i}'] = row[author_key]
+                
+                if row.get(title_key):
+                    course_data[f'reading_list_title_{i}'] = row[title_key]
+            
+            course = Course(**course_data)
             new_courses.append(course)
 
     Course.objects.bulk_create(new_courses)
@@ -191,17 +202,13 @@ def insert_section(rows):
 
         # Fetch or create the instructor, if provided
         instructor_emplid = row.get('Instructor EmplID', '').strip()
-        instructor_first_name = row.get('Instructor First Name', '').strip()
-        instructor_last_name = row.get('Instructor Last Name', '').strip()
-        instructor_full_name = f'{instructor_first_name} {instructor_last_name}'
+        instructor_full_name = row.get('Instructor Full Name', '').strip()
 
         instructor_obj = None
         if instructor_emplid:
             instructor_obj, _ = Instructor.objects.get_or_create(
                 emplid=instructor_emplid,
                 defaults={
-                    'first_name': instructor_first_name,
-                    'last_name': instructor_last_name,
                     'full_name': instructor_full_name,
                 },
             )
