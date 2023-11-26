@@ -9,14 +9,21 @@ from .models import Course, CustomUser, models, UserCourses, Minor, Major
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CourseSerializer
 import ujson as json
+from data.configs import Configs
+from data.req_lib import ReqLib
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 # ------------------------------------ PROFILE ----------------------------------------#
 
-
 def fetch_user_info(user):
     net_id = getattr(user, 'net_id', None)
+    if not net_id:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    configs = Configs()
+    req_lib = ReqLib()
     user_inst = CustomUser.objects.get(net_id=net_id)
     major_inst = user_inst.major
     minors_list = []
@@ -33,14 +40,28 @@ def fetch_user_info(user):
     for minor_inst in user_inst.minors.all():
         minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
 
+    student_profile = req_lib.getJSON(f'{configs.USERS_FULL}?uid={net_id}')
+    default_class_year, default_first_name, default_last_name = None, None, None
+    if student_profile:
+        match = re.search(r'Class of (\d{4})', student_profile[0]['dn'])
+        if match:
+            default_class_year = int(match.group(1))
+        default_full_name = student_profile[0].get('displayname')
+        default_first_name, default_last_name = (default_full_name.split(' ', 1) + ['', ''])[:2]
+
+    if default_class_year is None:
+        default_class_year = datetime.now().year + 1
+
     return {
-        'net_id': net_id,
-        'university_id': getattr(user, 'university_id', None),
+        'netId': net_id,
+        'universityId': getattr(user, 'university_id', None),
         'email': getattr(user, 'email', None),
-        'first_name': getattr(user, 'first_name', None),
-        'last_name': getattr(user, 'last_name', None),
-        'class_year': getattr(user, 'class_year', None),
-        'department': getattr(user, 'department', None),
+        'firstName': getattr(user, 'first_name', default_first_name),
+        'lastName': getattr(user, 'last_name', default_last_name),
+        'classYear': getattr(user, 'class_year', default_class_year),
+        'department': getattr(
+            user, 'department', None
+        ),  # May not exist in API for undergrads
         'major': major,
         'minors': minors_list,
     }
@@ -205,7 +226,7 @@ class GetUserCourses(View):
     """
 
     def get(self, request, *args, **kwargs):
-        net_id = fetch_user_info(request.user)['net_id']
+        net_id = request.user.net_id
         user_inst = CustomUser.objects.get(net_id=net_id)
         user_course_dict = {}
 
@@ -255,7 +276,7 @@ def update_user_courses(request):
         data = json.loads(request.body)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
-        net_id = fetch_user_info(request.user)['net_id']
+        net_id = request.user.net_id
         user_inst = CustomUser.objects.get(net_id=net_id)
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
@@ -296,7 +317,7 @@ def update_user(request):
         if (class_year > 2030) or (class_year < 2023):
             raise ValueError('Class year out of range')
 
-        net_id = fetch_user_info(request.user)['net_id']
+        net_id = request.user.net_id
         user_inst = CustomUser.objects.get(net_id=net_id)
         user_inst.class_year = class_year
         user_inst.save()

@@ -254,6 +254,11 @@ export function Canvas({
     }));
   }, [searchResults]);
 
+  // useEffect(() => {
+  //   const updatedSemesters = generateSemesters(classYear);
+  //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
+  // }, [classYear]);
+
   const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(semesters)];
   const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);

@@ -1,16 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-
-import { rectSortingStrategy } from '@dnd-kit/sortable';
-
+import { useEffect, useState } from "react";
+import { rectSortingStrategy } from "@dnd-kit/sortable";
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
 import { RecursiveDropdown } from '../../components/RecursiveDropDown';
 import useAuthStore from '../../store/authSlice';
 import UserState from '../../store/userSlice';
-
-
 import { Canvas } from './Canvas';
 
 type Dictionary = {
@@ -29,14 +25,17 @@ const nestedDictionary: Dictionary = {
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { user, isAuthenticated, checkAuthentication } = useAuthStore((state) => state);
+  const {
+    user,
+    isAuthenticated,
+    checkAuthentication
+  } = useAuthStore((state) => state);
   const userProfile = UserState((state) => state.profile);
-
   useEffect(() => {
     checkAuthentication()
       .then(() => setIsLoading(false))
       .catch((error) => {
-        console.error('Auth error:', error);
+        console.error("Auth error:", error);
         setIsLoading(false);
       });
   }, [checkAuthentication]);
@@ -47,29 +46,26 @@ const Dashboard: React.FC = () => {
     }
   }, [isAuthenticated, isLoading]);
 
-  // const handleDragEnd = (event: DragEndEvent) => {
-  //   // Logic for handling drag end event (update Zustand store)
-  //   // ...
-  // };
-
   return (
     <>
       <Navbar />
-      <div className='flex flex-col h-screen pt-20 p-2 rounded-xl'>
+      <div className="flex flex-col h-screen pt-20 p-2 rounded-xl">
         <main className='flex p-2 flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
           <div className='flex flex-grow'> {/* Flex container for both components */}
             {/* Canvas Component */}
-            {user && (
+            {!isLoading && userProfile && userProfile.netId !== "" ? (
               <Canvas
                 user={userProfile}
                 trashable
                 columns={2}
                 strategy={rectSortingStrategy}
                 wrapperStyle={() => ({
-                  width: '100%', // Adjust width as needed
-                  height: 150, // Maintain height
+                  width: 150,
+                  height: 150
                 })}
               />
+            ) : (
+              <div>Loading...</div> // You can replace this with a proper loading component or message
             )}
             {/* RecursiveDropdown Component */}
             <div className='w-1/4'> {/* Adjust width as necessary */}
@@ -77,9 +73,8 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </main>
+      </div>
       <Footer />
-    </div>
-
     </>
   );
 };
