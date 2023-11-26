@@ -11,6 +11,7 @@ from .serializers import CourseSerializer
 import ujson as json
 from data.configs import Configs
 from data.req_lib import ReqLib
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -40,13 +41,16 @@ def fetch_user_info(user):
         minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
 
     student_profile = req_lib.getJSON(f'{configs.USERS_FULL}?uid={net_id}')
-    class_year, default_first_name, default_last_name = None, None, None
+    default_class_year, default_first_name, default_last_name = None, None, None
     if student_profile:
         match = re.search(r'Class of (\d{4})', student_profile[0]['dn'])
         if match:
-            class_year = int(match.group(1))
+            default_class_year = int(match.group(1))
         default_full_name = student_profile[0].get('displayname')
         default_first_name, default_last_name = (default_full_name.split(' ', 1) + ['', ''])[:2]
+
+    if default_class_year is None:
+        default_class_year = datetime.now().year + 1
 
     return {
         'netId': net_id,
@@ -54,7 +58,7 @@ def fetch_user_info(user):
         'email': getattr(user, 'email', None),
         'firstName': getattr(user, 'first_name', default_first_name),
         'lastName': getattr(user, 'last_name', default_last_name),
-        'classYear': class_year,
+        'classYear': getattr(user, 'class_year', default_class_year),
         'department': getattr(
             user, 'department', None
         ),  # May not exist in API for undergrads

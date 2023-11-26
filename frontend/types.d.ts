@@ -13,7 +13,7 @@ export type UserState = {
 };
 
 export type MajorMinorType = {
-  code: string | null;
+  code: string;
   name: string;
 };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import {
   Autocomplete,
@@ -89,15 +89,6 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [localTimeFormat24h, setLocalTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
   const [localThemeDarkMode, setLocalThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
 
-  useEffect(() => {
-    setLocalFirstName(profile.firstName);
-    setLocalLastName(profile.lastName);
-    setLocalClassYear(profile.classYear);
-    setLocalMajor(profile.major);
-    setLocalMinors(profile.minors);
-    setLocalTimeFormat24h(profile.timeFormat24h);
-    setLocalThemeDarkMode(profile.themeDarkMode);
-  }, [profile]);
 
   const handleSave = async () => {
     // Updates useUserSlice.getState().profile
@@ -161,9 +152,9 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             value={localMajor}
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, e) => setLocalMajor(e ?? undefined)}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => option.code}
             renderOption={(props, option) => (
-              <AutocompleteOption {...props} key={option.code}>
+              <AutocompleteOption {...props} key={option.name}>
                 <ListItemContent>
                   {option.code}
                   <Typography level='body-xs'>{option.name}</Typography>
@@ -180,9 +171,9 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             value={localMinors}
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, e) => setLocalMinors(e)}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => option.code}
             renderOption={(props, option) => (
-              <AutocompleteOption {...props} key={option.code}>
+              <AutocompleteOption {...props} key={option.name}>
                 <ListItemContent>
                   {option.code}
                   <Typography level='body-xs'>{option.name}</Typography>
