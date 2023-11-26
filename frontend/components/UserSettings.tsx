@@ -78,7 +78,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const { updateProfile } = useUserSlice((state) => state);
   const [localFirstName, setLocalFirstName] = useState<string>(profile.firstName);
   const [localLastName, setLocalLastName] = useState<string>(profile.lastName);
-  const [localClassYear, setLocalClassYear] = useState<number | undefined>(profile.classYear);
+  const [localClassYear, setLocalClassYear] =
+    useState<number | undefined>(profile.classYear) ?? undefined;
   const [localMajor, setLocalMajor] = useState<MajorMinorType | undefined>(
     profile.major ?? undeclared
   );

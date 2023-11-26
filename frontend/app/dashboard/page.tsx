@@ -30,11 +30,6 @@ const Dashboard: React.FC = () => {
     }
   }, [isAuthenticated, isLoading]);
 
-  // const handleDragEnd = (event: DragEndEvent) => {
-  //   // Logic for handling drag end event (update Zustand store)
-  //   // ...
-  // };
-
   return (
     <>
       <Navbar />
