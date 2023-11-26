@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   CancelDrop,
@@ -22,8 +22,8 @@ import {
   useSensor,
   MeasuringStrategy,
   KeyboardCoordinateGetter,
-  defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
+  defaultDropAnimationSideEffects
+} from "@dnd-kit/core";
 import {
   AnimateLayoutChanges,
   SortableContext,
@@ -31,19 +31,36 @@ import {
   arrayMove,
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
-  SortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { createPortal, unstable_batchedUpdates } from 'react-dom';
+  SortingStrategy
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { createPortal, unstable_batchedUpdates } from "react-dom";
 
-import { Course, Profile } from '@/types';
+import { Course, Profile } from "@/types";
 
-import Search from '@/components/Search';
-import useSearchStore from '@/store/searchSlice';
+import Search from "@/components/Search";
+import useSearchStore from "@/store/searchSlice";
 
-import { Item, Container, ContainerProps } from '../../components';
+import { Item, Container, ContainerProps } from "../../components";
+import { RecursiveDropdown } from "../../components/RecursiveDropDown";
 
-import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
+import {
+  coordinateGetter as multipleContainersCoordinateGetter
+} from "./multipleContainersKeyboardCoordinates";
+
+type Dictionary = {
+  [key: string]: any;
+};
+
+const nestedDictionary: Dictionary = {
+  key1: "value1",
+  key2: {
+    subkey1: "subvalue1",
+    subkey2: {
+      subsubkey1: "subsubvalue1"
+    }
+  }
+};
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -63,30 +80,39 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 // };
 
 function DroppableContainer({
-  children,
-  columns = 1,
-  disabled,
-  id,
-  items,
-  style,
-  ...props
-}: ContainerProps & {
+                              children,
+                              columns = 1,
+                              disabled,
+                              id,
+                              items,
+                              style,
+                              ...props
+                            }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
-  const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } =
+  const {
+    active,
+    attributes,
+    isDragging,
+    listeners,
+    over,
+    setNodeRef,
+    transition,
+    transform
+  } =
     useSortable({
       id,
       data: {
-        type: 'container',
-        children: items,
+        type: "container",
+        children: items
       },
-      animateLayoutChanges,
+      animateLayoutChanges
     });
   const isOverContainer = over
-    ? (id === over.id && active?.data.current?.type !== 'container') || items.includes(over.id)
+    ? (id === over.id && active?.data.current?.type !== "container") || items.includes(over.id)
     : false;
 
   return (
@@ -96,12 +122,12 @@ function DroppableContainer({
         ...style,
         transition,
         transform: CSS.Translate.toString(transform),
-        opacity: isDragging ? 0.5 : undefined,
+        opacity: isDragging ? 0.5 : undefined
       }}
       hover={isOverContainer}
       handleProps={{
         ...attributes,
-        ...listeners,
+        ...listeners
       }}
       columns={columns}
       {...props}
@@ -115,10 +141,10 @@ const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
     styles: {
       active: {
-        opacity: '0.5',
-      },
-    },
-  }),
+        opacity: "0.5"
+      }
+    }
+  })
 };
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
@@ -147,7 +173,9 @@ interface Props {
   itemCount?: number;
   items?: Items;
   handle?: boolean;
+
   renderItem?(): React.ReactElement;
+
   strategy?: SortingStrategy;
   modifiers?: Modifiers;
   minimal?: boolean;
@@ -156,30 +184,30 @@ interface Props {
   vertical?: boolean;
 }
 
-export const TRASH_ID = 'void';
-export const PLACEHOLDER_ID = 'placeholder';
-export const SEARCH_RESULTS_ID = 'Search Results';
+export const TRASH_ID = "void";
+export const PLACEHOLDER_ID = "placeholder";
+export const SEARCH_RESULTS_ID = "Search Results";
 
 export function Canvas({
-  user,
-  adjustScale = false,
-  // itemCount = 3, // remove this?
-  cancelDrop,
-  columns = 2,
-  handle = false,
-  // initialItems, // remove
-  containerStyle,
-  coordinateGetter = multipleContainersCoordinateGetter,
-  getItemStyles = () => ({}),
-  wrapperStyle = () => ({}),
-  minimal = false,
-  modifiers,
-  renderItem,
-  strategy = verticalListSortingStrategy,
-  trashable = false,
-  // vertical = false,
-  scrollable,
-}: Props) {
+                         user,
+                         adjustScale = false,
+                         // itemCount = 3, // remove this?
+                         cancelDrop,
+                         columns = 2,
+                         handle = false,
+                         // initialItems, // remove
+                         containerStyle,
+                         coordinateGetter = multipleContainersCoordinateGetter,
+                         getItemStyles = () => ({}),
+                         wrapperStyle = () => ({}),
+                         minimal = false,
+                         modifiers,
+                         renderItem,
+                         strategy = verticalListSortingStrategy,
+                         trashable = false,
+                         // vertical = false,
+                         scrollable
+                       }: Props) {
   const classYear = user.classYear ?? 2025;
   console.log(user.classYear);
   console.log(user);
@@ -201,7 +229,7 @@ export function Canvas({
     user_courses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
-    console.log('updateSemesters called');
+    console.log("updateSemesters called");
 
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
@@ -223,25 +251,25 @@ export function Canvas({
   const semesters = generateSemesters(classYear);
   const [items, setItems] = useState<Items>(() => ({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
-    ...semesters,
+    ...semesters
   }));
 
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
 
     fetch(`${process.env.BACKEND}/get_user_courses/`, {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include"
     })
       .then((response) => response.json())
       .then((data) => {
         user_courses = data;
 
         setItems((prevItems) => ({
-          ...updateSemesters(prevItems, classYear, user_courses),
+          ...updateSemesters(prevItems, classYear, user_courses)
         }));
       })
-      .catch((error) => console.error('User Courses Error:', error));
+      .catch((error) => console.error("User Courses Error:", error));
   }, []);
 
   const { searchResults } = useSearchStore();
@@ -250,7 +278,7 @@ export function Canvas({
       ...prevItems,
       [SEARCH_RESULTS_ID]: searchResults.map(
         (course) => `${course.department_code} ${course.catalog_number}`
-      ),
+      )
     }));
   }, [searchResults]);
 
@@ -281,7 +309,7 @@ export function Canvas({
           ...args,
           droppableContainers: args.droppableContainers.filter(
             (container) => container.id in items
-          ),
+          )
         });
       }
 
@@ -290,9 +318,9 @@ export function Canvas({
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
+          pointerIntersections
           : rectIntersection(args);
-      let overId = getFirstCollision(intersections, 'id');
+      let overId = getFirstCollision(intersections, "id");
 
       if (overId !== null) {
         if (overId === TRASH_ID) {
@@ -311,7 +339,7 @@ export function Canvas({
               ...args,
               droppableContainers: args.droppableContainers.filter(
                 (container) => container.id !== overId && containerItems.includes(container.id)
-              ),
+              )
             })[0]?.id;
           }
         }
@@ -339,7 +367,7 @@ export function Canvas({
     useSensor(MouseSensor),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
-      coordinateGetter,
+      coordinateGetter
     })
   );
   const findContainer = (id?: UniqueIdentifier) => {
@@ -365,7 +393,7 @@ export function Canvas({
   };
 
   const onDragCancel = () => {
-    console.log('Drag canceled');
+    console.log("Drag canceled");
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -383,205 +411,169 @@ export function Canvas({
   }, [items]);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={collisionDetectionStrategy}
-      measuring={{
-        droppable: {
-          strategy: MeasuringStrategy.Always,
-        },
-      }}
-      onDragStart={({ active }) => {
-        console.log('Drag started: ', active.id);
-        setActiveId(active.id);
-        setClonedItems(items);
-      }}
-      onDragOver={({ active, over }) => {
-        console.log('Drag over: ', { activeId: active.id, overId: over?.id });
-        const overId = over?.id;
-
-        if (overId === null || overId === undefined || overId === TRASH_ID || active.id in items) {
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-        const activeContainer = findContainer(active.id);
-
-        if (!overContainer || !activeContainer) {
-          return;
-        }
-
-        if (activeContainer !== overContainer) {
-          setItems((items) => {
-            const activeItems = items[activeContainer];
-            const overItems = items[overContainer];
-            const overIndex = overItems.indexOf(overId);
-            const activeIndex = activeItems.indexOf(active.id);
-
-            let newIndex: number;
-
-            if (overId in items) {
-              newIndex = overItems.length + 1;
-            } else {
-              const isBelowOverItem =
-                over &&
-                active.rect.current.translated &&
-                active.rect.current.translated.top > over.rect.top + over.rect.height;
-
-              const modifier = isBelowOverItem ? 1 : 0;
-
-              newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-            }
-
-            recentlyMovedToNewContainer.current = true;
-
-            return {
-              ...items,
-              [activeContainer]: items[activeContainer].filter((item) => item !== active.id),
-              [overContainer]: [
-                ...items[overContainer].slice(0, newIndex),
-                items[activeContainer][activeIndex],
-                ...items[overContainer].slice(newIndex, items[overContainer].length),
-              ],
-            };
-          });
-        }
-      }}
-      onDragEnd={({ active, over }) => {
-        console.log('Drag end: ', { activeId: active.id, overId: over?.id });
-        if (active.id in items && over?.id) {
-          setContainers((containers) => {
-            const activeIndex = containers.indexOf(active.id);
-            const overIndex = containers.indexOf(over.id);
-
-            return arrayMove(containers, activeIndex, overIndex);
-          });
-        }
-
-        const activeContainer = findContainer(active.id);
-
-        if (!activeContainer) {
-          setActiveId(null);
-          return;
-        }
-
-        const overId = over?.id;
-
-        if (overId === null || overId === undefined) {
-          setActiveId(null);
-          return;
-        }
-
-        if (overId === PLACEHOLDER_ID) {
-          const newContainerId = getNextContainerId();
-
-          unstable_batchedUpdates(() => {
-            setContainers((containers) => [...containers, newContainerId]);
-            setItems((items) => ({
-              ...items,
-              [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-              [newContainerId]: [active.id],
-            }));
-            setActiveId(null);
-          });
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-
-        if (overContainer) {
-          const activeIndex = items[activeContainer].indexOf(active.id);
-          const overIndex = items[overContainer].indexOf(overId);
-
-          if (activeIndex !== overIndex) {
-            setItems((items) => ({
-              ...items,
-              [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
-            }));
+    <>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={collisionDetectionStrategy}
+        measuring={{
+          droppable: {
+            strategy: MeasuringStrategy.Always
           }
-        }
+        }}
+        onDragStart={({ active }) => {
+          console.log("Drag started: ", active.id);
+          setActiveId(active.id);
+          setClonedItems(items);
+        }}
+        onDragOver={({ active, over }) => {
+          console.log("Drag over: ", {
+            activeId: active.id,
+            overId: over?.id
+          });
+          const overId = over?.id;
 
-        setActiveId(null);
+          if (overId === null || overId === undefined || overId === TRASH_ID || active.id in items) {
+            return;
+          }
 
-        const courseId = active.id;
-        const semesterId = activeContainer;
-        fetch(`${process.env.BACKEND}/update_user_courses/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          // Need CSRF token here from Next.js
-          body: JSON.stringify({ courseId, semesterId }),
-        })
-          .then((response) => response.json())
-          .then((data) => console.log('Update success', data))
-          .catch((error) => console.error('Update Error:', error));
-      }}
-      cancelDrop={cancelDrop}
-      onDragCancel={onDragCancel}
-      modifiers={modifiers}
-    >
-      <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {/* Left Section for Search Results */}
-          {containers.includes('Search Results') && (
-            <div style={{ width: '100%', marginRight: '20px'}}>
-              <DroppableContainer
-                key='Search Results'
-                id='Search Results'
-                label={<Search />}
-                columns={columns}
-                items={items['Search Results']}
-                scrollable={scrollable}
-                style={containerStyle}
-                unstyled={minimal}
-                height="600px"
-              >
-                <SortableContext items={items['Search Results']} strategy={strategy}>
-                  {items['Search Results'].map((value, index) => (
-                    <SortableItem
-                      disabled={isSortingContainer}
-                      key={index}
-                      id={value}
-                      index={index}
-                      handle={handle}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem}
-                      containerId='Search Results'
-                      getIndex={getIndex}
-                    />
-                  ))}
-                </SortableContext>
-              </DroppableContainer>
-            </div>
-          )}
+          const overContainer = findContainer(overId);
+          const activeContainer = findContainer(active.id);
 
-          {/* Right Section for other containers in a 2x4 grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gridTemplateRows: '1fr 1fr 1fr 1fr',
-              gap: '0px',
-            }}
-          >
-            {containers
-              .filter((id) => id !== 'Search Results')
-              .map((containerId) => (
+          if (!overContainer || !activeContainer) {
+            return;
+          }
+
+          if (activeContainer !== overContainer) {
+            setItems((items) => {
+              const activeItems = items[activeContainer];
+              const overItems = items[overContainer];
+              const overIndex = overItems.indexOf(overId);
+              const activeIndex = activeItems.indexOf(active.id);
+
+              let newIndex: number;
+
+              if (overId in items) {
+                newIndex = overItems.length + 1;
+              } else {
+                const isBelowOverItem =
+                  over &&
+                  active.rect.current.translated &&
+                  active.rect.current.translated.top > over.rect.top + over.rect.height;
+
+                const modifier = isBelowOverItem ? 1 : 0;
+
+                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+              }
+
+              recentlyMovedToNewContainer.current = true;
+
+              return {
+                ...items,
+                [activeContainer]: items[activeContainer].filter((item) => item !== active.id),
+                [overContainer]: [
+                  ...items[overContainer].slice(0, newIndex),
+                  items[activeContainer][activeIndex],
+                  ...items[overContainer].slice(newIndex, items[overContainer].length)
+                ]
+              };
+            });
+          }
+        }}
+        onDragEnd={({ active, over }) => {
+          console.log("Drag end: ", {
+            activeId: active.id,
+            overId: over?.id
+          });
+          if (active.id in items && over?.id) {
+            setContainers((containers) => {
+              const activeIndex = containers.indexOf(active.id);
+              const overIndex = containers.indexOf(over.id);
+
+              return arrayMove(containers, activeIndex, overIndex);
+            });
+          }
+
+          const activeContainer = findContainer(active.id);
+
+          if (!activeContainer) {
+            setActiveId(null);
+            return;
+          }
+
+          const overId = over?.id;
+
+          if (overId === null || overId === undefined) {
+            setActiveId(null);
+            return;
+          }
+
+          if (overId === PLACEHOLDER_ID) {
+            const newContainerId = getNextContainerId();
+
+            unstable_batchedUpdates(() => {
+              setContainers((containers) => [...containers, newContainerId]);
+              setItems((items) => ({
+                ...items,
+                [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
+                [newContainerId]: [active.id]
+              }));
+              setActiveId(null);
+            });
+            return;
+          }
+
+          const overContainer = findContainer(overId);
+
+          if (overContainer) {
+            const activeIndex = items[activeContainer].indexOf(active.id);
+            const overIndex = items[overContainer].indexOf(overId);
+
+            if (activeIndex !== overIndex) {
+              setItems((items) => ({
+                ...items,
+                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex)
+              }));
+            }
+          }
+
+          setActiveId(null);
+
+          const courseId = active.id;
+          const semesterId = activeContainer;
+          fetch(`${process.env.BACKEND}/update_user_courses/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            // Need CSRF token here from Next.js
+            body: JSON.stringify({ courseId, semesterId })
+          })
+            .then((response) => response.json())
+            .then((data) => console.log("Update success", data))
+            .catch((error) => console.error("Update Error:", error));
+        }}
+        cancelDrop={cancelDrop}
+        onDragCancel={onDragCancel}
+        modifiers={modifiers}
+      >
+        <SortableContext items={[...containers, PLACEHOLDER_ID]}>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {/* Left Section for Search Results */}
+            {containers.includes("Search Results") && (
+              <div style={{ width: "100%", marginRight: "20px" }}>
                 <DroppableContainer
-                  key={containerId}
-                  id={containerId}
-                  label={minimal ? undefined : `${containerId}`}
+                  key="Search Results"
+                  id="Search Results"
+                  label={<Search />}
                   columns={columns}
-                  items={items[containerId]}
+                  items={items["Search Results"]}
                   scrollable={scrollable}
                   style={containerStyle}
                   unstyled={minimal}
-                  onRemove={() => handleRemove(containerId)}
-                  height="135px"
+                  height="600px"
                 >
-                  <SortableContext items={items[containerId]} strategy={strategy}>
-                    {items[containerId].map((value, index) => (
+                  <SortableContext items={items["Search Results"]}
+                                   strategy={strategy}>
+                    {items["Search Results"].map((value, index) => (
                       <SortableItem
                         disabled={isSortingContainer}
                         key={index}
@@ -591,29 +583,80 @@ export function Canvas({
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
                         renderItem={renderItem}
-                        containerId={containerId}
+                        containerId="Search Results"
                         getIndex={getIndex}
                       />
                     ))}
                   </SortableContext>
                 </DroppableContainer>
-              ))}
-          </div>
-        </div>
-      </SortableContext>
+              </div>
+            )}
 
-      {createPortal(
-        <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-          {activeId
-            ? containers.includes(activeId)
-              ? renderContainerDragOverlay(activeId)
-              : renderSortableItemDragOverlay(activeId)
-            : null}
-        </DragOverlay>,
-        document.body
-      )}
-      {trashable && activeId && !containers.includes(activeId) ? <Trash id={TRASH_ID} /> : null}
-    </DndContext>
+            {/* Right Section for other containers in a 2x4 grid */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gridTemplateRows: "1fr 1fr 1fr 1fr",
+                gap: "0px"
+              }}
+            >
+              {containers
+                .filter((id) => id !== "Search Results")
+                .map((containerId) => (
+                  <DroppableContainer
+                    key={containerId}
+                    id={containerId}
+                    label={minimal ? undefined : `${containerId}`}
+                    columns={columns}
+                    items={items[containerId]}
+                    scrollable={scrollable}
+                    style={containerStyle}
+                    unstyled={minimal}
+                    onRemove={() => handleRemove(containerId)}
+                    height="135px"
+                  >
+                    <SortableContext items={items[containerId]}
+                                     strategy={strategy}>
+                      {items[containerId].map((value, index) => (
+                        <SortableItem
+                          disabled={isSortingContainer}
+                          key={index}
+                          id={value}
+                          index={index}
+                          handle={handle}
+                          style={getItemStyles}
+                          wrapperStyle={wrapperStyle}
+                          renderItem={renderItem}
+                          containerId={containerId}
+                          getIndex={getIndex}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DroppableContainer>
+                ))}
+            </div>
+          </div>
+        </SortableContext>
+
+        {createPortal(
+          <DragOverlay adjustScale={adjustScale}
+                       dropAnimation={dropAnimation}>
+            {activeId
+              ? containers.includes(activeId)
+                ? renderContainerDragOverlay(activeId)
+                : renderSortableItemDragOverlay(activeId)
+              : null}
+          </DragOverlay>,
+          document.body
+        )}
+        {trashable && activeId && !containers.includes(activeId) ?
+          <Trash id={TRASH_ID} /> : null}
+      </DndContext>
+      <div className="w-1/4"> {/* Adjust width as necessary */}
+        <RecursiveDropdown dictionary={nestedDictionary} />
+      </div>
+    </>
   );
 
   function renderSortableItemDragOverlay(id: UniqueIdentifier) {
@@ -628,7 +671,7 @@ export function Canvas({
           value: id,
           isSorting: true,
           isDragging: true,
-          isDragOverlay: true,
+          isDragOverlay: true
         })}
         color={getColor(id)}
         wrapperStyle={wrapperStyle({ index: 0 })}
@@ -644,7 +687,7 @@ export function Canvas({
         label={`${containerId}`}
         columns={columns}
         style={{
-          height: '100%',
+          height: "100%"
         }}
         shadow
         unstyled={false}
@@ -661,7 +704,7 @@ export function Canvas({
               value: item,
               isDragging: false,
               isSorting: false,
-              isDragOverlay: false,
+              isDragOverlay: false
             })}
             color={getColor(item)}
             wrapperStyle={wrapperStyle({ index })}
@@ -686,14 +729,14 @@ export function Canvas({
 
 function getColor(id: UniqueIdentifier) {
   switch (String(id)[0]) {
-    case 'A':
-      return '#7193f1';
-    case 'B':
-      return '#ffda6c';
-    case 'C':
-      return '#00bcd4';
-    case 'D':
-      return '#ef769f';
+    case "A":
+      return "#7193f1";
+    case "B":
+      return "#ffda6c";
+    case "C":
+      return "#00bcd4";
+    case "D":
+      return "#ef769f";
   }
 
   return undefined;
@@ -701,25 +744,25 @@ function getColor(id: UniqueIdentifier) {
 
 function Trash({ id }: { id: UniqueIdentifier }) {
   const { setNodeRef, isOver } = useDroppable({
-    id,
+    id
   });
 
   return (
     <div
       ref={setNodeRef}
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'fixed',
-        left: '50%',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "fixed",
+        left: "50%",
         marginLeft: -150,
         bottom: 20,
         width: 300,
         height: 60,
         borderRadius: 5,
-        border: '1px solid',
-        borderColor: isOver ? 'red' : '#DDD',
+        border: "1px solid",
+        borderColor: isOver ? "red" : "#DDD"
       }}
     >
       Drop here to delete
@@ -752,16 +795,16 @@ interface SortableItemProps {
 }
 
 function SortableItem({
-  disabled,
-  id,
-  index,
-  handle,
-  renderItem,
-  style,
-  containerId,
-  getIndex,
-  wrapperStyle,
-}: SortableItemProps) {
+                        disabled,
+                        id,
+                        index,
+                        handle,
+                        renderItem,
+                        style,
+                        containerId,
+                        getIndex,
+                        wrapperStyle
+                      }: SortableItemProps) {
   const {
     setNodeRef,
     setActivatorNodeRef,
@@ -771,9 +814,9 @@ function SortableItem({
     over,
     overIndex,
     transform,
-    transition,
+    transition
   } = useSortable({
-    id,
+    id
   });
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
@@ -794,7 +837,7 @@ function SortableItem({
         isDragging,
         isSorting,
         overIndex: over ? getIndex(over.id) : overIndex,
-        containerId,
+        containerId
       })}
       color={getColor(id)}
       transition={transition}
