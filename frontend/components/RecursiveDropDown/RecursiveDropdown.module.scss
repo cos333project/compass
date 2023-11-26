@@ -1,0 +1,44 @@
+.recursiveDropdownContainer {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #000; /* All text in black */
+  }
+  
+  .dropdown {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .category {
+    margin: 2px 0;
+    padding-left: 10px;
+  }
+  
+  .categoryTitle {
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0; /* Grey background for categories */
+  }
+  
+  .item {
+    padding: 5px 10px;
+    background-color: #f9f9f9; /* Lighter grey background for items */
+  }
+  
+  .indicator {
+    margin-right: 5px;
+    font-size: 0.8em; /* Smaller font size for the indicator */
+  }
+  
+  .nested {
+    display: none;
+    padding-left: 20px;
+  }
+  
+  .nested.active {
+    display: block;
+  }
+  
