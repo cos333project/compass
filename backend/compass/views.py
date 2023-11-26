@@ -5,12 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
-from .models import Course, CustomUser, models, UserCourses, Minor, Major
+from .models import models, Course, Department, Degree, Major, Minor, \
+    Certificate, Requirement, CustomUser, UserCourses
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CourseSerializer
 import ujson as json
 from data.configs import Configs
 from data.req_lib import ReqLib
+from data.check_reqs import check_user
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -30,12 +32,8 @@ def fetch_user_info(user):
 
     if major_inst is not None:
         major = {'code': major_inst.code, 'name': major_inst.name}
-        major_name = major_inst.name
-        major_code = major_inst.code
     else:
         major = None
-        major_name = None
-        major_code = None
 
     for minor_inst in user_inst.minors.all():
         minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
@@ -334,3 +332,15 @@ def update_user(request):
         return JsonResponse(
             {'status': 'error', 'message': 'An internal error has occurred!'}
         )
+
+# ----------------------------- CHECK REQUIREMENTS -----------------------------------#
+
+
+def check_requirements(request):
+    user_info = fetch_user_info(request.user)
+    req_dict = {}
+    req_dict = check_user(user_info['netId'], user_info['major'],
+                          user_info['minors'])
+    return JsonResponse(req_dict)
+
+
