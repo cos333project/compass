@@ -12,7 +12,11 @@ import { Logout } from "./Logout";
 import SettingsModal from "./Modal";
 import UserSettings from "./UserSettings";
 
-const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
+const MenuItem: React.FC<MenuItemProps> = ({
+                                             isActive,
+                                             children,
+                                             onClick
+                                           }) => (
   <div
     className={clsx(
       isActive ? "bg-gray-100 text-gray-900" : "text-gray-700",
@@ -60,7 +64,7 @@ const DropdownMenu: React.FC = () => {
           major: data?.major,
           minors: data?.minors,
           classYear: data?.class_year,
-          netId: "",
+          netId: data.net_id,
           universityId: "",
           email: "",
           department: "",
@@ -126,7 +130,10 @@ const DropdownMenu: React.FC = () => {
           <UserSettings
             profile={userProfile}
             onClose={() => setBlur(false)}
-            onSave={() => setBlur(false)}
+            onSave={() => {
+              setBlur(false);
+              window.location.reload();
+            }}
           />
         </SettingsModal>
       )}

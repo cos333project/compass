@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col h-screen pt-20 p-2 rounded-xl">
         <main
           className="flex p-2 flex-grow bg-[#FAFAFA] rounded-xl shadow-xl">
-          {!isLoading && userProfile && userProfile.firstName !== "" ? (
+          {!isLoading && userProfile && userProfile.netId !== "" ? (
             <Canvas
               user={userProfile}
               trashable

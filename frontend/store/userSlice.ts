@@ -44,6 +44,7 @@ export const useFetchUserProfile = () => {
         updateStore({
           firstName: data.first_name,
           lastName: data.last_name,
+          netId: data.net_id,
           major: data.major,
           minors: data.minors,
           classYear: data.class_year,
