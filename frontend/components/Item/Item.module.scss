@@ -22,7 +22,7 @@
 
 .Wrapper {
   display: flex;
-  height: 20px !important;
+  height: 30px !important;
   box-sizing: border-box;
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scaleX(var(--scale-x, 1))
     scaleY(var(--scale-y, 1));
@@ -45,11 +45,11 @@
 
 .Item {
   position: relative;
-  height: 20px;
+  height: 30px;
   display: flex;
   flex-grow: 1;
   align-items: center;
-  padding: 10px 10px;
+  padding: 15px 15px;
   background-color: #fff;
   box-shadow:
     0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05),

@@ -245,8 +245,7 @@ export function Canvas({
   }));
 
   const nestedDictionary: Dictionary = {
-    'COS-AB': "",
-    'Minors': ""
+    'Requirements': ""
   };
   const [reqDict, setReqDict] = useState<Dictionary>(() => ({
     reqDict: nestedDictionary
@@ -579,7 +578,7 @@ export function Canvas({
                   scrollable={scrollable}
                   style={containerStyle}
                   unstyled={minimal}
-                  height="600px"
+                  height="688px"
                 >
                   <SortableContext items={items["Search Results"]}
                                    strategy={strategy}>
@@ -624,7 +623,7 @@ export function Canvas({
                     style={containerStyle}
                     unstyled={minimal}
                     onRemove={() => handleRemove(containerId)}
-                    height="350px"
+                    height="150px"
                   >
                     <SortableContext items={items[containerId]}
                                      strategy={strategy}>

@@ -32,10 +32,10 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
               </ul>}
             </>
           ) : (
-            <div>
+            <>
               <div className={styles.categoryTitle}>{key}</div>
               <div className={styles.item}>{value}</div>
-            </div>
+            </>
           )}
         </li>
       );
