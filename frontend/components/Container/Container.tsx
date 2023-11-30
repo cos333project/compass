@@ -77,10 +77,10 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
         {label ? (
           <div className={styles.Header}>
             {label}
-            <div className={styles.Actions}>
+            {/* <div className={styles.Actions}>
               {onRemove ? <Remove onClick={onRemove} /> : undefined}
               <Handle {...handleProps} />
-            </div>
+            </div> */}
           </div>
         ) : null}
         {placeholder ? children : <ul>{children}</ul>}
