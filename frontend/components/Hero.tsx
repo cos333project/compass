@@ -48,12 +48,7 @@ export default function Hero() {
             />
           </div>
         </div>
-        <div className='py-24 sm:py-32 lg:pb-40'>
-          <div className='mx-auto max-w-7xl px-6 lg:px-8'>
-            <div className='mx-auto max-w-2xl text-center text-[var(--system-text-color)]'>
-            </div>
-          </div>
-        </div>
+        <div className='py-24 sm:py-32 lg:pb-40'/>
       </div>
   );
 }

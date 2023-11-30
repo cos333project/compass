@@ -53,7 +53,8 @@ const Dashboard: React.FC = () => {
             )}
         </main>
       </div>
-      {/*<Footer />*/}
+      <div className='py-12 sm:py-16 lg:pb-20'/>
+      <Footer />
     </>
   );
 };
