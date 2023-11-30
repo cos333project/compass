@@ -18,7 +18,7 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
 
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
-      const isObject = typeof value === 'object' && value !== null && !(value instanceof Array);
+      const isObject = typeof value === 'object' && value !== null;
       return (
         <li key={key} className={isObject ? styles.category : styles.item}>
           {isObject ? (
@@ -32,7 +32,10 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
               </ul>}
             </>
           ) : (
-            <span>{key}</span>
+            <>
+              <div className={styles.categoryTitle}>{key}</div>
+              <div className={styles.item}>{value}</div>
+            </>
           )}
         </li>
       );

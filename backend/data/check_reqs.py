@@ -10,7 +10,7 @@ import copy
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
-sys.path.append(str(Path("../../../../../Desktop").resolve()))
+sys.path.append(str(Path("../").resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 import constants
@@ -61,10 +61,9 @@ def cumulative_time(func):
 
 
 @cumulative_time
-def check_user(user_id):
+def check_user(net_id, major, minors):
     output = {}
-    user_inst = CustomUser.objects.get(id=user_id)
-    user_courses = create_courses(user_id)
+    user_courses = create_courses(net_id)
 
     # get rid of this
     for sem in user_courses:
@@ -82,28 +81,30 @@ def check_user(user_id):
             elif course['inst'].catalog_number == '520':
                 course['settled'] = [2515]
 
-    if user_inst.major:
-        output[user_inst.major.code] = {}
+    if major is not None:
+        output[major['code']] = {}
         formatted_courses, formatted_req = \
-            check_requirements("Major", user_inst.major.id, user_courses)
-        output[user_inst.major.code]['courses'] = formatted_courses
-        output[user_inst.major.code]['requirements'] = formatted_req
+            check_requirements("Major", major['code'], user_courses)
+        # output[major['code']]['courses'] = formatted_courses
+        output[major['code']]['requirements'] = formatted_req
 
-    output['minors'] = {}
-    for minor_inst in user_inst.minors.all():
-        output['minors'][minor_inst.code] = {}
+    output['Minors'] = {}
+    for minor in minors:
+        output['Minors'][minor['code']] = {}
         formatted_courses, formatted_req = \
-            check_requirements("Minor", minor_inst.id, user_courses)
-        output['minors'][minor_inst.code]['courses'] = formatted_courses
-        output['minors'][minor_inst.code]['requirements'] = formatted_req
+            check_requirements("Minor", minor['code'], user_courses)
+        # output['minors'][minor['code']]['courses'] = formatted_courses
+        output['Minors'][minor['code']]['requirements'] = formatted_req
+
+    print(output['COS-AB'])
 
     return output
 
 
 @cumulative_time
-def create_courses(user_id):
+def create_courses(net_id):
     courses = DEFAULT_SCHEDULE
-    course_insts = UserCourses.objects.filter(user_id=user_id)
+    course_insts = UserCourses.objects.select_related('user').filter(user__net_id=net_id)
     for course_inst in course_insts:
         courses[course_inst.semester - 1].append({"inst": course_inst.course})
     return courses
@@ -119,7 +120,7 @@ def create_dummy_courses(course_dict):
 
 
 @cumulative_time
-def check_requirements(table, id, courses):
+def check_requirements(table, code, courses):
     """
     Returns information about the requirements satisfied by the courses
     given in course_ids.
@@ -134,13 +135,13 @@ def check_requirements(table, id, courses):
     :rtype: (bool, dict, dict)
     """
     if table == "Degree":
-        req_inst = Degree.objects.get(id=id)
+        req_inst = Degree.objects.get(code=code)
     elif table == "Major":
-        req_inst = Major.objects.get(id=id)
+        req_inst = Major.objects.get(code=code)
     elif table == "Minor":
-        req_inst = Minor.objects.get(id=id)
+        req_inst = Minor.objects.get(code=code)
     elif table == "Certificate":
-        req_inst = Certificate.objects.get(id=id)
+        req_inst = Certificate.objects.get(code=code)
 
     req = _init_req(req_inst)
     courses = _init_courses(courses)
@@ -186,11 +187,11 @@ def _init_req(req_inst):
             req['req_list'].append(sub_req)
     if (req["inst"]._meta.db_table == 'Requirement'):
         req['course_list'] = {course_inst.id for course_inst in req["inst"].course_list.all()}
-        req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
         if len(req['course_list']) == 0:
             req.pop('course_list')
-        if len(req['exc_course_list']) == 0:
-            req.pop('exc_course_list')
+        # if len(req['exc_course_list']) == 0:
+        #     req.pop('exc_course_list')
     return req
 
 
@@ -413,23 +414,23 @@ def format_req_output(req):
     Enforce the type and order of fields in the req output
     """
     output = collections.OrderedDict()
-    if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].name:
-        output['name'] = req["inst"].name
+    # if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].name:
+    #     output['name'] = req["inst"].name
     if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].code:
         output['code'] = req["inst"].code
     # if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
     #     output['degree'] = req['inst'].degree.all()[0]
-    if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].pdfs_allowed:
-        output['pdfs_allowed'] = req['inst'].pdfs_allowed
-    if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
-        output['completed_by_semester'] = req['inst'].completed_by_semester
+    # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].pdfs_allowed:
+    #     output['pdfs_allowed'] = str(req['inst'].pdfs_allowed)
+    # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
+    #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
     if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].name:
         output['name'] = req["inst"].name
 
-    output["satisfied"] = (req["inst"].min_needed - req["count"] <= 0)
-    output['count'] = req['count']
-    output['min_needed'] = req['inst'].min_needed
-    output['max_counted'] = req['inst'].max_counted
+    output["satisfied"] = str((req["inst"].min_needed - req["count"] <= 0))
+    # output['count'] = str(req['count'])
+    # output['min_needed'] = str(req['inst'].min_needed)
+    # output['max_counted'] = str(req['inst'].max_counted)
     if "req_list" in req: # internal node. recursively call on children
         req_list = []
         for subreq in req["req_list"]:
@@ -439,9 +440,9 @@ def format_req_output(req):
         if req_list:
             output["req_list"] = req_list
     if "settled" in req:
-        output["settled"] = req["settled"]
-    if "unsettled" in req:
-        output["unsettled"] = req["unsettled"]
+        output["settled"] = str(req["settled"])
+    # if "unsettled" in req:
+    #     output["unsettled"] = str(req["unsettled"])
     return output
 
 def main():
@@ -467,8 +468,11 @@ def main():
     # courses = _init_courses(courses)
     # print(courses)
 
-    output = check_user(4)
-    print(output['minors']['CLA']['requirements'])
+    output = check_user('gc5512',
+                        {'code': 'COS-AB', 'name': 'Computer Science - AB'},
+                        [{'code': 'CLA', 'name': 'Classics'},
+                         {'code': 'DAN', 'name': 'Dance'}])
+    print(output['minors'])
 
 if __name__ == "__main__":
     main()

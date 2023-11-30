@@ -70,8 +70,11 @@ const majors = [
 
 const minors = [
   { code: 'FIN', name: 'Finance' },
-  { code: 'SML', name: 'Statistics and Machine Learning' },
+  { code: 'DAN', name: 'Dance' },
   { code: 'CLA', name: 'Classics' },
+  { code: 'CHI', name: 'Chinese Language' },
+  { code: 'CS', name: 'Climate Science' },
+  { code: 'MQE', name: 'Quantitative Economics' },
 ];
 
 const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
