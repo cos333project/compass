@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
             )}
         </main>
       </div>
-      <Footer />
+      {/*<Footer />*/}
     </>
   );
 };

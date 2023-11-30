@@ -17,16 +17,16 @@
 
   ul {
     display: grid;
-    grid-gap: 10px;
+    gap: 10px 10px;
     grid-template-columns: repeat(var(--columns, 1), 1fr);
     list-style: none;
-    padding: 20px;
-    margin: 0;
+    padding: 5px;
+    margin: 5px;
     max-height: 100%; /* Ensures ul doesn't exceed container's height */
     overflow-y: auto; /* Adds vertical scrollbar to ul */
     overflow-x: hidden; /* Prevents horizontal scrollbar */
   }
-
+  
   &.scrollable {
     ul {
       overflow-y: auto;

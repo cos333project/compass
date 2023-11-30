@@ -52,16 +52,6 @@ type Dictionary = {
   [key: string]: any;
 };
 
-const nestedDictionary: Dictionary = {
-  key1: "value1",
-  key2: {
-    subkey1: "subvalue1",
-    subkey2: {
-      subsubkey1: "subsubvalue1"
-    }
-  }
-};
-
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
@@ -252,6 +242,13 @@ export function Canvas({
   const [items, setItems] = useState<Items>(() => ({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
     ...semesters
+  }));
+
+  const nestedDictionary: Dictionary = {
+    'Requirements': ""
+  };
+  const [reqDict, setReqDict] = useState<Dictionary>(() => ({
+    reqDict: nestedDictionary
   }));
 
   useEffect(() => {
@@ -550,6 +547,18 @@ export function Canvas({
             .then((response) => response.json())
             .then((data) => console.log("Update success", data))
             .catch((error) => console.error("Update Error:", error));
+
+          fetch(`${process.env.BACKEND}/check_requirements/`, {
+            method: "GET",
+            credentials: "include"
+          }).then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              setReqDict((reqDict) => ({
+                reqDict: data
+              }));
+            })
+            .catch((error) => console.error("Requirements Check Error:", error));
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
@@ -569,7 +578,7 @@ export function Canvas({
                   scrollable={scrollable}
                   style={containerStyle}
                   unstyled={minimal}
-                  height="600px"
+                  height="688px"
                 >
                   <SortableContext items={items["Search Results"]}
                                    strategy={strategy}>
@@ -614,7 +623,7 @@ export function Canvas({
                     style={containerStyle}
                     unstyled={minimal}
                     onRemove={() => handleRemove(containerId)}
-                    height="135px"
+                    height="150px"
                   >
                     <SortableContext items={items[containerId]}
                                      strategy={strategy}>
@@ -654,7 +663,7 @@ export function Canvas({
           <Trash id={TRASH_ID} /> : null}
       </DndContext>
       <div className="w-1/4"> {/* Adjust width as necessary */}
-        <RecursiveDropdown dictionary={nestedDictionary} />
+        <RecursiveDropdown dictionary={reqDict.reqDict} />
       </div>
     </>
   );
