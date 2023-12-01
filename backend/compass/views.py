@@ -14,6 +14,7 @@ from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user
 from datetime import datetime
+import django_cas_ng.views
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,15 @@ def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
 
+# @csrf_exempt
+# def login(request):
+#     if request.user.is_authenticated:
+#         return redirect("index")
+#     else:
+#         return django_cas_ng.views.LoginView.as_view()(request)
+
+# def logout(request):
+#     return django_cas_ng.views.LogoutView.as_view()(request)
 
 # TODO: Need to give csrf token instead of exempting it in production
 @csrf_exempt
@@ -133,8 +143,8 @@ def authenticate(request):
 
 DEPT_NUM_SUFFIX_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', re.IGNORECASE)
 DEPT_NUM_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}$', re.IGNORECASE)
-NUM_DEPT_REGEX = re.compile(r'^\d{1,3}[a-zA-Z]{1,3}$', re.IGNORECASE)
 DEPT_ONLY_REGEX = re.compile(r'^[a-zA-Z]{1,3}$', re.IGNORECASE)
+NUM_SUFFIX_ONLY_REGEX = re.compile(r'^\d{1,3}[a-zA-Z]{1}$', re.IGNORECASE)
 NUM_ONLY_REGEX = re.compile(r'^\d{1,3}$', re.IGNORECASE)
 
 
@@ -162,20 +172,17 @@ class SearchCourses(View):
                 result = re.split(r'(\d+)', string=trimmed_query, maxsplit=1)
                 dept = result[0]
                 num = result[1]
-            elif NUM_DEPT_REGEX.match(trimmed_query):
-                result = re.split(r'([a-zA-Z]+)', string=trimmed_query, maxsplit=1)
-                dept = result[1]
-                num = result[0]
+            elif NUM_ONLY_REGEX.match(trimmed_query) or NUM_SUFFIX_ONLY_REGEX.match(trimmed_query):
+                dept = ''
+                num = trimmed_query
             elif DEPT_ONLY_REGEX.match(trimmed_query):
                 dept = trimmed_query
                 num = ''
                 # title = query.strip()
-            elif NUM_ONLY_REGEX.match(trimmed_query):
-                dept = ''
-                num = trimmed_query
             else:
-                dept = ''
-                num = ''
+                return JsonResponse({'courses': []})
+                # dept = ''
+                # num = ''
                 # title = query.strip()
 
             try:
