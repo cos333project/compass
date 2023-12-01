@@ -10,7 +10,5 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = [
             'course_id',
             'department_code',
-            'catalog_number',
-            'title',
-            'distribution_area_short',
+            'catalog_number'
         ]

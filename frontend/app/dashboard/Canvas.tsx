@@ -270,15 +270,38 @@ export function Canvas({
   }, []);
 
   const { searchResults } = useSearchStore();
-  useEffect(() => {
-    setItems((prevItems) => ({
-      ...prevItems,
-      [SEARCH_RESULTS_ID]: searchResults.map(
-        (course) => `${course.department_code} ${course.catalog_number}`
-      )
-    }));
-  }, [searchResults]);
+  // useEffect(() => {
+  //   setItems((prevItems) => ({
+  //     ...prevItems,
+  //     // for deptcode catalognum in each semesterbin:
+  //     // exclude if shared with search results bin
+  //     [SEARCH_RESULTS_ID]: searchResults.map(
+  //       (course) => `${course.department_code} ${course.catalog_number}`
+  //     )
+  //   }));
+  // }, [searchResults]);
 
+  useEffect(() => {
+    setItems((prevItems) => {
+      const userCurrentCourses: Set<string> = new Set<string>();
+      Object.keys(prevItems).forEach((key) => {
+        if (key !== SEARCH_RESULTS_ID) {
+          const courses = prevItems[key];
+          courses.forEach((course) => {
+            userCurrentCourses.add(course.toString());
+          });
+        }
+      });
+  
+      return {
+        ...prevItems,
+        [SEARCH_RESULTS_ID]: searchResults
+          .filter((course) => !userCurrentCourses.has(`${course.department_code} ${course.catalog_number}`))
+          .map((course) => `${course.department_code} ${course.catalog_number}`),
+      };
+    });
+  }, [searchResults]);
+  
   // useEffect(() => {
   //   const updatedSemesters = generateSemesters(classYear);
   //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
@@ -500,6 +523,17 @@ export function Canvas({
           const overId = over?.id;
 
           if (overId === null || overId === undefined) {
+            setActiveId(null);
+            return;
+          }
+
+          if (overId === TRASH_ID) {
+            setItems((items) => ({
+              ...items,
+              [activeContainer]: items[activeContainer].filter(
+                (id) => id !== activeId
+              ),
+            }));
             setActiveId(null);
             return;
           }
