@@ -286,7 +286,7 @@ def update_user_courses(request):
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
 
-        if container == 'Search Results':
+        if container == 'Search Results' or container == 'void':
             user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
             message = f'User course deleted: {course_inst.course_id}, {net_id}'

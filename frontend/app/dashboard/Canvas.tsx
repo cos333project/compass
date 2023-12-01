@@ -578,7 +578,6 @@ export function Canvas({
               ),
             }));
             setActiveId(null);
-            return;
           }
 
           if (overId === PLACEHOLDER_ID) {
@@ -613,7 +612,10 @@ export function Canvas({
           setActiveId(null);
 
           const courseId = active.id;
-          const semesterId = activeContainer;
+          let semesterId = activeContainer;
+          if (overId === TRASH_ID) {
+            semesterId = TRASH_ID
+          }
           fetch(`${process.env.BACKEND}/update_user_courses/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
