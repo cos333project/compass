@@ -376,13 +376,15 @@ def add_course_lists_to_req(req, courses):
                 if len(course["reqs_double_counted"]) > 0:
                     for req_id in course["reqs_double_counted"]:
                         if req_id == req["inst"].id:
-                            req["settled"].append(course["inst"].id)
+                            if course["inst"].id not in req["settled"]:
+                                req["settled"].append(course["inst"].id)
                             ## add to reqs_satisfied because couldn't be added in _assign_settled_courses_to_reqs()
                             course["reqs_satisfied"].append(req["inst"].id)
             elif len(course["settled"]) > 0:
                 for req_id in course["settled"]:
                     if req_id == req["inst"].id:
-                        req["settled"].append(course["inst"].id)
+                        if course["inst"].id not in req["settled"]:
+                                req["settled"].append(course["inst"].id)
             else:
                 for req_id in course["possible_reqs"]:
                     if req_id == req["inst"].id:
