@@ -335,8 +335,6 @@ def update_user(request):
         )
 
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
-
-
 def check_requirements(request):
     user_info = fetch_user_info(request.user)
 
@@ -348,14 +346,14 @@ def check_requirements(request):
     req_dict = check_user(user_info['netId'], user_info['major'],
                           user_info['minors'])
 
+    # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
     formatted_dict[this_major] =  req_dict[this_major]
     for minor in these_minors:
         formatted_dict[minor] = req_dict['Minors'][minor]
-
-    print(formatted_dict)
-    
+    # Deleted number indices
     return JsonResponse(formatted_dict)
+
 
 
        
