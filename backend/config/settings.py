@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
@@ -94,12 +95,12 @@ CAS_RENAME_ATTRIBUTES = {
     'department': 'department',
 }
 
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    CAS,
-    os.environ.get('COMPASS'),
-    os.environ.get('BACKEND')
-]
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     CAS,
+#     os.environ.get('COMPASS'),
+#     os.environ.get('BACKEND')
+# ]
 CSRF_TRUSTED_ORIGINS = [os.environ.get('COMPASS'), os.environ.get('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
 CAS_REDIRECT_WHITELIST = os.environ.get('BACKEND')
