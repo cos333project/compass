@@ -4,7 +4,7 @@ name: Creative Writing
 code: CWR
 degree:
 urls:
-- https://arts.princeton.edu/academics/creative-writing/
+- https://arts.princeton.edu/academics/creative-writing/minor-in-creative-writing/
 description: The Program in Creative Writing, part of the Lewis Center 
   for the Arts,  with a minor in creative writing, like our present 
   certificate students, will encounter a rigorous framework of courses. 
@@ -38,17 +38,13 @@ req_list:
   - CWR 4*
   deadline: Junior Spring
 - name: Independent Work
-  max_counted:
-  min_needed:
+  max_counted: 1
+  min_needed: 1
   explanation: This independent work includes weekly or biweekly 
     conferences with the thesis advisers for two semesters. Under the 
     direction of the thesis advisers, the students will produce a 
     full-length collection of poetry, a collection of short stories or a 
     finished novel manuscript.
-  double_counting_allowed:
-  max_common_with_major:
-  pdfs_allowed:
-  course_list:
   deadline: Senior Spring
 
 # Notes: Not sure how to encode courses housed within the department

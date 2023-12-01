@@ -3,8 +3,6 @@ type: Minor
 name: Asian American Studies
 code: ASA
 degree:
-urls:
-- https://effroncenter.princeton.edu/areas-study/asian-american-studies
 description: The Program in Asian American Studies, administered by the 
   Effron Center for the Study of America, provides students with the 
   opportunity to gain an interdisciplinary perspective on the diversity 
@@ -14,6 +12,8 @@ description: The Program in Asian American Studies, administered by the
   highlights Asian America’s transnational connections and contexts, 
   including the dynamics of globalization, migration, imperialism and 
   postcoloniality.
+urls:
+- https://effroncenter.princeton.edu/areas-study/asian-american-studies
 contacts:
 - type: Program Director
   name: Beth Lew-Williams
@@ -45,29 +45,7 @@ req_list:
   max_common_with_major: 1
   pdfs_allowed: 3
   course_list:
-  - ASA 201
-  - ASA 224
-  - ASA 238
-  - ASA 293
-  - ASA 314
-  - ASA 315
-  - ASA 320
-  - ASA 314
-  - ASA 316
-  - ASA 324
-  - ASA 328
-  - ASA 329
-  - ASA 332
-  - ASA 336
-  - ASA 343
-  - ASA 361
-  - ASA 370
-  - ASA 381
-  - ASA 389
-  - ASA 390
-  - ASA 430
-  - ASA 444
-  - ASA 482
+  - ASA *
   deadline:
 - name: Advanced Seminar
   max_counted: 1

@@ -1,24 +1,55 @@
 ---
-type: Certificate
+type: Minor
 name: Global Health and Health Policy
 code: GHP
 degree:
-description: The interdepartmental Program in Global Health and Health Policy enables
-  undergraduates to study the determinants, consequences, and patterns of disease
-  across societies; the role of medical technologies and interventions in health improvements;
-  and the economic, political, and social factors that shape domestic and global public
-  health policy.
+description: The minor in Global Health and Health Policy provides students a foundational 
+  grounding in the core interdisciplinary issues of global health. These include the biological, 
+  social and environmental determinants of health; public health policy and politics; epidemiology; 
+  comparative approaches to health-care provision; medical anthropology; health ethics; and social 
+  justice. Participating students learn about and collaborate with diverse communities around the 
+  world and in the United States.
 urls:
-- https://ua.princeton.edu/academic-units/program-global-health-and-health-policy
-- https://globalhealth.princeton.edu/
+- https://globalhealth.princeton.edu/minorcertificate
 contacts:
 - type: Co-Director
-  name: Joao G. Biehl
-  email: jbiehl@princeton.edu
+  name: Heather H. Howard
+  email: heatherh@princeton.edu
 - type: Co-Director
-  name: Andrea Graham
-  email: algraham@princeton.edu
+  name: C. Jessica E. Metcalf
+  email: cmetcalf@princeton.edu
 req_list:
+- name: Prerequisites
+  max_counted: 1
+  min_needed: 1
+  explanation: By the end of sophomore year, prospective applicants must complete one Foundations prerequisite course and one Statistics prerequisite course, with a grade of B or higher.
+  Foundations prerequisite course options include ANT 240, GSS 201, ISC-231-234, MOL 101, MOL/EEB 211, MOL/EEB 214, SOC 217, URB 201, EEB 309, EEB 314, EEB 327, and EEB 328.
+  Statistics prerequisite course options include ECO 202, MOL 290, ORF 245, POL 345, PSY 251, SML 201, SOC 301, SPI 200, ECO 302, ECO 312, and ORF 405.
+  Applicants should also have maintained a cumulative 3.0 GPA through the time of application. Students with a cumulative GPA below 3.0, or who have not 
+  completed both prerequisite courses, may still apply to the minor during the sophomore spring with an explanation of any extenuating circumstances.
+  double_counting_allowed: false
+  pdfs_allowed: 0
+  deadline: Sophomore Spring
+  req_list:
+  - name: Foundations Prerequisite
+    max_counted: 1
+    min_needed: 1
+    req_list:
+    - name: ISC
+    max_counted: 1
+    min_needed: 4
+    course_list:
+    - ISC 231
+    - ISC 232
+    - ISC 233
+    - ISC 234
+    - name: non-ISC
+    course_list:
+    - ANT 240
+    - GSS 201
+    - ISC 23*
+    - MOL 101
+  - name: Statistics Prerequisite
 - name: Core Requirements
   min_needed: 2
   explanation: Completion of GHP 350 (Critical Perspectives on Global Health and Health

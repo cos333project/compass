@@ -3,8 +3,6 @@ type: Minor
 name: Chinese Language
 code: CHI
 degree:
-urls:
-- https://eas.princeton.edu/undergraduate/language/chinese
 description: The Department of East Asian Studies offers a wide range of 
   undergraduate classes at the highest standards of academic, linguistic 
   and cultural competence focused on China, Japan and Korea. It provides 
@@ -12,6 +10,8 @@ description: The Department of East Asian Studies offers a wide range of
   simultaneously pursue a high level of proficiency in one or more East 
   Asian language (Chinese, Japanese and Korean) and acquire the basic 
   knowledge about the literature, history and culture of East Asia.
+urls:
+- https://eas.princeton.edu/undergraduate/language/chinese
 contacts:
 - type: Department Chair
   name: Anna M. Shields
