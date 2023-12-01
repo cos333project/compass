@@ -265,26 +265,35 @@ export function Canvas({
     return result;
   }
 
-  let major = user.major?.code;
-  let minors = user.minors;
-  console.log('minors are', (minors));
-  const testDict = {
-    "blank" : {"blank" : "hi"}
-  };
-  // Check if 'major' is a string and add it to the dictionary if it is
-  if (typeof major === 'string') {
-      testDict[major] = reqDict.reqDict[major];
-  }
-
-  if (typeof minors !== undefined) {
-    minors.forEach(minor => {
-      if (typeof minor['code'] === 'string') {
-          testDict[minor['code']] = reqDict.reqDict[minor['code']]; // Or however you want to map minors
-      }
-    })
+  interface RequirementDict {
+    [key: string]: any; // Define the shape of your requirement objects
   }
   
-
+  interface User {
+    major?: { code: string };
+    minors?: Array<{ code: string }>;
+  }
+  
+  // Assuming 'user' is of type User
+  let majorCode = user.major?.code;
+  let minors = user.minors ?? [];
+  
+  const requirements: RequirementDict = { "blank": { "blank": "hi" } };
+  
+  // Add major to requirements if it's a string
+  if (typeof majorCode === 'string') {
+    requirements[majorCode] = reqDict.reqDict[majorCode];
+  }
+  
+  // Iterate over minors and add them to requirements if their code is a string
+  minors.forEach(minor => {
+    let minorCode = minor.code;
+    if (typeof minorCode === 'string') {
+      requirements[minorCode] = reqDict.reqDict[minorCode];
+    }
+  });
+  
+  
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
 
@@ -699,7 +708,7 @@ export function Canvas({
       </DndContext>
       <div className="w-1/4"> {/* Adjust width as necessary */}
         <div>
-          <TabbedMenu tabsData = {testDict} />
+          <TabbedMenu tabsData = {requirements} />
         </div>
         
       </div>
