@@ -286,7 +286,7 @@ def update_user_courses(request):
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
 
-        if container == 'Search Results':
+        if container == 'Search Results' or container == 'void':
             user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
             message = f'User course deleted: {course_inst.course_id}, {net_id}'
@@ -341,6 +341,25 @@ def update_user(request):
         )
 
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
+def del_duplicates(li):
+    res = []
+    for x in li:
+        if x not in res:
+            res.append(x)
+    return res
+
+def settle_cleaning(d):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            if 'settled' in v.keys():
+                print(v['settled'])
+                print(type(v['settled']))
+                print(del_duplicates(v['settled']))
+                v['settled'] = del_duplicates(v['settled'])
+            settle_cleaning(v)
+    return d
+
+
 def check_requirements(request):
     user_info = fetch_user_info(request.user)
 
@@ -352,12 +371,19 @@ def check_requirements(request):
     req_dict = check_user(user_info['netId'], user_info['major'],
                           user_info['minors'])
 
+    print(req_dict)
+
     # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
     formatted_dict[this_major] =  req_dict[this_major]
     for minor in these_minors:
         formatted_dict[minor] = req_dict['Minors'][minor]
-    # Deleted number indices
+
+    # Clean Settled
+    #print("this is clean")
+    #cleaned = settle_cleaning(formatted_dict)
+    #print(cleaned)
+
     return JsonResponse(formatted_dict)
 
 
