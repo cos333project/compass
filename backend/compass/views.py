@@ -88,7 +88,7 @@ def update_profile(request):
     net_id = request.user.net_id
     user_inst = CustomUser.objects.get(net_id=net_id)
     print(
-        f'USER PROFILE: {user_inst.first_name} {user_inst.last_name} {user_inst.major_id} {user_inst.minors} {user_inst.class_year}'
+        f'USER PROFILE: {user_inst.first_name} {user_inst.last_name} {user_inst.major} {user_inst.minors} {user_inst.class_year}'
     )
 
     # Update user's profile
@@ -118,9 +118,6 @@ def update_profile(request):
 
 def authenticate(request):
     is_authenticated = request.user.is_authenticated
-    logging.debug(f'request here: {request}')
-    logging.debug(f'user info here: {request.user}')
-    logging.debug(f'is auth?: {is_authenticated}')
     if is_authenticated:
         user_info = fetch_user_info(request.user)
         logger.info(
@@ -285,7 +282,7 @@ def update_user_courses(request):
         if container == 'Search Results':
             user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
-            message = f'User course deleted: {course_inst.id}, {net_id}'
+            message = f'User course deleted: {course_inst.course_id}, {net_id}'
 
         else:
             semester = parse_semester(container, class_year)
@@ -294,9 +291,9 @@ def update_user_courses(request):
                 user=user_inst, course=course_inst, defaults={'semester': semester}
             )
             if created:
-                message = f'User course added: {semester}, {course_inst.id}, {net_id}'
+                message = f'User course added: {semester}, {course_inst.course_id}, {net_id}'
             else:
-                message = f'User course updated: {semester}, {course_inst.id}, {net_id}'
+                message = f'User course updated: {semester}, {course_inst.course_id}, {net_id}'
 
         return JsonResponse({'status': 'success', 'message': message})
 
