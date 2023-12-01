@@ -42,11 +42,12 @@ import Search from "@/components/Search";
 import useSearchStore from "@/store/searchSlice";
 
 import { Item, Container, ContainerProps } from "../../components";
-import { RecursiveDropdown } from "../../components/RecursiveDropDown";
+import { TabbedMenu } from "../../components/TabbedMenu";
 
 import {
   coordinateGetter as multipleContainersCoordinateGetter
 } from "./multipleContainersKeyboardCoordinates";
+import { min } from "lodash";
 
 type Dictionary = {
   [key: string]: any;
@@ -250,6 +251,39 @@ export function Canvas({
   const [reqDict, setReqDict] = useState<Dictionary>(() => ({
     reqDict: nestedDictionary
   }));
+
+  function mapKeysToStrings(obj: Dictionary): Dictionary {
+    const result: Dictionary = {};
+  
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // Since values can be either string or Dictionary, no further type check is required here
+        result[String(key)] = obj[key];
+      }
+    }
+  
+    return result;
+  }
+
+  let major = user.major?.code;
+  let minors = user.minors;
+  console.log('minors are', (minors));
+  const testDict = {
+    "blank" : {"blank" : "hi"}
+  };
+  // Check if 'major' is a string and add it to the dictionary if it is
+  if (typeof major === 'string') {
+      testDict[major] = reqDict.reqDict[major];
+  }
+
+  if (typeof minors !== undefined) {
+    minors.forEach(minor => {
+      if (typeof minor['code'] === 'string') {
+          testDict[minor['code']] = reqDict.reqDict[minor['code']]; // Or however you want to map minors
+      }
+    })
+  }
+  
 
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
@@ -555,8 +589,9 @@ export function Canvas({
             .then((data) => {
               console.log(data);
               setReqDict((reqDict) => ({
-                reqDict: data
+                reqDict: mapKeysToStrings(data)
               }));
+              console.log(reqDict.reqDict);
             })
             .catch((error) => console.error("Requirements Check Error:", error));
         }}
@@ -663,7 +698,10 @@ export function Canvas({
           <Trash id={TRASH_ID} /> : null}
       </DndContext>
       <div className="w-1/4"> {/* Adjust width as necessary */}
-        <RecursiveDropdown dictionary={reqDict.reqDict} />
+        <div>
+          <TabbedMenu tabsData = {testDict} />
+        </div>
+        
       </div>
     </>
   );
