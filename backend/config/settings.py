@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'compass',
 ]
 
+SESSION_COOKIE_SECURE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -90,19 +94,16 @@ CAS_RENAME_ATTRIBUTES = {
     'department': 'department',
 }
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
-
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     CAS,
     os.environ.get('COMPASS'),
+    os.environ.get('BACKEND')
 ]
 CSRF_TRUSTED_ORIGINS = [os.environ.get('COMPASS'), os.environ.get('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
 CAS_REDIRECT_WHITELIST = os.environ.get('BACKEND')
 CAS_CHECK_NEXT = False
-
 
 LOGGING = {
     'version': 1,
@@ -115,7 +116,7 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': 'DEBUG',
-        'propogate': True,
+        'propagate': True,
     },
 }
 
