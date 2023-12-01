@@ -372,24 +372,26 @@ def add_course_lists_to_req(req, courses):
     req["unsettled"] = []
     for sem in courses:
         for course in sem:
+            course_id = course['inst'].id
             if ((req["inst"]._meta.db_table == 'Requirement') and req["inst"].double_counting_allowed):
                 if len(course["reqs_double_counted"]) > 0:
                     for req_id in course["reqs_double_counted"]:
                         if req_id == req["inst"].id:
-                            if course["inst"].id not in req["settled"]:
-                                req["settled"].append(course["inst"].id)
+                            if course_id not in req["settled"]:
+                                req["settled"].append(course_id)
                             ## add to reqs_satisfied because couldn't be added in _assign_settled_courses_to_reqs()
                             course["reqs_satisfied"].append(req["inst"].id)
             elif len(course["settled"]) > 0:
                 for req_id in course["settled"]:
                     if req_id == req["inst"].id:
-                        if course["inst"].id not in req["settled"]:
-                                req["settled"].append(course["inst"].id)
+                        if course_id not in req["settled"]:
+                            req["settled"].append(course["inst"].id)
             else:
                 for req_id in course["possible_reqs"]:
                     if req_id == req["inst"].id:
-                        req["unsettled"].append(course["inst"].id)
-                        break
+                        if course_id not in req["unsettled"]:
+                            req["unsettled"].append(course["inst"].id)
+                            break
 
 
 @cumulative_time
@@ -435,7 +437,11 @@ def format_req_output(req):
     # output['max_counted'] = str(req['inst'].max_counted)
     if "req_list" in req: # internal node. recursively call on children
         req_list = {}
-        for subreq in req["req_list"]:
+        for i, subreq in enumerate(req["req_list"]):
+            if 'name' in output:
+                if output['name'] == "Computer Science Prerequisites":
+                    print("CS PREREQS")
+                    print(subreq)
             child = format_req_output(subreq)
             if (child != None):
                 if 'code' in child:
@@ -444,36 +450,25 @@ def format_req_output(req):
                 elif 'name' in child:
                     name = child.pop('name')
                     req_list[name] = child
+                else:
+                    req_list[f"Subrequirement {i + 1}"] = child
         if req_list:
-            output["req_list"] = req_list
-    if "settled" in req:
-        output["settled"] = str(req["settled"])
-    # if "unsettled" in req:
-    #     output["unsettled"] = str(req["unsettled"])
+            output["subrequirements"] = req_list
+    if ("settled" in req) and ('req_list' not in req):
+        settled = ""
+        for course_id in req["settled"]:
+            course_inst = Course.objects.get(id=course_id)
+            settled += (course_inst.department.code + " " + course_inst.catalog_number + ", ")
+        output["settled"] = settled[:-2]
+    if ("unsettled" in req) and ('req_list' not in req):
+        unsettled = ""
+        for course_id in req["unsettled"]:
+            course_inst = Course.objects.get(id=course_id)
+            unsettled += (course_inst.department.code + " " + course_inst.catalog_number + ", ")
+        output["unsettled"] = unsettled[:-2]
     return output
 
 def main():
-    # course_dict = {61511: 1, 2321: 1, 29481: 1, 2352: 1, 2113: 1,
-    #                2303: 2, 7008: 2, 2207: 2, 2131: 2, 2133: 3}
-    # course_dict = {29481: 1, 2113: 1, 2137: 1, 7008: 2, 2131: 2,
-    #                2133: 3, 13483: 3}
-    # courses = create_dummy_courses(course_dict)
-    # for sem in courses:
-    #     for course in sem:
-    #         if course['inst'].catalog_number == '217':
-    #             course['settled'] = [2514]
-    #         elif course['inst'].catalog_number == '216':
-    #             course['settled'] = [2514]
-    #         elif course['inst'].catalog_number == '218':
-    #             course['settled'] = [2504]
-    #         elif course['inst'].catalog_number == '219':
-    #             course['settled'] = [2516]
-    #         elif course['inst'].catalog_number == '326':
-    #             course['settled'] = [2515]
-    #         elif course['inst'].catalog_number == '520':
-    #             course['settled'] = [2515]
-    # courses = _init_courses(courses)
-    # print(courses)
 
     output = check_user('gc5512',
                         {'code': 'COS-AB', 'name': 'Computer Science - AB'},

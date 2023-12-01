@@ -56,19 +56,6 @@ type Dictionary = {
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-// TODO: Might be needed for styling
-// const gridContainerStyle = {
-//   display: 'grid',
-//   gridTemplateColumns: '1fr 1fr', // Two columns
-//   gridTemplateRows: 'repeat(4, 1fr)', // Four rows
-//   gap: '10px', // Space between grid items
-// };
-
-// const gridItemStyle = {
-//   border: '1px solid #ccc',
-//   padding: '10px',
-//   textAlign: 'center',
-// };
 
 function DroppableContainer({
                               children,
@@ -246,7 +233,7 @@ export function Canvas({
   }));
 
   const nestedDictionary: Dictionary = {
-    'Requirements': ""
+    "Requirements": ""
   };
   const [reqDict, setReqDict] = useState<Dictionary>(() => ({
     reqDict: nestedDictionary
@@ -254,46 +241,50 @@ export function Canvas({
 
   function mapKeysToStrings(obj: Dictionary): Dictionary {
     const result: Dictionary = {};
-  
+
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         // Since values can be either string or Dictionary, no further type check is required here
         result[String(key)] = obj[key];
       }
     }
-  
+
     return result;
   }
 
   interface RequirementDict {
-    [key: string]: any; // Define the shape of your requirement objects
+    [key: string]: any;
   }
-  
+
   interface User {
     major?: { code: string };
     minors?: Array<{ code: string }>;
   }
-  
+
   // Assuming 'user' is of type User
   let majorCode = user.major?.code;
   let minors = user.minors ?? [];
-  
-  const requirements: RequirementDict = { "blank": { "blank": "hi" } };
-  
+
+  let requirements: RequirementDict = { "Requirements": "" };
+
   // Add major to requirements if it's a string
-  if (typeof majorCode === 'string') {
-    requirements[majorCode] = reqDict.reqDict[majorCode];
-  }
-  
-  // Iterate over minors and add them to requirements if their code is a string
-  minors.forEach(minor => {
-    let minorCode = minor.code;
-    if (typeof minorCode === 'string') {
-      requirements[minorCode] = reqDict.reqDict[minorCode];
+  if (reqDict.reqDict.Requirements != "") {
+
+    if (typeof majorCode === "string") {
+      console.log(requirements);
+      requirements[majorCode] = reqDict.reqDict[majorCode];
     }
-  });
-  
-  
+
+    // Iterate over minors and add them to requirements if their code is a string
+    minors.forEach(minor => {
+      let minorCode = minor.code;
+      if (typeof minorCode === "string") {
+        requirements[minorCode] = reqDict.reqDict[minorCode];
+      }
+    });
+  }
+
+
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
 
@@ -310,6 +301,19 @@ export function Canvas({
         }));
       })
       .catch((error) => console.error("User Courses Error:", error));
+
+    fetch(`${process.env.BACKEND}/check_requirements/`, {
+      method: "GET",
+      credentials: "include"
+    }).then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setReqDict((reqDict) => ({
+          reqDict: mapKeysToStrings(data)
+        }));
+        console.log(reqDict.reqDict);
+      })
+      .catch((error) => console.error("Requirements Check Error:", error));
   }, []);
 
   const { searchResults } = useSearchStore();
@@ -335,16 +339,16 @@ export function Canvas({
           });
         }
       });
-  
+
       return {
         ...prevItems,
         [SEARCH_RESULTS_ID]: searchResults
           .filter((course) => !userCurrentCourses.has(`${course.department_code} ${course.catalog_number}`))
-          .map((course) => `${course.department_code} ${course.catalog_number}`),
+          .map((course) => `${course.department_code} ${course.catalog_number}`)
       };
     });
   }, [searchResults]);
-  
+
   // useEffect(() => {
   //   const updatedSemesters = generateSemesters(classYear);
   //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
@@ -575,7 +579,7 @@ export function Canvas({
               ...items,
               [activeContainer]: items[activeContainer].filter(
                 (id) => id !== activeId
-              ),
+              )
             }));
             setActiveId(null);
           }
@@ -645,10 +649,11 @@ export function Canvas({
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: "flex", flexDirection: "row"}}>
+          <div style={{ display: "flex", flexDirection: "row" }}>
             {/* Left Section for Search Results */}
             {containers.includes("Search Results") && (
-              <div style={{width: '380px'}}> {/* Try to get this to fixed height*/}
+              <div
+                style={{ width: "380px" }}> {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key="Search Results"
                   id="Search Results"
@@ -657,7 +662,7 @@ export function Canvas({
                   items={items["Search Results"]}
                   scrollable={scrollable}
                   style={containerStyle}
-                  height='703px'
+                  height="703px"
                 >
                   <SortableContext items={items["Search Results"]}
                                    strategy={strategy}>
@@ -685,7 +690,7 @@ export function Canvas({
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gridTemplateRows: "1fr 1fr 1fr 1fr",
+                gridTemplateRows: "1fr 1fr 1fr 1fr"
               }}
             >
               {containers
@@ -701,7 +706,7 @@ export function Canvas({
                     style={containerStyle}
                     unstyled={minimal}
                     onRemove={() => handleRemove(containerId)}
-                    height='160px'
+                    height="160px"
                   >
                     <SortableContext items={items[containerId]}
                                      strategy={strategy}>
@@ -725,8 +730,8 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            <div style={{width: '380px'}}>
-              <TabbedMenu tabsData = {requirements} />
+            <div style={{ width: "380px" }}>
+              <TabbedMenu tabsData={requirements} />
             </div>
           </div>
         </SortableContext>
