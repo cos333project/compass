@@ -115,6 +115,7 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': 'DEBUG',
+        'propogate': True,
     },
 }
 

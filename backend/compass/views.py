@@ -118,6 +118,9 @@ def update_profile(request):
 
 def authenticate(request):
     is_authenticated = request.user.is_authenticated
+    logging.debug(f'request here: {request}')
+    logging.debug(f'user info here: {request.user}')
+    logging.debug(f'is auth?: {is_authenticated}')
     if is_authenticated:
         user_info = fetch_user_info(request.user)
         logger.info(
