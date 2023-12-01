@@ -432,11 +432,16 @@ def format_req_output(req):
     # output['min_needed'] = str(req['inst'].min_needed)
     # output['max_counted'] = str(req['inst'].max_counted)
     if "req_list" in req: # internal node. recursively call on children
-        req_list = []
+        req_list = {}
         for subreq in req["req_list"]:
             child = format_req_output(subreq)
             if (child != None):
-                req_list.append(format_req_output(subreq))
+                if 'code' in child:
+                    code = child.pop('code')
+                    req_list[code] = child
+                elif 'name' in child:
+                    name = child.pop('name')
+                    req_list[name] = child
         if req_list:
             output["req_list"] = req_list
     if "settled" in req:
