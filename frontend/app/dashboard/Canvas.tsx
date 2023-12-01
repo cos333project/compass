@@ -643,10 +643,10 @@ export function Canvas({
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: "flex", flexDirection: "row"}}>
             {/* Left Section for Search Results */}
             {containers.includes("Search Results") && (
-              <div style={{ width: "100%", marginRight: "20px" }}>
+              <div style={{width: '380px'}}> {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key="Search Results"
                   id="Search Results"
@@ -655,8 +655,7 @@ export function Canvas({
                   items={items["Search Results"]}
                   scrollable={scrollable}
                   style={containerStyle}
-                  unstyled={minimal}
-                  height="688px"
+                  height='703px'
                 >
                   <SortableContext items={items["Search Results"]}
                                    strategy={strategy}>
@@ -679,13 +678,12 @@ export function Canvas({
               </div>
             )}
 
-            {/* Right Section for other containers in a 2x4 grid */}
+            {/* Center Section for other containers in a 2x4 grid */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gridTemplateRows: "1fr 1fr 1fr 1fr",
-                gap: "0px"
               }}
             >
               {containers
@@ -701,7 +699,7 @@ export function Canvas({
                     style={containerStyle}
                     unstyled={minimal}
                     onRemove={() => handleRemove(containerId)}
-                    height="150px"
+                    height='160px'
                   >
                     <SortableContext items={items[containerId]}
                                      strategy={strategy}>
@@ -723,6 +721,11 @@ export function Canvas({
                   </DroppableContainer>
                 ))}
             </div>
+
+            {/* Right section for requirements */}
+            <div style={{width: '380px'}}>
+              <TabbedMenu tabsData = {requirements} />
+            </div>
           </div>
         </SortableContext>
 
@@ -740,12 +743,6 @@ export function Canvas({
         {trashable && activeId && !containers.includes(activeId) ?
           <Trash id={TRASH_ID} /> : null}
       </DndContext>
-      <div className="w-1/4"> {/* Adjust width as necessary */}
-        <div>
-          <TabbedMenu tabsData = {requirements} />
-        </div>
-        
-      </div>
     </>
   );
 

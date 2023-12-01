@@ -1,15 +1,15 @@
 .Container {
   display: flex;
   flex-direction: column;
+  width: full;
   grid-auto-rows: max-content;
   overflow: hidden; /* Prevents horizontal scrollbar */
   box-sizing: border-box;
   appearance: none;
   outline: none;
-  min-width: 350px;
   margin: 10px;
   border-radius: 5px;
-  height: 200px; /* Default height, customize as needed */
+  height: full;
   transition: background-color 350ms ease;
   background-color: rgba(246, 246, 246, 1);
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -21,7 +21,7 @@
     grid-template-columns: repeat(var(--columns, 1), 1fr);
     list-style: none;
     padding: 5px;
-    margin: 5px;
+    margin: 0px;
     max-height: 100%; /* Ensures ul doesn't exceed container's height */
     overflow-y: auto; /* Adds vertical scrollbar to ul */
     overflow-x: hidden; /* Prevents horizontal scrollbar */
