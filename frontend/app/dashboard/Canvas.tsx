@@ -527,6 +527,17 @@ export function Canvas({
             return;
           }
 
+          if (overId === TRASH_ID) {
+            setItems((items) => ({
+              ...items,
+              [activeContainer]: items[activeContainer].filter(
+                (id) => id !== activeId
+              ),
+            }));
+            setActiveId(null);
+            return;
+          }
+
           if (overId === PLACEHOLDER_ID) {
             const newContainerId = getNextContainerId();
 

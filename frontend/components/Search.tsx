@@ -81,10 +81,8 @@ const Search: React.FC = () => {
     }
   };
 
-  const handleRecentSearchClick = (search: string) => {
-    // Display dummy popup for now
-    alert(`Displaying course information for: ${search}`);
-    // In the future, you might open a modal or a dedicated component to show the course profile
+  const handleRecentSearchClick = (searched: string) => {
+    search(searched);
   };
 
   return (

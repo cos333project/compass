@@ -178,21 +178,19 @@ class SearchCourses(View):
             elif DEPT_ONLY_REGEX.match(trimmed_query):
                 dept = trimmed_query
                 num = ''
-                # title = query.strip()
             else:
                 return JsonResponse({'courses': []})
                 # dept = ''
                 # num = ''
-                # title = query.strip()
 
             try:
-                exact_match_course = Course.objects.select_related('department').filter(
-                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
-                )
-                if exact_match_course:
-                    # If an exact match is found, return only that course
-                    serialized_course = CourseSerializer(exact_match_course, many=True)
-                    return JsonResponse({'courses': serialized_course.data})
+                # exact_match_course = Course.objects.select_related('department').filter(
+                #     Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
+                # )
+                # if exact_match_course:
+                #     # If an exact match is found, return only that course
+                #     serialized_course = CourseSerializer(exact_match_course, many=True)
+                #     return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
                     & Q(catalog_number__icontains=num)
@@ -279,6 +277,7 @@ def get_first_course_inst(course_code):
 def update_user_courses(request):
     try:
         data = json.loads(request.body)
+        print("AMONGUSSSSSSSSSSSSSSSs", data)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
         net_id = request.user.net_id
