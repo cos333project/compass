@@ -9,7 +9,7 @@ from .models import models, Course, Department, Degree, Major, Minor, \
     Certificate, Requirement, CustomUser, UserCourses
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CourseSerializer
-import ujson as json
+import json
 from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user
@@ -31,10 +31,11 @@ def fetch_user_info(user):
     major_inst = user_inst.major
     minors_list = []
 
+    major = {}
     if major_inst is not None:
         major = {'code': major_inst.code, 'name': major_inst.name}
     else:
-        major = None
+        major = {}
 
     for minor_inst in user_inst.minors.all():
         minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
@@ -340,13 +341,27 @@ def update_user(request):
         )
 
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
-
-
 def check_requirements(request):
     user_info = fetch_user_info(request.user)
-    req_dict = {}
+
+    this_major = user_info['major']['code']
+    these_minors = []
+    for minor in user_info['minors']:
+        these_minors.append(minor['code'])
+
     req_dict = check_user(user_info['netId'], user_info['major'],
                           user_info['minors'])
-    return JsonResponse(req_dict)
+
+    # Rewrite req_dict so that it is stratified by requirements being met
+    formatted_dict = {}
+    formatted_dict[this_major] =  req_dict[this_major]
+    for minor in these_minors:
+        formatted_dict[minor] = req_dict['Minors'][minor]
+    # Deleted number indices
+    return JsonResponse(formatted_dict)
+
+
+
+       
 
 

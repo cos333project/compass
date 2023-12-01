@@ -42,11 +42,12 @@ import Search from "@/components/Search";
 import useSearchStore from "@/store/searchSlice";
 
 import { Item, Container, ContainerProps } from "../../components";
-import { RecursiveDropdown } from "../../components/RecursiveDropDown";
+import { TabbedMenu } from "../../components/TabbedMenu";
 
 import {
   coordinateGetter as multipleContainersCoordinateGetter
 } from "./multipleContainersKeyboardCoordinates";
+import { min } from "lodash";
 
 type Dictionary = {
   [key: string]: any;
@@ -251,6 +252,48 @@ export function Canvas({
     reqDict: nestedDictionary
   }));
 
+  function mapKeysToStrings(obj: Dictionary): Dictionary {
+    const result: Dictionary = {};
+  
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // Since values can be either string or Dictionary, no further type check is required here
+        result[String(key)] = obj[key];
+      }
+    }
+  
+    return result;
+  }
+
+  interface RequirementDict {
+    [key: string]: any; // Define the shape of your requirement objects
+  }
+  
+  interface User {
+    major?: { code: string };
+    minors?: Array<{ code: string }>;
+  }
+  
+  // Assuming 'user' is of type User
+  let majorCode = user.major?.code;
+  let minors = user.minors ?? [];
+  
+  const requirements: RequirementDict = { "blank": { "blank": "hi" } };
+  
+  // Add major to requirements if it's a string
+  if (typeof majorCode === 'string') {
+    requirements[majorCode] = reqDict.reqDict[majorCode];
+  }
+  
+  // Iterate over minors and add them to requirements if their code is a string
+  minors.forEach(minor => {
+    let minorCode = minor.code;
+    if (typeof minorCode === 'string') {
+      requirements[minorCode] = reqDict.reqDict[minorCode];
+    }
+  });
+  
+  
   useEffect(() => {
     let user_courses: { [key: number]: Course[] } = {};
 
@@ -589,8 +632,9 @@ export function Canvas({
             .then((data) => {
               console.log(data);
               setReqDict((reqDict) => ({
-                reqDict: data
+                reqDict: mapKeysToStrings(data)
               }));
+              console.log(reqDict.reqDict);
             })
             .catch((error) => console.error("Requirements Check Error:", error));
         }}
@@ -697,7 +741,10 @@ export function Canvas({
           <Trash id={TRASH_ID} /> : null}
       </DndContext>
       <div className="w-1/4"> {/* Adjust width as necessary */}
-        <RecursiveDropdown dictionary={reqDict.reqDict} />
+        <div>
+          <TabbedMenu tabsData = {requirements} />
+        </div>
+        
       </div>
     </>
   );
