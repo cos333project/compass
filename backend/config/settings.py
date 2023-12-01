@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production! Toggle in .env
-DEBUG = os.environ.get('DEBUG') == 'True'
+DEBUG = os.environ.get('DEBUG') == 'TRUE'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
@@ -74,7 +74,7 @@ CAS = os.environ.get('CAS_URL')
 CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'  # .env this?
 CAS_CREATE_USER = True
 CAS_CREATE_USER_ID = True
-CAS_REDIRECT_URL = DASHBOARD
+CAS_REDIRECT_URL = HOMEPAGE
 CAS_LOGOUT_NEXT_PAGE = HOMEPAGE
 CAS_VERSION = 3
 CAS_APPLY_ATTRIBUTES_TO_USER = True

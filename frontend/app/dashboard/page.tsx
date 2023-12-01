@@ -24,11 +24,11 @@ const Dashboard: React.FC = () => {
         console.error("Auth error:", error);
         setIsLoading(false);
       });
-  }, [checkAuthentication]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      window.location.href = `${process.env.BACKEND}/login`;
+      window.location.href = `${process.env.BACKEND}/login/`;
     }
   }, [isAuthenticated, isLoading]);
 
