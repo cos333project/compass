@@ -2,11 +2,11 @@ import { forwardRef, Ref, RefCallback } from 'react';
 
 import classNames from 'classnames';
 
-import { Handle, Remove } from '../Item';
+// import { Handle, Remove } from '../Item';
 
 import styles from './Container.module.scss';
 
-export interface ContainerProps {
+export type ContainerProps = {
   children: React.ReactNode;
   columns?: number;
   label?: string | React.ReactNode;
@@ -21,18 +21,18 @@ export interface ContainerProps {
   height?: string | number;
   onClick?(): void;
   onRemove?(): void;
-}
+};
 
 export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, ContainerProps>(
   (
     {
       children,
       columns = 1,
-      handleProps,
+      // handleProps, // TODO: remove permanently?
       horizontal,
       hover,
       onClick,
-      onRemove,
+      // onRemove, // TODO: remove permanently?
       label,
       placeholder,
       style,
@@ -59,7 +59,7 @@ export const Container = forwardRef<HTMLDivElement | HTMLButtonElement, Containe
           {
             ...style,
             '--columns': columns,
-            height: height
+            height: height,
           } as React.CSSProperties
         }
         className={classNames(

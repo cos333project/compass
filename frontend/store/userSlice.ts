@@ -29,7 +29,7 @@ export const useFetchUserProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND}/profile`, {
+        const response = await fetch(`/profile`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

@@ -3,10 +3,10 @@ import re
 
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
+from django.middleware.csrf import get_token
 from django.views import View
 from .models import models, Course, Department, Degree, Major, Minor, \
     Certificate, Requirement, CustomUser, UserCourses
-from django.views.decorators.csrf import csrf_exempt
 from .serializers import CourseSerializer
 import json
 from data.configs import Configs
@@ -70,18 +70,10 @@ def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
 
-# @csrf_exempt
-# def login(request):
-#     if request.user.is_authenticated:
-#         return redirect("index")
-#     else:
-#         return django_cas_ng.views.LoginView.as_view()(request)
-
-# def logout(request):
-#     return django_cas_ng.views.LogoutView.as_view()(request)
+def csrf(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
 # TODO: Need to give csrf token instead of exempting it in production
-@csrf_exempt
 def update_profile(request):
     # TODO: Validate this stuff
     data = json.loads(request.body)
@@ -134,7 +126,6 @@ def authenticate(request):
     else:
         logger.info('User is not authenticated.')
         return JsonResponse({'authenticated': False, 'user': None})
-
 
 # ------------------------------- SEARCH COURSES --------------------------------------#
 
@@ -269,9 +260,7 @@ def get_first_course_inst(course_code):
     )[0]
     return course_inst
 
-
-@csrf_exempt
-def update_user_courses(request):
+def update_courses(request):
     try:
         data = json.loads(request.body)
         print("AMONGUSSSSSSSSSSSSSSSs", data)
@@ -309,8 +298,6 @@ def update_user_courses(request):
             {'status': 'error', 'message': 'An internal error has occurred!'}
         )
 
-
-@csrf_exempt
 def update_user(request):
     try:
         class_year = int(request.body)

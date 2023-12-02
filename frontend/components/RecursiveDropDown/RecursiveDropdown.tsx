@@ -1,21 +1,30 @@
-import React, { useState, FC } from 'react';
+import { useState, FC } from 'react';
+
+// TODO: Use these or other official heroicons (can use Material UI or others as well)
+// import { XCircleIcon, CheckCircleIcon } from '@heroicons/react/solid';
+
 import styles from './RecursiveDropdown.module.scss';
 
-interface Dictionary {
-  [key: string]: any;
-}
+type DropdownData = Record<string, DropdownValue>;
 
-interface DropdownProps {
-  data: Dictionary;
-}
+type DropdownValue = string | number | boolean | NestedObject | undefined;
 
-interface SatisfactionStatusProps {
-  satisfied: string;
-}
+type NestedObject = {
+  [key: string]: DropdownValue;
+  satisfied?: boolean;
+};
+
+type DropdownProps = {
+  data: DropdownData;
+};
+
+type SatisfactionStatusProps = {
+  satisfied: boolean;
+};
 
 const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
-  <span style={{ marginLeft: '10px', color: satisfied === 'True' ? 'green' : 'red' }}>
-    {satisfied === 'True' ? '✅' : '❌'}
+  <span style={{ marginLeft: '10px', color: satisfied ? 'green' : 'red' }}>
+    {satisfied ? '✅' : '❌'}
   </span>
 );
 
@@ -23,24 +32,27 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
   const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
 
   const toggleDropdown = (key: string) => () => {
-    setIsOpen(prev => ({ ...prev, [key]: !prev[key] }));
+    setIsOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const renderContent = (data: Dictionary) => {
+  const renderContent = (data: DropdownData) => {
     return Object.entries(data).map(([key, value]) => {
       const isObject = typeof value === 'object' && value !== null;
       let satisfactionElement = null;
 
-      if (isObject && 'satisfied' in value) {
-        satisfactionElement = <SatisfactionStatus satisfied={value.satisfied} />;
-        // Remove 'satisfied' from the value to be rendered
-        const { satisfied, ...rest } = value;
-        value = rest;
+      if (isObject) {
+        const nestedValue = value as NestedObject;
+        if ('satisfied' in nestedValue) {
+          satisfactionElement = <SatisfactionStatus satisfied={nestedValue.satisfied ?? false} />;
+        }
       }
 
       return (
         <li key={key} className={isObject ? styles.category : styles.item}>
-          <div className={styles.categoryTitle} onClick={isObject ? toggleDropdown(key) : undefined}>
+          <div
+            className={styles.categoryTitle}
+            onClick={isObject ? toggleDropdown(key) : undefined}
+          >
             {isObject && <span className={styles.indicator}>{isOpen[key] ? '-' : '>'}</span>}
             {key}
             {satisfactionElement}
@@ -56,16 +68,12 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
     });
   };
 
-  return (
-    <ul className={styles.dropdown}>
-      {renderContent(data)}
-    </ul>
-  );
+  return <ul className={styles.dropdown}>{renderContent(data)}</ul>;
 };
 
-interface RecursiveDropdownProps {
-  dictionary: Dictionary;
-}
+type RecursiveDropdownProps = {
+  dictionary: DropdownData;
+};
 
 const RecursiveDropdown: FC<RecursiveDropdownProps> = ({ dictionary }) => {
   return (

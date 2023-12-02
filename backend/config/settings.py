@@ -50,13 +50,16 @@ INSTALLED_APPS = [
     'compass',
 ]
 
+# Required since frontend and backend are served on different domains. Do not change!
+# SESSION_COOKIE_SAMESITE = None
+# CSRF_COOKIE_SAMESITE = None
+
 SECURE_SSL_REDIRECT = os.getenv('USE_HTTPS') == 'True'
 SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_HTTPS') == 'True'
 CSRF_COOKIE_SECURE = os.getenv('SESSION_CSRF_HTTPS') == 'True'
-# SESSION_COOKIE_SAMESITE = 'Lax'
-# CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

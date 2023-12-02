@@ -4,9 +4,9 @@ import classNames from 'classnames';
 
 import styles from './Button.module.scss';
 
-export interface Props extends HTMLAttributes<HTMLButtonElement> {
+export type Props = HTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
-}
+};
 
 export const Button: React.FC<Props> = ({ children, ...props }) => {
   return (

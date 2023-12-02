@@ -8,7 +8,7 @@ const useAuthStore = create<AuthState>((set) => ({
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   checkAuthentication: async () => {
     try {
-      const response = await fetch(`${process.env.BACKEND}/authenticate/`, {
+      const response = await fetch(`/authenticate`, {
         credentials: 'include',
       });
       const data = await response.json();
@@ -22,12 +22,12 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   login: () => {
-    const nextUrl = encodeURIComponent(`${process.env.COMPASS}/dashboard/`);
-    window.location.href = `${process.env.BACKEND}/login?next=${nextUrl}`;
+    const nextUrl = encodeURIComponent(`${process.env.COMPASS}/dashboard`);
+    window.location.href = `/login?next=${nextUrl}`;
   },
   logout: async () => {
     try {
-      const response = await fetch(`${process.env.BACKEND}/logout/`, {
+      const response = await fetch(`/logout`, {
         credentials: 'include',
       });
       if (response.ok) {
@@ -38,7 +38,7 @@ const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       console.error('Error during logout:', error);
     }
-    window.location.href = `${process.env.COMPASS}`;
+    window.location.href = `/`;
   },
 }));
 

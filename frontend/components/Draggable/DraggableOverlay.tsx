@@ -50,10 +50,10 @@ const dropAnimationConfig: DropAnimation = {
   },
 };
 
-interface Props {
+type Props = {
   axis?: ComponentProps<typeof Draggable>['axis'];
   dropAnimation?: DropAnimation | null;
-}
+};
 
 export function DraggableOverlay({ axis, dropAnimation = dropAnimationConfig }: Props) {
   const { active } = useDndContext();
