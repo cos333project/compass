@@ -50,11 +50,11 @@ INSTALLED_APPS = [
     'compass',
 ]
 
-SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_HTTPS') == 'True'
 SECURE_SSL_REDIRECT = os.getenv('USE_HTTPS') == 'True'
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_HTTPS') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_HTTPS') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('SESSION_CSRF_HTTPS') == 'True'
+# SESSION_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
@@ -98,12 +98,7 @@ CAS_RENAME_ATTRIBUTES = {
     'department': 'department',
 }
 
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    CAS,
-    os.getenv('COMPASS'),
-    os.getenv('BACKEND')
-]
+CORS_ALLOWED_ORIGINS = [CAS, os.getenv('COMPASS'), os.getenv('BACKEND')]
 CSRF_TRUSTED_ORIGINS = [os.getenv('COMPASS'), os.getenv('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
 CAS_REDIRECT_WHITELIST = os.getenv('BACKEND')
