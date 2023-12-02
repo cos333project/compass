@@ -1,7 +1,6 @@
 import logging
 import re
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse
 from django.views import View
@@ -67,7 +66,6 @@ def fetch_user_info(user):
     }
 
 
-@login_required
 def profile(request):
     user_info = fetch_user_info(request.user)
     return JsonResponse(user_info)
@@ -84,7 +82,6 @@ def profile(request):
 
 # TODO: Need to give csrf token instead of exempting it in production
 @csrf_exempt
-@login_required
 def update_profile(request):
     # TODO: Validate this stuff
     data = json.loads(request.body)
@@ -125,7 +122,6 @@ def update_profile(request):
 
 
 # ------------------------------------ LOG IN -----------------------------------------#
-
 
 def authenticate(request):
     is_authenticated = request.user.is_authenticated

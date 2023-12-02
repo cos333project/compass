@@ -27,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production! Toggle in .env
-DEBUG = os.environ.get('DEBUG') == 'TRUE'
+DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -50,8 +50,11 @@ INSTALLED_APPS = [
     'compass',
 ]
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_HTTPS') == 'True'
+SECURE_SSL_REDIRECT = os.getenv('USE_HTTPS') == 'True'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_HTTPS') == 'True'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
@@ -72,9 +75,9 @@ AUTHENTICATION_BACKENDS = (
     'django_cas_ng.backends.CASBackend',
 )
 
-HOMEPAGE = os.environ.get('COMPASS')
-DASHBOARD = urljoin(os.environ.get('COMPASS'), 'dashboard')
-CAS = os.environ.get('CAS_URL')
+HOMEPAGE = os.getenv('COMPASS')
+DASHBOARD = urljoin(os.getenv('COMPASS'), 'dashboard')
+CAS = os.getenv('CAS_URL')
 
 CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'  # .env this?
 CAS_CREATE_USER = True
@@ -95,15 +98,15 @@ CAS_RENAME_ATTRIBUTES = {
     'department': 'department',
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     CAS,
-#     os.environ.get('COMPASS'),
-#     os.environ.get('BACKEND')
-# ]
-CSRF_TRUSTED_ORIGINS = [os.environ.get('COMPASS'), os.environ.get('BACKEND')]
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    CAS,
+    os.getenv('COMPASS'),
+    os.getenv('BACKEND')
+]
+CSRF_TRUSTED_ORIGINS = [os.getenv('COMPASS'), os.getenv('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
-CAS_REDIRECT_WHITELIST = os.environ.get('BACKEND')
+CAS_REDIRECT_WHITELIST = os.getenv('BACKEND')
 CAS_CHECK_NEXT = False
 
 LOGGING = {
@@ -145,7 +148,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
+DATABASES = {'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))}
 
 
 AUTH_USER_MODEL = 'compass.CustomUser'
