@@ -18,7 +18,7 @@ import useUserSlice from '@/store/userSlice';
 
 async function fetchCsrfToken() {
   try {
-    const response = await fetch(`${process.env.BACKEND}/csrf/`, {
+    const response = await fetch(`/csrf`, {
       credentials: 'include',
     });
     if (!response.ok) {

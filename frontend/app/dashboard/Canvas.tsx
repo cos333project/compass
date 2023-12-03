@@ -48,7 +48,7 @@ import { coordinateGetter as multipleContainersCoordinateGetter } from './multip
 
 async function fetchCsrfToken() {
   try {
-    const response = await fetch(`${process.env.BACKEND}/csrf/`, {
+    const response = await fetch(`/csrf`, {
       credentials: 'include',
     });
     if (!response.ok) {
@@ -303,7 +303,7 @@ export function Canvas({
       })
       .catch((error) => console.error('User Courses Error:', error));
 
-    fetch(`${process.env.BACKEND}/check_requirements/`, {
+    fetch(`/check_requirements`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -642,7 +642,7 @@ export function Canvas({
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
 
-          fetch(`${process.env.BACKEND}/check_requirements/`, {
+          fetch(`/check_requirements`, {
             method: 'GET',
             credentials: 'include',
           })
