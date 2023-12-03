@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 
+import { Dictionary } from '@/types';
+
 import { RecursiveDropdown } from '../RecursiveDropDown'; // Adjust the import path as necessary
 
 import styles from './TabbedMenu.module.scss';
-
-type Dictionary = {
-  [key: string]: string | Dictionary;
-};
 
 type TabsData = {
   [tabName: string]: string | Dictionary;

@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cas_ng',
     'rest_framework',
     'corsheaders',
     'compass',
@@ -57,8 +56,6 @@ CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE')
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT') == 'True'
 SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE') == 'True'
 CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE') == 'True'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -66,7 +63,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_cas_ng.middleware.CASMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -74,37 +70,21 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas_ng.backends.CASBackend',
 )
 
 HOMEPAGE = os.getenv('COMPASS')
 DASHBOARD = urljoin(os.getenv('COMPASS'), 'dashboard')
-CAS = os.getenv('CAS_URL')
+CAS_SERVER_URL = urljoin(os.getenv('CAS_URL'), 'cas/')
 
-CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'  # .env this?
-CAS_CREATE_USER = True
-CAS_CREATE_USER_ID = True
-CAS_REDIRECT_URL = HOMEPAGE
-CAS_LOGOUT_NEXT_PAGE = HOMEPAGE
-CAS_VERSION = 3
-CAS_APPLY_ATTRIBUTES_TO_USER = True
-CAS_LOGIN_URL_NAME = 'login'
-CAS_LOGOUT_URL_NAME = 'logout'
-
-CAS_RENAME_ATTRIBUTES = {
-    'uid': 'net_id',  # Maps to 'net_id'
-    'universityid': 'university_id',  # Maps to 'university_id'
-    'mail': 'email',  # Maps to 'email'
-    'givenname': 'first_name',  # Maps to 'first_name'
-    'sn': 'last_name',  # Maps to 'last_name'
-    'department': 'department',
-}
-
-CORS_ALLOWED_ORIGINS = [CAS, os.getenv('COMPASS'), os.getenv('BACKEND')]
-CSRF_TRUSTED_ORIGINS = [os.getenv('COMPASS'), os.getenv('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
-CAS_REDIRECT_WHITELIST = os.getenv('BACKEND')
-CAS_CHECK_NEXT = False
+CORS_ALLOWED_ORIGINS = [
+    os.getenv('COMPASS'),
+    os.getenv('BACKEND'),
+]
+CSRF_TRUSTED_ORIGINS = [
+    os.getenv('COMPASS'),
+    os.getenv('BACKEND'),
+]
 
 LOGGING = {
     'version': 1,

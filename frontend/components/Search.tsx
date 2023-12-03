@@ -49,7 +49,9 @@ const Search: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`/search/?course=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(
+        `${process.env.BACKEND}/search/?course=${encodeURIComponent(searchQuery)}`
+      );
       if (response.ok) {
         const data: { courses: Course[] } = await response.json();
         setSearchResults(data.courses);

@@ -10,13 +10,22 @@ import copy
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
-sys.path.append(str(Path("../").resolve()))
+sys.path.append(str(Path('../').resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 import constants
 from config import django_init
-from compass.models import Course, Department, Degree, Major, Minor, \
-    Certificate, Requirement, CustomUser, UserCourses
+from compass.models import (
+    Course,
+    Department,
+    Degree,
+    Major,
+    Minor,
+    Certificate,
+    Requirement,
+    CustomUser,
+    UserCourses,
+)
 
 DEFAULT_SCHEDULE = [[] for i in range(8)]
 
@@ -54,7 +63,7 @@ def cumulative_time(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         total_time += end_time - start_time
-        print(f"Current total time for {func.__name__}: {total_time} seconds")
+        # print(f"Current total time for {func.__name__}: {total_time} seconds")
         return result
 
     return wrapper
@@ -82,21 +91,23 @@ def check_user(net_id, major, minors):
                 course['settled'] = [2515]
 
     if major is not None:
-        output[major['code']] = {}
-        formatted_courses, formatted_req = \
-            check_requirements("Major", major['code'], user_courses)
+        output[major] = {}
+        formatted_courses, formatted_req = check_requirements(
+            'Major', major, user_courses
+        )
         # output[major['code']]['courses'] = formatted_courses
-        output[major['code']]['requirements'] = formatted_req
+        output[major]['requirements'] = formatted_req
 
     output['Minors'] = {}
     for minor in minors:
-        output['Minors'][minor['code']] = {}
-        formatted_courses, formatted_req = \
-            check_requirements("Minor", minor['code'], user_courses)
+        output['Minors'][minor] = {}
+        formatted_courses, formatted_req = check_requirements(
+            'Minor', minor, user_courses
+        )
         # output['minors'][minor['code']]['courses'] = formatted_courses
-        output['Minors'][minor['code']]['requirements'] = formatted_req
+        output['Minors'][minor]['requirements'] = formatted_req
 
-    print(output['COS-AB'])
+    # print(output['COS-AB'])
 
     return output
 
@@ -104,9 +115,11 @@ def check_user(net_id, major, minors):
 @cumulative_time
 def create_courses(net_id):
     courses = DEFAULT_SCHEDULE
-    course_insts = UserCourses.objects.select_related('user').filter(user__net_id=net_id)
+    course_insts = UserCourses.objects.select_related('user').filter(
+        user__net_id=net_id
+    )
     for course_inst in course_insts:
-        courses[course_inst.semester - 1].append({"inst": course_inst.course})
+        courses[course_inst.semester - 1].append({'inst': course_inst.course})
     return courses
 
 
@@ -115,7 +128,7 @@ def create_courses(net_id):
 def create_dummy_courses(course_dict):
     courses = DEFAULT_SCHEDULE
     for id in course_dict:
-        courses[course_dict[id] - 1].append({"inst": Course.objects.get(id=id)})
+        courses[course_dict[id] - 1].append({'inst': Course.objects.get(id=id)})
     return courses
 
 
@@ -134,13 +147,13 @@ def check_requirements(table, code, courses):
     :returns: A simplified json with info about how much of each requirement is satisfied
     :rtype: (bool, dict, dict)
     """
-    if table == "Degree":
+    if table == 'Degree':
         req_inst = Degree.objects.get(code=code)
-    elif table == "Major":
+    elif table == 'Major':
         req_inst = Major.objects.get(code=code)
-    elif table == "Minor":
+    elif table == 'Minor':
         req_inst = Minor.objects.get(code=code)
-    elif table == "Certificate":
+    elif table == 'Certificate':
         req_inst = Certificate.objects.get(code=code)
 
     req = _init_req(req_inst)
@@ -163,12 +176,16 @@ def _init_courses(courses):
         courses = copy.deepcopy(courses)
     for sem in courses:
         for course in sem:
-            course["possible_reqs"] = []
-            course["reqs_satisfied"] = []
-            course["reqs_double_counted"] = [] # reqs satisfied for which double counting allowed
-            course["num_settleable"] = 0 # number of reqs to which can be settled. autosettled if 1
-            if "settled" not in course or course["settled"] == None:
-                course["settled"] = []
+            course['possible_reqs'] = []
+            course['reqs_satisfied'] = []
+            course[
+                'reqs_double_counted'
+            ] = []  # reqs satisfied for which double counting allowed
+            course[
+                'num_settleable'
+            ] = 0  # number of reqs to which can be settled. autosettled if 1
+            if 'settled' not in course or course['settled'] == None:
+                course['settled'] = []
     return courses
 
 
@@ -185,8 +202,10 @@ def _init_req(req_inst):
         for sub_req_inst in req_inst.req_list.all():
             sub_req = _init_req(sub_req_inst)
             req['req_list'].append(sub_req)
-    if (req["inst"]._meta.db_table == 'Requirement'):
-        req['course_list'] = {course_inst.id for course_inst in req["inst"].course_list.all()}
+    if req['inst']._meta.db_table == 'Requirement':
+        req['course_list'] = {
+            course_inst.id for course_inst in req['inst'].course_list.all()
+        }
         # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
         if len(req['course_list']) == 0:
             req.pop('course_list')
@@ -204,28 +223,28 @@ def assign_settled_courses_to_reqs(req, courses):
     Assigns only settled courses and those that can only satify one requirement,
     and updates the appropriate counts.
     """
-    old_deficit = req["inst"].min_needed - req["count"]
-    if (req["inst"].max_counted != None):
-        old_available = req["inst"].max_counted - req["count"]
+    old_deficit = req['inst'].min_needed - req['count']
+    if req['inst'].max_counted != None:
+        old_available = req['inst'].max_counted - req['count']
 
-    was_satisfied = (old_deficit <= 0)
+    was_satisfied = old_deficit <= 0
     newly_satisfied = 0
     if 'req_list' in req:
         for sub_req in req['req_list']:
             newly_satisfied += assign_settled_courses_to_reqs(sub_req, courses)
-    elif req["inst"].double_counting_allowed:
+    elif req['inst'].double_counting_allowed:
         newly_satisfied = mark_all(req, courses)
-    elif req["inst"].course_list.exists() or req["inst"].dept_list:
+    elif req['inst'].course_list.exists() or req['inst'].dept_list:
         newly_satisfied = mark_settled(req, courses)
-    elif req["inst"].dist_req:
+    elif req['inst'].dist_req:
         newly_satisfied = mark_settled(req, courses)
-    elif req["inst"].num_courses:
+    elif req['inst'].num_courses:
         newly_satisfied = check_degree_progress(req, courses)
     else:
         # for papers, IW, where there are no leaf nodes
         newly_satisfied = 1
 
-    req["count"] += newly_satisfied
+    req['count'] += newly_satisfied
     new_deficit = req['inst'].min_needed - req['count']
     if (not was_satisfied) and (new_deficit <= 0):
         if req['inst'].max_counted == None:
@@ -246,13 +265,13 @@ def mark_possible_reqs(req, courses):
     """
     Finds all the requirements that each course can satisfy.
     """
-    if "req_list" in req:
-        for sub_req in req["req_list"]:
+    if 'req_list' in req:
+        for sub_req in req['req_list']:
             mark_possible_reqs(sub_req, courses)
     else:
-        if "course_list" in req or req["inst"].dept_list:
+        if 'course_list' in req or req['inst'].dept_list:
             mark_courses(req, courses)
-        if req["inst"].dist_req:
+        if req['inst'].dist_req:
             mark_dist(req, courses)
 
 
@@ -264,13 +283,15 @@ def mark_dist(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
-            if req["inst"].id in course["possible_reqs"]: # already used
+            if req['inst'].id in course['possible_reqs']:  # already used
                 continue
-            if course["inst"].distribution_area_short in json.loads(req["inst"].dist_req):
+            if course['inst'].distribution_area_short in json.loads(
+                req['inst'].dist_req
+            ):
                 num_marked += 1
-                course["possible_reqs"].append(req["inst"].id)
-                if not req["inst"].double_counting_allowed:
-                    course["num_settleable"] += 1
+                course['possible_reqs'].append(req['inst'].id)
+                if not req['inst'].double_counting_allowed:
+                    course['num_settleable'] += 1
     return num_marked
 
 
@@ -281,25 +302,25 @@ def mark_courses(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
-            if req["inst"].id in course["possible_reqs"]: # already used
+            if req['inst'].id in course['possible_reqs']:  # already used
                 continue
-            if "exc_course_list" in req:
-                if course["inst"].id in req["exc_course_list"]:
+            if 'exc_course_list' in req:
+                if course['inst'].id in req['exc_course_list']:
                     continue
-            if req["inst"].dept_list:
-                for code in json.loads(req["inst"].dept_list):
-                    if code == course["inst"].department.code:
+            if req['inst'].dept_list:
+                for code in json.loads(req['inst'].dept_list):
+                    if code == course['inst'].department.code:
                         num_marked += 1
-                        course["possible_reqs"].append(req["inst"].id)
-                        if not req["inst"].double_counting_allowed:
-                            course["num_settleable"] += 1
+                        course['possible_reqs'].append(req['inst'].id)
+                        if not req['inst'].double_counting_allowed:
+                            course['num_settleable'] += 1
                         break
-            if "course_list" in req:
-                if course["inst"].id in req["course_list"]:
+            if 'course_list' in req:
+                if course['inst'].id in req['course_list']:
                     num_marked += 1
-                    course["possible_reqs"].append(req["inst"].id)
-                    if not req["inst"].double_counting_allowed:
-                        course["num_settleable"] += 1
+                    course['possible_reqs'].append(req['inst'].id)
+                    if not req['inst'].double_counting_allowed:
+                        course['num_settleable'] += 1
     return num_marked
 
 
@@ -312,9 +333,9 @@ def mark_all(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
-            if req["inst"].id in course["possible_reqs"]:
+            if req['inst'].id in course['possible_reqs']:
                 num_marked += 1
-                course["reqs_double_counted"].append(req["inst"].id)
+                course['reqs_double_counted'].append(req['inst'].id)
     return num_marked
 
 
@@ -327,19 +348,23 @@ def mark_settled(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
-            if len(course["reqs_satisfied"]) > 0: # already used in some subreq
+            if len(course['reqs_satisfied']) > 0:  # already used in some subreq
                 continue
-            if len(course["settled"]) > 0:
-                for p in course["settled"]: # go through the settled requirement ids
-                    if (p == req["inst"].id) and (p in course["possible_reqs"]): # course was settled into this requirement
+            if len(course['settled']) > 0:
+                for p in course['settled']:  # go through the settled requirement ids
+                    if (p == req['inst'].id) and (
+                        p in course['possible_reqs']
+                    ):  # course was settled into this requirement
                         num_marked += 1
-                        course["reqs_satisfied"].append(p)
+                        course['reqs_satisfied'].append(p)
                         break
             # or course is manually settled to this req...
-            elif (course["num_settleable"] == 1) and (req["inst"].id in course["possible_reqs"]):
+            elif (course['num_settleable'] == 1) and (
+                req['inst'].id in course['possible_reqs']
+            ):
                 num_marked += 1
-                course["reqs_satisfied"].append(req["inst"].id)
-                course["settled"].append(req["inst"].id)
+                course['reqs_satisfied'].append(req['inst'].id)
+                course['settled'].append(req['inst'].id)
     return num_marked
 
 
@@ -349,7 +374,7 @@ def check_degree_progress(req, courses):
     Checks whether the correct number of courses have been completed by the
     end of semester number 'by_semester' (1-8)
     """
-    by_semester = req["inst"].completed_by_semester
+    by_semester = req['inst'].completed_by_semester
     num_courses = 0
     if by_semester == None or by_semester > len(courses):
         by_semester = len(courses)
@@ -365,32 +390,34 @@ def add_course_lists_to_req(req, courses):
     (a) has no subrequirements, or
     (b) has hidden subrequirements
     """
-    if "req_list" in req:
-        for sub_req in req["req_list"]:
+    if 'req_list' in req:
+        for sub_req in req['req_list']:
             add_course_lists_to_req(sub_req, courses)
-    req["settled"] = []
-    req["unsettled"] = []
+    req['settled'] = []
+    req['unsettled'] = []
     for sem in courses:
         for course in sem:
             course_id = course['inst'].id
-            if ((req["inst"]._meta.db_table == 'Requirement') and req["inst"].double_counting_allowed):
-                if len(course["reqs_double_counted"]) > 0:
-                    for req_id in course["reqs_double_counted"]:
-                        if req_id == req["inst"].id:
-                            if course_id not in req["settled"]:
-                                req["settled"].append(course_id)
+            if (req['inst']._meta.db_table == 'Requirement') and req[
+                'inst'
+            ].double_counting_allowed:
+                if len(course['reqs_double_counted']) > 0:
+                    for req_id in course['reqs_double_counted']:
+                        if req_id == req['inst'].id:
+                            if course_id not in req['settled']:
+                                req['settled'].append(course_id)
                             ## add to reqs_satisfied because couldn't be added in _assign_settled_courses_to_reqs()
-                            course["reqs_satisfied"].append(req["inst"].id)
-            elif len(course["settled"]) > 0:
-                for req_id in course["settled"]:
-                    if req_id == req["inst"].id:
-                        if course_id not in req["settled"]:
-                            req["settled"].append(course["inst"].id)
+                            course['reqs_satisfied'].append(req['inst'].id)
+            elif len(course['settled']) > 0:
+                for req_id in course['settled']:
+                    if req_id == req['inst'].id:
+                        if course_id not in req['settled']:
+                            req['settled'].append(course['inst'].id)
             else:
-                for req_id in course["possible_reqs"]:
-                    if req_id == req["inst"].id:
-                        if course_id not in req["unsettled"]:
-                            req["unsettled"].append(course["inst"].id)
+                for req_id in course['possible_reqs']:
+                    if req_id == req['inst'].id:
+                        if course_id not in req['unsettled']:
+                            req['unsettled'].append(course['inst'].id)
                             break
 
 
@@ -402,13 +429,13 @@ def format_courses_output(courses):
     output = []
     for i, sem in enumerate(courses):
         output.append([])
-        for j,course in enumerate(sem):
+        for j, course in enumerate(sem):
             output[i].append(collections.OrderedDict())
-            for key in ["possible_reqs", "reqs_satisfied"]:
+            for key in ['possible_reqs', 'reqs_satisfied']:
                 output[i][j][key] = course[key]
-            output[i][j]["name"] = course["inst"].title
-            if len(course["settled"]) > 0: # only show if non-empty
-                output[i][j]["settled"] = course["settled"]
+            output[i][j]['name'] = course['inst'].title
+            if len(course['settled']) > 0:  # only show if non-empty
+                output[i][j]['settled'] = course['settled']
     return output
 
 
@@ -420,30 +447,31 @@ def format_req_output(req):
     output = collections.OrderedDict()
     # if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].name:
     #     output['name'] = req["inst"].name
-    if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].code:
-        output['code'] = req["inst"].code
+    if (req['inst']._meta.db_table != 'Requirement') and req['inst'].code:
+        output['code'] = req['inst'].code
     # if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
     #     output['degree'] = req['inst'].degree.all()[0]
     # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].pdfs_allowed:
     #     output['pdfs_allowed'] = str(req['inst'].pdfs_allowed)
     # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
     #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
-    if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].name:
-        output['name'] = req["inst"].name
+    if (req['inst']._meta.db_table == 'Requirement') and req['inst'].name:
+        output['name'] = req['inst'].name
 
-    output["satisfied"] = str((req["inst"].min_needed - req["count"] <= 0))
+    output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
     # output['count'] = str(req['count'])
     # output['min_needed'] = str(req['inst'].min_needed)
     # output['max_counted'] = str(req['inst'].max_counted)
-    if "req_list" in req: # internal node. recursively call on children
+    if 'req_list' in req:  # internal node. recursively call on children
         req_list = {}
-        for i, subreq in enumerate(req["req_list"]):
+        for i, subreq in enumerate(req['req_list']):
             if 'name' in output:
-                if output['name'] == "Computer Science Prerequisites":
-                    print("CS PREREQS")
-                    print(subreq)
+                if output['name'] == 'Computer Science Prerequisites':
+                    # print("CS PREREQS")
+                    # print(subreq)
+                    pass
             child = format_req_output(subreq)
-            if (child != None):
+            if child != None:
                 if 'code' in child:
                     code = child.pop('code')
                     req_list[code] = child
@@ -451,30 +479,36 @@ def format_req_output(req):
                     name = child.pop('name')
                     req_list[name] = child
                 else:
-                    req_list[f"Subrequirement {i + 1}"] = child
+                    req_list[f'Subrequirement {i + 1}'] = child
         if req_list:
-            output["subrequirements"] = req_list
-    if ("settled" in req) and ('req_list' not in req):
-        settled = ""
-        for course_id in req["settled"]:
+            output['subrequirements'] = req_list
+    if ('settled' in req) and ('req_list' not in req):
+        settled = ''
+        for course_id in req['settled']:
             course_inst = Course.objects.get(id=course_id)
-            settled += (course_inst.department.code + " " + course_inst.catalog_number + ", ")
-        output["settled"] = settled[:-2]
-    if ("unsettled" in req) and ('req_list' not in req):
-        unsettled = ""
-        for course_id in req["unsettled"]:
+            settled += (
+                course_inst.department.code + ' ' + course_inst.catalog_number + ', '
+            )
+        output['settled'] = settled[:-2]
+    if ('unsettled' in req) and ('req_list' not in req):
+        unsettled = ''
+        for course_id in req['unsettled']:
             course_inst = Course.objects.get(id=course_id)
-            unsettled += (course_inst.department.code + " " + course_inst.catalog_number + ", ")
-        output["unsettled"] = unsettled[:-2]
+            unsettled += (
+                course_inst.department.code + ' ' + course_inst.catalog_number + ', '
+            )
+        output['unsettled'] = unsettled[:-2]
     return output
 
-def main():
 
-    output = check_user('gc5512',
-                        {'code': 'COS-AB', 'name': 'Computer Science - AB'},
-                        [{'code': 'CLA', 'name': 'Classics'},
-                         {'code': 'DAN', 'name': 'Dance'}])
+def main():
+    output = check_user(
+        'gc5512',
+        {'code': 'COS-AB', 'name': 'Computer Science - AB'},
+        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'DAN', 'name': 'Dance'}],
+    )
     print(output['minors'])
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()

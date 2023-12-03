@@ -18,7 +18,7 @@ import useUserSlice from '@/store/userSlice';
 
 async function fetchCsrfToken() {
   try {
-    const response = await fetch(`/csrf`, {
+    const response = await fetch(`${process.env.BACKEND}/csrf`, {
       credentials: 'include',
     });
     if (!response.ok) {
@@ -27,7 +27,8 @@ async function fetchCsrfToken() {
     const data = await response.json();
     return data.csrfToken;
   } catch (error) {
-    return '';
+    console.log(error);
+    return 'Error fetching CSRF token!';
   }
 }
 
@@ -122,7 +123,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     // Updates local profile. TODO: Do we even need a local profile?
     profile = useUserSlice.getState().profile;
     const csrfToken = await fetchCsrfToken();
-    fetch(`/update_profile`, {
+    console.log('csrf: ', csrfToken);
+    fetch(`${process.env.BACKEND}/update_profile/`, {
       method: 'POST',
       credentials: 'include',
       headers: {

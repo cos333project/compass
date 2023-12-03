@@ -11,7 +11,7 @@ const Home = () => {
 
   useEffect(() => {
     checkAuthentication();
-  }, [checkAuthentication]);
+  }, []);
 
   return (
     <>

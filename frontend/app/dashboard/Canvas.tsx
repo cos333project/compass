@@ -36,10 +36,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
-import { Course, Profile } from '@/types';
+import { Course, Profile, Requirement } from '@/types';
 
 import Search from '@/components/Search';
-import { TabbedMenu } from '@/components/TabbedMenu';
+// import { TabbedMenu } from '@/components/TabbedMenu';
 import useSearchStore from '@/store/searchSlice';
 
 import { Item, Container, ContainerProps } from '../../components';
@@ -48,7 +48,7 @@ import { coordinateGetter as multipleContainersCoordinateGetter } from './multip
 
 async function fetchCsrfToken() {
   try {
-    const response = await fetch(`/csrf`, {
+    const response = await fetch(`${process.env.BACKEND}/csrf`, {
       credentials: 'include',
     });
     if (!response.ok) {
@@ -57,7 +57,7 @@ async function fetchCsrfToken() {
     const data = await response.json();
     return data.csrfToken;
   } catch (error) {
-    return '';
+    return 'Error fetching CSRF token!';
   }
 }
 
@@ -230,66 +230,32 @@ export function Canvas({
     ...semesters,
   }));
 
-  type Dictionary = {
-    [key: string]: string | Dictionary;
-  };
+  type RequirementDict = Record<string, Requirement | string>;
+  const [reqDict, setReqDict] = useState<RequirementDict>({});
 
-  type RequirementDict = {
-    [key: string]: string | RequirementDict;
-  };
-
-  const nestedDictionary: Dictionary = {
-    Requirements: '',
-  };
-
-  const [reqDict, setReqDict] = useState<{ reqDict: Dictionary }>(() => ({
-    reqDict: nestedDictionary,
-  }));
-
-  function mapKeysToStrings(obj: Dictionary): Dictionary {
-    const result: Dictionary = {};
-
-    for (const key in obj) {
-      if (Object.hasOwn(obj, key)) {
-        result[String(key)] = obj[key];
-      }
-    }
-
-    return result;
-  }
-
-  // Type guard to check if a value is a Dictionary
-  function isDictionary(value: string | Dictionary): value is Dictionary {
-    return typeof value === 'object' && value !== null;
-  }
-
+  // Assuming 'user' is of type User
   const majorCode = user.major?.code;
   const minors = user.minors ?? [];
 
-  const requirements: RequirementDict = { Requirements: '' };
+  const requirements: RequirementDict = {};
 
-  // Add major to requirements if it's a string
-  if (reqDict.reqDict.Requirements !== '') {
-    if (typeof majorCode === 'string' && isDictionary(reqDict.reqDict)) {
-      if (majorCode in reqDict.reqDict) {
-        requirements[majorCode] = reqDict.reqDict[majorCode];
-      }
-    }
-
-    minors.forEach((minor) => {
-      const minorCode = minor.code;
-      if (typeof minorCode === 'string' && isDictionary(reqDict.reqDict)) {
-        if (minorCode in reqDict.reqDict) {
-          requirements[minorCode] = reqDict.reqDict[minorCode];
-        }
-      }
-    });
+  // Add major to requirements if it exists
+  if (majorCode && reqDict[majorCode]) {
+    requirements[majorCode] = reqDict[majorCode];
   }
+
+  // Iterate over minors and add them to requirements
+  minors.forEach((minor) => {
+    const minorCode = minor.code;
+    if (minorCode && reqDict[minorCode]) {
+      requirements[minorCode] = reqDict[minorCode];
+    }
+  });
 
   useEffect(() => {
     let user_courses: Record<number, Course[]> = {};
 
-    fetch(`/get_courses`, {
+    fetch(`${process.env.BACKEND}/fetch_courses`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -303,16 +269,13 @@ export function Canvas({
       })
       .catch((error) => console.error('User Courses Error:', error));
 
-    fetch(`/check_requirements`, {
+    fetch(`${process.env.BACKEND}/check_requirements`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setReqDict(() => ({
-          reqDict: mapKeysToStrings(data),
-        }));
+        setReqDict(data);
         console.log(reqDict.reqDict);
       })
       .catch((error) => console.error('Requirements Check Error:', error));
@@ -629,7 +592,7 @@ export function Canvas({
             semesterId = TRASH_ID;
           }
           const csrfToken = await fetchCsrfToken();
-          fetch(`/update_courses`, {
+          fetch(`${process.env.BACKEND}/update_courses`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -642,16 +605,14 @@ export function Canvas({
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
 
-          fetch(`/check_requirements`, {
+          fetch(`${process.env.BACKEND}/check_requirements`, {
             method: 'GET',
             credentials: 'include',
           })
             .then((response) => response.json())
             .then((data) => {
               console.log(data);
-              setReqDict(() => ({
-                reqDict: mapKeysToStrings(data),
-              }));
+              setReqDict(reqDict);
               console.log(reqDict.reqDict);
             })
             .catch((error) => console.error('Requirements Check Error:', error));
@@ -741,9 +702,10 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            <div style={{ width: '380px' }}>
+            {/* TODO: Put this back in after verifying CAS works. }}>
+            {/* <div style={{ width: '380px' }}>
               <TabbedMenu tabsData={requirements} />
-            </div>
+            </div> */}
           </div>
         </SortableContext>
 

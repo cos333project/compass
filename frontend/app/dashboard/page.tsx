@@ -13,7 +13,7 @@ import { Canvas } from './Canvas';
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { isAuthenticated, checkAuthentication } = useAuthStore((state) => state);
+  const { checkAuthentication } = useAuthStore((state) => state);
   const userProfile = UserState((state) => state.profile);
   useEffect(() => {
     checkAuthentication()
@@ -22,13 +22,7 @@ const Dashboard: React.FC = () => {
         console.error('Auth error:', error);
         setIsLoading(false);
       });
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      window.location.href = `/login`;
-    }
-  }, [isAuthenticated, isLoading]);
+  }, []);
 
   return (
     <>

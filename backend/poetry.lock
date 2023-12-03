@@ -390,21 +390,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-cas-ng"
-version = "5.0.1"
-description = "Django CAS 1.0/2.0/3.0 client authentication library, support Django 2.2, 3.0, 3.1, 3.2, 4.0 and Python 3.7+"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "django-cas-ng-5.0.1.tar.gz", hash = "sha256:e02ba35cc289e3478ca43185383ba24e4f690a41110927e87e92ac6675248541"},
-    {file = "django_cas_ng-5.0.1-py2.py3-none-any.whl", hash = "sha256:76f400c1efc75511fbc8566cb376ece7178a922187c8e01bede257f5b405892a"},
-]
-
-[package.dependencies]
-Django = ">=2.2"
-python-cas = ">=1.6.0"
-
-[[package]]
 name = "django-cors-headers"
 version = "4.3.1"
 description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
@@ -1977,4 +1962,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ce2875847993bb31027c394184894fab99257d966cd8eacb44808d191c18a274"
+content-hash = "c05a80fe39e678ca5bd63bc737b8c461d4cce6562a6b6d35d78031eac010ac37"
