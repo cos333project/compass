@@ -15,7 +15,7 @@ export enum Axis {
   Horizontal,
 }
 
-interface DraggableProps {
+type DraggableProps = {
   axis?: Axis;
   dragOverlay?: boolean;
   dragging?: boolean;
@@ -26,7 +26,7 @@ interface DraggableProps {
   buttonStyle?: React.CSSProperties;
   transform?: Transform | null;
   children?: React.ReactNode;
-}
+};
 
 export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(function Draggable(
   {

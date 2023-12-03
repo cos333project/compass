@@ -1,9 +1,9 @@
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 
 import { SettingsModalProps } from '../types';
 
 const Modal: React.FC<SettingsModalProps> = ({ children, onClose }) => {
-  return ReactDOM.createPortal(
+  return createPortal(
     <>
       {/* TODO: Need an equivalent fade out animation when 'Close' is pressed */}
       <div className='modal-backdrop fixed inset-0 backdrop-blur-sm bg-black bg-opacity-30 z-50'></div>

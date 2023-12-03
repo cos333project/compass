@@ -16,23 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import django_cas_ng.views
 from compass import views
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     # CAS Authentication
-    path('login/', django_cas_ng.views.LoginView.as_view(), name='login'),
-    path('logout/', django_cas_ng.views.LogoutView.as_view(), name='logout'),
-    path('authenticate/', views.authenticate, name='authenticate'),
+    path('cas/', views.CAS.as_view(), name='cas'),
     # Profile
     path('profile/', views.profile, name='profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
+    path('csrf/', views.csrf, name='csrf'),
     # Canvas
     path('search/', views.SearchCourses.as_view(), name='search'),
-    path('get_user_courses/', views.GetUserCourses.as_view(), name='get_user_courses'),
-    path('update_user_courses/', views.update_user_courses, name='update_user_courses'),
+    path('fetch_courses/', views.GetUserCourses.as_view(), name='fetch_courses'),
+    path('update_courses/', views.update_courses, name='update_courses'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
     path('update_user/', views.update_user, name='update_settings'),
 ]

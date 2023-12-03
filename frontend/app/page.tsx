@@ -1,9 +1,9 @@
 'use client';
 import { useEffect } from 'react';
 
+import Footer from '../components/Footer';
 import Hero from '../components/Hero';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import useAuthStore from '../store/authSlice';
 
 const Home = () => {
@@ -11,7 +11,7 @@ const Home = () => {
 
   useEffect(() => {
     checkAuthentication();
-  }, [checkAuthentication]);
+  }, []);
 
   return (
     <>

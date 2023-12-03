@@ -11,11 +11,7 @@ import { Logout } from './Logout';
 import SettingsModal from './Modal';
 import UserSettings from './UserSettings';
 
-const MenuItem: React.FC<MenuItemProps> = ({
-                                             isActive,
-                                             children,
-                                             onClick
-                                           }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
     className={clsx(
       isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -40,7 +36,7 @@ const DropdownMenu: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND}/profile/`, {
+        const response = await fetch(`${process.env.BACKEND}/profile`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -54,7 +50,6 @@ const DropdownMenu: React.FC = () => {
         const data = await response.json();
         const fullName =
           data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : 'Profile';
-        // localStorage.setItem('username', fullName);
         setUsername(fullName);
         updateProfile({
           firstName: data.firstName,

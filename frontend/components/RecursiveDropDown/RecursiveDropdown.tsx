@@ -1,21 +1,30 @@
-import React, { useState, FC } from 'react';
-import styles from './RecursiveDropdown.module.scss';
+import { useState, FC } from 'react';
 
-interface Dictionary {
-  [key: string]: any;
-}
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
-interface DropdownProps {
-  data: Dictionary;
-}
+type DropdownData = Record<string, DropdownValue>;
+type DropdownValue = string | number | boolean | NestedObject | undefined;
 
-interface SatisfactionStatusProps {
-  satisfied: string;
-}
+type NestedObject = {
+  [key: string]: DropdownValue;
+  satisfied?: boolean;
+};
+
+type DropdownProps = {
+  data: DropdownData;
+};
+
+type SatisfactionStatusProps = {
+  satisfied: boolean;
+};
 
 const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
-  <span style={{ marginLeft: '10px', color: satisfied === 'True' ? 'green' : 'red' }}>
-    {satisfied === 'True' ? '✅' : '❌'}
+  <span className='ml-2 statusIcon'>
+    {satisfied ? (
+      <CheckCircleIcon className='w-5 h-5 text-green-500' />
+    ) : (
+      <XCircleIcon className='w-5 h-5 text-red-500' />
+    )}
   </span>
 );
 
@@ -23,53 +32,58 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
   const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
 
   const toggleDropdown = (key: string) => () => {
-    setIsOpen(prev => ({ ...prev, [key]: !prev[key] }));
+    setIsOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const renderContent = (data: Dictionary) => {
+  const renderContent = (data: DropdownData) => {
     return Object.entries(data).map(([key, value]) => {
       const isObject = typeof value === 'object' && value !== null;
       let satisfactionElement = null;
 
-      if (isObject && 'satisfied' in value) {
-        satisfactionElement = <SatisfactionStatus satisfied={value.satisfied} />;
-        // Remove 'satisfied' from the value to be rendered
-        const { satisfied, ...rest } = value;
-        value = rest;
+      if (isObject) {
+        const nestedValue = value as NestedObject;
+        if ('satisfied' in nestedValue) {
+          satisfactionElement = <SatisfactionStatus satisfied={nestedValue.satisfied ?? false} />;
+        }
       }
 
       return (
-        <li key={key} className={isObject ? styles.category : styles.item}>
-          <div className={styles.categoryTitle} onClick={isObject ? toggleDropdown(key) : undefined}>
-            {isObject && <span className={styles.indicator}>{isOpen[key] ? '-' : '>'}</span>}
-            {key}
+        <li key={key} className={isObject ? 'mb-2' : ''}>
+          <div
+            className={`flex justify-between items-center p-2 cursor-pointer ${
+              isObject ? 'bg-gray-200 rounded' : 'bg-gray-100'
+            }`}
+            onClick={isObject ? toggleDropdown(key) : undefined}
+          >
+            {isObject && (
+              <>
+                <span className={`mr-2 text-lg ${isOpen[key] ? 'transform rotate-90' : ''}`}></span>
+                <span className='flex-grow'>{key}</span>
+              </>
+            )}
+            {!isObject && <span>{key}</span>}
             {satisfactionElement}
           </div>
           {isObject && (
-            <ul className={`${styles.nested} ${isOpen[key] ? styles.active : ''}`}>
+            <ul className={`pl-4 ${isOpen[key] ? 'block' : 'hidden'}`}>
               <Dropdown data={value} />
             </ul>
           )}
-          {!isObject && <div className={styles.item}>{value}</div>}
         </li>
       );
     });
   };
 
-  return (
-    <ul className={styles.dropdown}>
-      {renderContent(data)}
-    </ul>
-  );
+  return <ul className='list-none p-0 m-0'>{renderContent(data)}</ul>;
 };
 
-interface RecursiveDropdownProps {
-  dictionary: Dictionary;
-}
+type RecursiveDropdownProps = {
+  dictionary: DropdownData;
+};
 
 const RecursiveDropdown: FC<RecursiveDropdownProps> = ({ dictionary }) => {
   return (
-    <div className={styles.recursiveDropdownContainer}>
+    <div className='text-gray-700 w-full'>
       <Dropdown data={dictionary} />
     </div>
   );

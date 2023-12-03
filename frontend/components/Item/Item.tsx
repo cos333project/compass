@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { Handle, Remove } from './components';
 import styles from './Item.module.scss';
 
-export interface Props {
+export type Props = {
   dragOverlay?: boolean;
   color?: string;
   disabled?: boolean;
@@ -38,7 +38,7 @@ export interface Props {
     transition: Props['transition'];
     value: Props['value'];
   }): React.ReactElement;
-}
+};
 
 export const Item = memo(
   forwardRef<HTMLLIElement, Props>(

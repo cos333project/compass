@@ -1,9 +1,9 @@
 import styles from './GridContainer.module.scss';
 
-export interface GridContainerProps {
+export type GridContainerProps = {
   children: React.ReactNode;
   columns: number;
-}
+};
 
 export function GridContainer({ children, columns }: GridContainerProps) {
   return (

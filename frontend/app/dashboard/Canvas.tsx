@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   CancelDrop,
@@ -22,8 +22,8 @@ import {
   useSensor,
   MeasuringStrategy,
   KeyboardCoordinateGetter,
-  defaultDropAnimationSideEffects
-} from "@dnd-kit/core";
+  defaultDropAnimationSideEffects,
+} from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
   SortableContext,
@@ -31,66 +31,64 @@ import {
   arrayMove,
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
-  SortingStrategy
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { createPortal, unstable_batchedUpdates } from "react-dom";
+  SortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
-import { Course, Profile } from "@/types";
+import { Course, Profile, Requirement } from '@/types';
 
-import Search from "@/components/Search";
-import useSearchStore from "@/store/searchSlice";
+import Search from '@/components/Search';
+// import { TabbedMenu } from '@/components/TabbedMenu';
+import useSearchStore from '@/store/searchSlice';
 
-import { Item, Container, ContainerProps } from "../../components";
-import { TabbedMenu } from "../../components/TabbedMenu";
+import { Item, Container, ContainerProps } from '../../components';
 
-import {
-  coordinateGetter as multipleContainersCoordinateGetter
-} from "./multipleContainersKeyboardCoordinates";
-import { min } from "lodash";
+import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 
-type Dictionary = {
-  [key: string]: any;
-};
+async function fetchCsrfToken() {
+  try {
+    const response = await fetch(`${process.env.BACKEND}/csrf`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.csrfToken;
+  } catch (error) {
+    return 'Error fetching CSRF token!';
+  }
+}
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-
 function DroppableContainer({
-                              children,
-                              columns = 1,
-                              disabled,
-                              id,
-                              items,
-                              style,
-                              ...props
-                            }: ContainerProps & {
+  children,
+  columns = 1,
+  disabled,
+  id,
+  items,
+  style,
+  ...props
+}: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
-  const {
-    active,
-    attributes,
-    isDragging,
-    listeners,
-    over,
-    setNodeRef,
-    transition,
-    transform
-  } =
+  const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } =
     useSortable({
       id,
       data: {
-        type: "container",
-        children: items
+        type: 'container',
+        children: items,
       },
-      animateLayoutChanges
+      animateLayoutChanges,
     });
   const isOverContainer = over
-    ? (id === over.id && active?.data.current?.type !== "container") || items.includes(over.id)
+    ? (id === over.id && active?.data.current?.type !== 'container') || items.includes(over.id)
     : false;
 
   return (
@@ -100,12 +98,12 @@ function DroppableContainer({
         ...style,
         transition,
         transform: CSS.Translate.toString(transform),
-        opacity: isDragging ? 0.5 : undefined
+        opacity: isDragging ? 0.5 : undefined,
       }}
       hover={isOverContainer}
       handleProps={{
         ...attributes,
-        ...listeners
+        ...listeners,
       }}
       columns={columns}
       {...props}
@@ -119,15 +117,15 @@ const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
     styles: {
       active: {
-        opacity: "0.5"
-      }
-    }
-  })
+        opacity: '0.5',
+      },
+    },
+  }),
 };
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
-interface Props {
+type Props = {
   user: Profile;
   adjustScale?: boolean;
   cancelDrop?: CancelDrop;
@@ -160,32 +158,32 @@ interface Props {
   trashable?: boolean;
   scrollable?: boolean;
   vertical?: boolean;
-}
+};
 
-export const TRASH_ID = "void";
-export const PLACEHOLDER_ID = "placeholder";
-export const SEARCH_RESULTS_ID = "Search Results";
+export const TRASH_ID = 'void';
+export const PLACEHOLDER_ID = 'placeholder';
+export const SEARCH_RESULTS_ID = 'Search Results';
 
 export function Canvas({
-                         user,
-                         adjustScale = false,
-                         // itemCount = 3, // remove this?
-                         cancelDrop,
-                         columns = 2,
-                         handle = false,
-                         // initialItems, // remove
-                         containerStyle,
-                         coordinateGetter = multipleContainersCoordinateGetter,
-                         getItemStyles = () => ({}),
-                         wrapperStyle = () => ({}),
-                         minimal = false,
-                         modifiers,
-                         renderItem,
-                         strategy = verticalListSortingStrategy,
-                         trashable = false,
-                         // vertical = false,
-                         scrollable
-                       }: Props) {
+  user,
+  adjustScale = false,
+  // itemCount = 3, // remove this?
+  cancelDrop,
+  columns = 2,
+  handle = false,
+  // initialItems, // remove
+  containerStyle,
+  coordinateGetter = multipleContainersCoordinateGetter,
+  getItemStyles = () => ({}),
+  wrapperStyle = () => ({}),
+  minimal = false,
+  modifiers,
+  renderItem,
+  strategy = verticalListSortingStrategy,
+  trashable = false,
+  // vertical = false,
+  scrollable,
+}: Props) {
   const classYear = user.classYear ?? 2025;
   console.log(user.classYear);
   console.log(user);
@@ -207,7 +205,7 @@ export function Canvas({
     user_courses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
-    console.log("updateSemesters called");
+    console.log('updateSemesters called');
 
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
@@ -229,94 +227,62 @@ export function Canvas({
   const semesters = generateSemesters(classYear);
   const [items, setItems] = useState<Items>(() => ({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
-    ...semesters
+    ...semesters,
   }));
 
-  const nestedDictionary: Dictionary = {
-    "Requirements": ""
-  };
-  const [reqDict, setReqDict] = useState<Dictionary>(() => ({
-    reqDict: nestedDictionary
-  }));
-
-  function mapKeysToStrings(obj: Dictionary): Dictionary {
-    const result: Dictionary = {};
-
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        // Since values can be either string or Dictionary, no further type check is required here
-        result[String(key)] = obj[key];
-      }
-    }
-
-    return result;
-  }
-
-  interface RequirementDict {
-    [key: string]: any;
-  }
-
-  interface User {
-    major?: { code: string };
-    minors?: Array<{ code: string }>;
-  }
+  type RequirementDict = Record<string, Requirement | string>;
+  const [reqDict, setReqDict] = useState<RequirementDict>({});
 
   // Assuming 'user' is of type User
-  let majorCode = user.major?.code;
-  let minors = user.minors ?? [];
+  const majorCode = user.major?.code;
+  const minors = user.minors ?? [];
 
-  let requirements: RequirementDict = { "Requirements": "" };
+  const requirements: RequirementDict = {};
 
-  // Add major to requirements if it's a string
-  if (reqDict.reqDict.Requirements != "") {
-
-    if (typeof majorCode === "string") {
-      console.log(requirements);
-      requirements[majorCode] = reqDict.reqDict[majorCode];
-    }
-
-    // Iterate over minors and add them to requirements if their code is a string
-    minors.forEach(minor => {
-      let minorCode = minor.code;
-      if (typeof minorCode === "string") {
-        requirements[minorCode] = reqDict.reqDict[minorCode];
-      }
-    });
+  // Add major to requirements if it exists
+  if (majorCode && reqDict[majorCode]) {
+    requirements[majorCode] = reqDict[majorCode];
   }
 
+  // Iterate over minors and add them to requirements
+  minors.forEach((minor) => {
+    const minorCode = minor.code;
+    if (minorCode && reqDict[minorCode]) {
+      requirements[minorCode] = reqDict[minorCode];
+    }
+  });
 
   useEffect(() => {
-    let user_courses: { [key: number]: Course[] } = {};
+    let user_courses: Record<number, Course[]> = {};
 
-    fetch(`${process.env.BACKEND}/get_user_courses/`, {
-      method: "GET",
-      credentials: "include"
+    fetch(`${process.env.BACKEND}/fetch_courses`, {
+      method: 'GET',
+      credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
         user_courses = data;
 
         setItems((prevItems) => ({
-          ...updateSemesters(prevItems, classYear, user_courses)
+          ...updateSemesters(prevItems, classYear, user_courses),
         }));
       })
-      .catch((error) => console.error("User Courses Error:", error));
+      .catch((error) => console.error('User Courses Error:', error));
 
-    fetch(`${process.env.BACKEND}/check_requirements/`, {
-      method: "GET",
-      credentials: "include"
-    }).then((response) => response.json())
+    fetch(`${process.env.BACKEND}/check_requirements`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setReqDict((reqDict) => ({
-          reqDict: mapKeysToStrings(data)
-        }));
+        setReqDict(data);
         console.log(reqDict.reqDict);
       })
-      .catch((error) => console.error("Requirements Check Error:", error));
+      .catch((error) => console.error('Requirements Check Error:', error));
   }, []);
 
   const { searchResults } = useSearchStore();
+  // TODO: Clean this up or remove if not needed
   // useEffect(() => {
   //   setItems((prevItems) => ({
   //     ...prevItems,
@@ -343,12 +309,16 @@ export function Canvas({
       return {
         ...prevItems,
         [SEARCH_RESULTS_ID]: searchResults
-          .filter((course) => !userCurrentCourses.has(`${course.department_code} ${course.catalog_number}`))
-          .map((course) => `${course.department_code} ${course.catalog_number}`)
+          .filter(
+            (course) =>
+              !userCurrentCourses.has(`${course.department_code} ${course.catalog_number}`)
+          )
+          .map((course) => `${course.department_code} ${course.catalog_number}`),
       };
     });
   }, [searchResults]);
 
+  // TODO: Clean this up or remove if not needed
   // useEffect(() => {
   //   const updatedSemesters = generateSemesters(classYear);
   //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
@@ -376,7 +346,7 @@ export function Canvas({
           ...args,
           droppableContainers: args.droppableContainers.filter(
             (container) => container.id in items
-          )
+          ),
         });
       }
 
@@ -385,14 +355,13 @@ export function Canvas({
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
-          pointerIntersections
+            pointerIntersections
           : rectIntersection(args);
-      let overId = getFirstCollision(intersections, "id");
+      let overId = getFirstCollision(intersections, 'id');
 
       if (overId !== null) {
         if (overId === TRASH_ID) {
           // If the intersecting droppable is the trash, return early
-          // Remove this if you're not using trashable functionality in your app
           return intersections;
         }
 
@@ -406,7 +375,7 @@ export function Canvas({
               ...args,
               droppableContainers: args.droppableContainers.filter(
                 (container) => container.id !== overId && containerItems.includes(container.id)
-              )
+              ),
             })[0]?.id;
           }
         }
@@ -434,7 +403,7 @@ export function Canvas({
     useSensor(MouseSensor),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
-      coordinateGetter
+      coordinateGetter,
     })
   );
   const findContainer = (id?: UniqueIdentifier) => {
@@ -460,7 +429,7 @@ export function Canvas({
   };
 
   const onDragCancel = () => {
-    console.log("Drag canceled");
+    console.log('Drag canceled');
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -484,22 +453,26 @@ export function Canvas({
         collisionDetection={collisionDetectionStrategy}
         measuring={{
           droppable: {
-            strategy: MeasuringStrategy.Always
-          }
+            strategy: MeasuringStrategy.Always,
+          },
         }}
         onDragStart={({ active }) => {
-          console.log("Drag started: ", active.id);
+          console.log('Drag started: ', active.id);
           setActiveId(active.id);
           setClonedItems(items);
         }}
         onDragOver={({ active, over }) => {
-          console.log("Drag over: ", {
+          console.log('Drag over: ', {
             activeId: active.id,
-            overId: over?.id
+            overId: over?.id,
           });
           const overId = over?.id;
-
-          if (overId === null || overId === undefined || overId === TRASH_ID || active.id in items) {
+          if (
+            overId === null ||
+            overId === undefined ||
+            overId === TRASH_ID ||
+            active.id in items
+          ) {
             return;
           }
 
@@ -540,16 +513,16 @@ export function Canvas({
                 [overContainer]: [
                   ...items[overContainer].slice(0, newIndex),
                   items[activeContainer][activeIndex],
-                  ...items[overContainer].slice(newIndex, items[overContainer].length)
-                ]
+                  ...items[overContainer].slice(newIndex, items[overContainer].length),
+                ],
               };
             });
           }
         }}
-        onDragEnd={({ active, over }) => {
-          console.log("Drag end: ", {
+        onDragEnd={async ({ active, over }) => {
+          console.log('Drag end: ', {
             activeId: active.id,
-            overId: over?.id
+            overId: over?.id,
           });
           if (active.id in items && over?.id) {
             setContainers((containers) => {
@@ -577,9 +550,7 @@ export function Canvas({
           if (overId === TRASH_ID) {
             setItems((items) => ({
               ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (id) => id !== activeId
-              )
+              [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
             }));
             setActiveId(null);
           }
@@ -592,7 +563,7 @@ export function Canvas({
               setItems((items) => ({
                 ...items,
                 [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-                [newContainerId]: [active.id]
+                [newContainerId]: [active.id],
               }));
               setActiveId(null);
             });
@@ -608,7 +579,7 @@ export function Canvas({
             if (activeIndex !== overIndex) {
               setItems((items) => ({
                 ...items,
-                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex)
+                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
               }));
             }
           }
@@ -618,55 +589,57 @@ export function Canvas({
           const courseId = active.id;
           let semesterId = activeContainer;
           if (overId === TRASH_ID) {
-            semesterId = TRASH_ID
+            semesterId = TRASH_ID;
           }
-          fetch(`${process.env.BACKEND}/update_user_courses/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            // Need CSRF token here from Next.js
-            body: JSON.stringify({ courseId, semesterId })
+          const csrfToken = await fetchCsrfToken();
+          fetch(`${process.env.BACKEND}/update_courses`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ courseId, semesterId }),
           })
             .then((response) => response.json())
-            .then((data) => console.log("Update success", data))
-            .catch((error) => console.error("Update Error:", error));
+            .then((data) => console.log('Update success', data))
+            .catch((error) => console.error('Update Error:', error));
 
-          fetch(`${process.env.BACKEND}/check_requirements/`, {
-            method: "GET",
-            credentials: "include"
-          }).then((response) => response.json())
+          fetch(`${process.env.BACKEND}/check_requirements`, {
+            method: 'GET',
+            credentials: 'include',
+          })
+            .then((response) => response.json())
             .then((data) => {
               console.log(data);
-              setReqDict((reqDict) => ({
-                reqDict: mapKeysToStrings(data)
-              }));
+              setReqDict(reqDict);
               console.log(reqDict.reqDict);
             })
-            .catch((error) => console.error("Requirements Check Error:", error));
+            .catch((error) => console.error('Requirements Check Error:', error));
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
             {/* Left Section for Search Results */}
-            {containers.includes("Search Results") && (
-              <div
-                style={{ width: "380px" }}> {/* Try to get this to fixed height*/}
+            {containers.includes('Search Results') && (
+              <div style={{ width: '380px' }}>
+                {' '}
+                {/* Try to get this to fixed height*/}
                 <DroppableContainer
-                  key="Search Results"
-                  id="Search Results"
+                  key='Search Results'
+                  id='Search Results'
                   label={<Search />}
                   columns={columns}
-                  items={items["Search Results"]}
+                  items={items['Search Results']}
                   scrollable={scrollable}
                   style={containerStyle}
-                  height="703px"
+                  height='703px'
                 >
-                  <SortableContext items={items["Search Results"]}
-                                   strategy={strategy}>
-                    {items["Search Results"].map((value, index) => (
+                  <SortableContext items={items['Search Results']} strategy={strategy}>
+                    {items['Search Results'].map((value, index) => (
                       <SortableItem
                         disabled={isSortingContainer}
                         key={index}
@@ -676,7 +649,7 @@ export function Canvas({
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
                         renderItem={renderItem}
-                        containerId="Search Results"
+                        containerId='Search Results'
                         getIndex={getIndex}
                       />
                     ))}
@@ -688,13 +661,13 @@ export function Canvas({
             {/* Center Section for other containers in a 2x4 grid */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gridTemplateRows: "1fr 1fr 1fr 1fr"
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: '1fr 1fr 1fr 1fr',
               }}
             >
               {containers
-                .filter((id) => id !== "Search Results")
+                .filter((id) => id !== 'Search Results')
                 .map((containerId) => (
                   <DroppableContainer
                     key={containerId}
@@ -706,10 +679,9 @@ export function Canvas({
                     style={containerStyle}
                     unstyled={minimal}
                     onRemove={() => handleRemove(containerId)}
-                    height="160px"
+                    height='160px'
                   >
-                    <SortableContext items={items[containerId]}
-                                     strategy={strategy}>
+                    <SortableContext items={items[containerId]} strategy={strategy}>
                       {items[containerId].map((value, index) => (
                         <SortableItem
                           disabled={isSortingContainer}
@@ -730,15 +702,15 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            <div style={{ width: "380px" }}>
+            {/* TODO: Put this back in after verifying CAS works. }}>
+            {/* <div style={{ width: '380px' }}>
               <TabbedMenu tabsData={requirements} />
-            </div>
+            </div> */}
           </div>
         </SortableContext>
 
         {createPortal(
-          <DragOverlay adjustScale={adjustScale}
-                       dropAnimation={dropAnimation}>
+          <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
             {activeId
               ? containers.includes(activeId)
                 ? renderContainerDragOverlay(activeId)
@@ -747,8 +719,7 @@ export function Canvas({
           </DragOverlay>,
           document.body
         )}
-        {trashable && activeId && !containers.includes(activeId) ?
-          <Trash id={TRASH_ID} /> : null}
+        {trashable && activeId && !containers.includes(activeId) ? <Trash id={TRASH_ID} /> : null}
       </DndContext>
     </>
   );
@@ -765,7 +736,7 @@ export function Canvas({
           value: id,
           isSorting: true,
           isDragging: true,
-          isDragOverlay: true
+          isDragOverlay: true,
         })}
         color={getColor(id)}
         wrapperStyle={wrapperStyle({ index: 0 })}
@@ -781,7 +752,7 @@ export function Canvas({
         label={`${containerId}`}
         columns={columns}
         style={{
-          height: "100%"
+          height: '100%',
         }}
         shadow
         unstyled={false}
@@ -798,7 +769,7 @@ export function Canvas({
               value: item,
               isDragging: false,
               isSorting: false,
-              isDragOverlay: false
+              isDragOverlay: false,
             })}
             color={getColor(item)}
             wrapperStyle={wrapperStyle({ index })}
@@ -823,14 +794,14 @@ export function Canvas({
 
 function getColor(id: UniqueIdentifier) {
   switch (String(id)[0]) {
-    case "A":
-      return "#7193f1";
-    case "B":
-      return "#ffda6c";
-    case "C":
-      return "#00bcd4";
-    case "D":
-      return "#ef769f";
+    case 'A':
+      return '#7193f1';
+    case 'B':
+      return '#ffda6c';
+    case 'C':
+      return '#00bcd4';
+    case 'D':
+      return '#ef769f';
   }
 
   return undefined;
@@ -838,25 +809,25 @@ function getColor(id: UniqueIdentifier) {
 
 function Trash({ id }: { id: UniqueIdentifier }) {
   const { setNodeRef, isOver } = useDroppable({
-    id
+    id,
   });
 
   return (
     <div
       ref={setNodeRef}
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "fixed",
-        left: "50%",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'fixed',
+        left: '50%',
         marginLeft: -150,
         bottom: 20,
         width: 300,
         height: 60,
         borderRadius: 5,
-        border: "1px solid",
-        borderColor: isOver ? "red" : "#DDD"
+        border: '1px solid',
+        borderColor: isOver ? 'red' : '#DDD',
       }}
     >
       Drop here to delete
@@ -864,7 +835,7 @@ function Trash({ id }: { id: UniqueIdentifier }) {
   );
 }
 
-interface SortableItemProps {
+type SortableItemProps = {
   containerId: UniqueIdentifier;
   id: UniqueIdentifier;
   index: number;
@@ -886,19 +857,19 @@ interface SortableItemProps {
   renderItem?(): React.ReactElement;
 
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
-}
+};
 
 function SortableItem({
-                        disabled,
-                        id,
-                        index,
-                        handle,
-                        renderItem,
-                        style,
-                        containerId,
-                        getIndex,
-                        wrapperStyle
-                      }: SortableItemProps) {
+  disabled,
+  id,
+  index,
+  handle,
+  renderItem,
+  style,
+  containerId,
+  getIndex,
+  wrapperStyle,
+}: SortableItemProps) {
   const {
     setNodeRef,
     setActivatorNodeRef,
@@ -908,9 +879,9 @@ function SortableItem({
     over,
     overIndex,
     transform,
-    transition
+    transition,
   } = useSortable({
-    id
+    id,
   });
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
@@ -931,7 +902,7 @@ function SortableItem({
         isDragging,
         isSorting,
         overIndex: over ? getIndex(over.id) : overIndex,
-        containerId
+        containerId,
       })}
       color={getColor(id)}
       transition={transition}

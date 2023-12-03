@@ -1,10 +1,10 @@
 import styles from './Grid.module.scss';
 
-export interface GridProps {
+export type GridProps = {
   size: number;
   step?: number;
   onSizeChange(size: number): void;
-}
+};
 
 export function Grid({ size }: GridProps) {
   return (

@@ -1,16 +1,16 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 
-interface FormData {
+type FormData = {
   firstName: string;
   lastName: string;
   classYear: string;
   major: string;
   minors: string[];
-}
+};
 
-interface SettingsFormProps {
+type SettingsFormProps = {
   closeSettings: () => void;
-}
+};
 
 const SettingsForm: React.FC<SettingsFormProps> = ({ closeSettings }) => {
   const [formData, setFormData] = useState<FormData>({

@@ -4,7 +4,7 @@ export type AuthState = {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   checkAuthentication: () => Promise<void>;
   login: () => void;
-  logout: () => Promise<void>;
+  logout: () => void;
 };
 
 export type UserState = {
@@ -145,4 +145,15 @@ export type Planner = {
   setClassYear: (classYear: number) => void;
   addCourseToSemester: (semesterId: string, course: Course) => void;
   removeCourseFromSemester: (semesterId: string, courseId: string) => void;
+};
+
+export type Requirement = {
+  satisfied: boolean;
+  settled: string;
+  unsettled: string;
+  subrequirements?: Record<string, Requirement>;
+};
+
+export type Dictionary = {
+  [key: string]: string | Dictionary;
 };

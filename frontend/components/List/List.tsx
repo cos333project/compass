@@ -4,12 +4,12 @@ import classNames from 'classnames';
 
 import styles from './List.module.scss';
 
-export interface Props {
+export type Props = {
   children: React.ReactNode;
   columns?: number;
   style?: React.CSSProperties;
   horizontal?: boolean;
-}
+};
 
 export const List = forwardRef<HTMLUListElement, Props>(
   ({ children, columns = 1, horizontal, style }: Props, ref) => {

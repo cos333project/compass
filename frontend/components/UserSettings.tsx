@@ -16,6 +16,22 @@ import { MajorMinorType, ProfileProps } from '@/types';
 
 import useUserSlice from '@/store/userSlice';
 
+async function fetchCsrfToken() {
+  try {
+    const response = await fetch(`${process.env.BACKEND}/csrf`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.csrfToken;
+  } catch (error) {
+    console.log(error);
+    return 'Error fetching CSRF token!';
+  }
+}
+
 function generateClassYears() {
   const currentYear = new Date().getFullYear() + 1;
   const classYears = [currentYear, currentYear + 1, currentYear + 2, currentYear + 3];
@@ -92,7 +108,6 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [localTimeFormat24h, setLocalTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
   const [localThemeDarkMode, setLocalThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
 
-
   const handleSave = async () => {
     // Updates useUserSlice.getState().profile
     updateProfile({
@@ -105,13 +120,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
       themeDarkMode: localThemeDarkMode,
     });
 
-    // Updates local profile. Do we even need a local profile?
+    // Updates local profile. TODO: Do we even need a local profile?
     profile = useUserSlice.getState().profile;
-
-    const csrfToken = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('csrftoken='))!
-      .split('=')[1]; // CSRF token always exists with our Django backend
+    const csrfToken = await fetchCsrfToken();
+    console.log('csrf: ', csrfToken);
     fetch(`${process.env.BACKEND}/update_profile/`, {
       method: 'POST',
       credentials: 'include',
@@ -119,7 +131,6 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       },
-      // Need CSRF token here from Next.js
       body: JSON.stringify(profile),
     })
       .then((response) => response.json())

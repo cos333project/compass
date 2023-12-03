@@ -27,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production! Toggle in .env
-DEBUG = os.environ.get('DEBUG') == 'TRUE'
+DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -44,16 +44,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cas_ng',
     'rest_framework',
     'corsheaders',
     'compass',
 ]
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 2419200  # 4 weeks, in seconds
+# Required since frontend and backend are served on different domains. Do not change!
+SESSION_COOKIE_SAMESITE = os.getenv('SESSION_COOKIE_SAMESITE')
+CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE')
+
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE') == 'True'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,7 +63,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_cas_ng.middleware.CASMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -69,42 +70,21 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas_ng.backends.CASBackend',
 )
 
-HOMEPAGE = os.environ.get('COMPASS')
-DASHBOARD = urljoin(os.environ.get('COMPASS'), 'dashboard')
-CAS = os.environ.get('CAS_URL')
+HOMEPAGE = os.getenv('COMPASS')
+DASHBOARD = urljoin(os.getenv('COMPASS'), 'dashboard')
+CAS_SERVER_URL = urljoin(os.getenv('CAS_URL'), 'cas/')
 
-CAS_SERVER_URL = 'https://fed.princeton.edu/cas/'  # .env this?
-CAS_CREATE_USER = True
-CAS_CREATE_USER_ID = True
-CAS_REDIRECT_URL = HOMEPAGE
-CAS_LOGOUT_NEXT_PAGE = HOMEPAGE
-CAS_VERSION = 3
-CAS_APPLY_ATTRIBUTES_TO_USER = True
-CAS_LOGIN_URL_NAME = 'login'
-CAS_LOGOUT_URL_NAME = 'logout'
-
-CAS_RENAME_ATTRIBUTES = {
-    'uid': 'net_id',  # Maps to 'net_id'
-    'universityid': 'university_id',  # Maps to 'university_id'
-    'mail': 'email',  # Maps to 'email'
-    'givenname': 'first_name',  # Maps to 'first_name'
-    'sn': 'last_name',  # Maps to 'last_name'
-    'department': 'department',
-}
-
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     CAS,
-#     os.environ.get('COMPASS'),
-#     os.environ.get('BACKEND')
-# ]
-CSRF_TRUSTED_ORIGINS = [os.environ.get('COMPASS'), os.environ.get('BACKEND')]
 CORS_ALLOW_CREDENTIALS = True
-CAS_REDIRECT_WHITELIST = os.environ.get('BACKEND')
-CAS_CHECK_NEXT = False
+CORS_ALLOWED_ORIGINS = [
+    os.getenv('COMPASS'),
+    os.getenv('BACKEND'),
+]
+CSRF_TRUSTED_ORIGINS = [
+    os.getenv('COMPASS'),
+    os.getenv('BACKEND'),
+]
 
 LOGGING = {
     'version': 1,
@@ -145,7 +125,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
+DATABASES = {'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))}
 
 
 AUTH_USER_MODEL = 'compass.CustomUser'

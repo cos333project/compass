@@ -2,11 +2,11 @@ import classNames from 'classnames';
 
 import styles from './Wrapper.module.scss';
 
-interface Props {
+type Props = {
   children: React.ReactNode;
   center?: boolean;
   style?: React.CSSProperties;
-}
+};
 
 export function Wrapper({ children, center, style }: Props) {
   return (

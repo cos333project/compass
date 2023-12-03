@@ -2,10 +2,10 @@ import { PropsWithChildren } from 'react';
 
 import styles from './ConfirmModal.module.scss';
 
-interface ConfirmProps {
+type ConfirmProps = {
   onConfirm(): void;
   onDeny(): void;
-}
+};
 
 export const ConfirmModal = ({ onConfirm, onDeny, children }: PropsWithChildren<ConfirmProps>) => (
   <div className={styles.ConfirmModal}>

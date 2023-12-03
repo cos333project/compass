@@ -1,112 +1,148 @@
 import logging
-import re
-
-from django.contrib.auth.decorators import login_required
+from re import sub, search, split, compile, IGNORECASE
+from urllib.request import urlopen
+from urllib.parse import quote, urlencode
+from urllib.error import HTTPError, URLError
 from django.db.models import Case, Q, Value, When
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseServerError
+from django.middleware.csrf import get_token
 from django.views import View
-from .models import models, Course, Department, Degree, Major, Minor, \
-    Certificate, Requirement, CustomUser, UserCourses
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
+from .models import (
+    models,
+    Course,
+    Department,
+    Degree,
+    Major,
+    Minor,
+    Certificate,
+    Requirement,
+    CustomUser,
+    UserCourses,
+)
 from .serializers import CourseSerializer
 import json
 from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user
 from datetime import datetime
-import django_cas_ng.views
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 # ------------------------------------ PROFILE ----------------------------------------#
 
-def fetch_user_info(user):
-    net_id = getattr(user, 'net_id', None)
-    if not net_id:
-        return JsonResponse({'error': 'User not found'}, status=404)
 
+def fetch_user_info(net_id):
     configs = Configs()
     req_lib = ReqLib()
-    user_inst = CustomUser.objects.get(net_id=net_id)
-    major_inst = user_inst.major
-    minors_list = []
 
-    major = {}
-    if major_inst is not None:
-        major = {'code': major_inst.code, 'name': major_inst.name}
-    else:
-        major = {}
+    # Fetching the user instance
+    user_inst, created = CustomUser.objects.get_or_create(
+        net_id=net_id,
+        defaults={
+            'role': 'student',
+            'university_id': '',
+            'email': '',
+            'first_name': '',
+            'last_name': '',
+            'class_year': datetime.now().year + 1,
+        },
+    )
 
-    for minor_inst in user_inst.minors.all():
-        minors_list.append({'code': minor_inst.code, 'name': minor_inst.name})
+    # Processing major and minors
+    major = (
+        {'code': user_inst.major.code, 'name': user_inst.major.name}
+        if user_inst.major
+        else {}
+    )
 
-    student_profile = req_lib.getJSON(f'{configs.USERS_FULL}?uid={net_id}')
-    default_class_year, default_first_name, default_last_name = None, None, None
-    if student_profile:
-        match = re.search(r'Class of (\d{4})', student_profile[0]['dn'])
-        if match:
-            default_class_year = int(match.group(1))
-        default_full_name = student_profile[0].get('displayname')
-        default_first_name, default_last_name = (default_full_name.split(' ', 1) + ['', ''])[:2]
+    minors = [
+        {'code': minor.code, 'name': minor.name} for minor in user_inst.minors.all()
+    ]
 
-    if default_class_year is None:
-        default_class_year = datetime.now().year + 1
-
-    return {
-        'netId': net_id,
-        'universityId': getattr(user, 'university_id', None),
-        'email': getattr(user, 'email', None),
-        'firstName': getattr(user, 'first_name', default_first_name),
-        'lastName': getattr(user, 'last_name', default_last_name),
-        'classYear': getattr(user, 'class_year', default_class_year),
-        'department': getattr(
-            user, 'department', None
-        ),  # May not exist in API for undergrads
-        'major': major,
-        'minors': minors_list,
+    # Initialize profile with default values
+    profile = {
+        'universityid': '',
+        'mail': '',
+        'displayname': '',
+        'dn': '',
+        'department': None,
     }
 
+    # External API call for additional info only if necessary attributes are missing
+    if (
+        not user_inst.university_id
+        or not user_inst.email
+        or not user_inst.first_name
+        or not user_inst.last_name
+        or not user_inst.class_year
+    ):
+        student_profile = req_lib.getJSON(f'{configs.USERS_FULL}?uid={net_id}')
+        profile.update(student_profile[0])
 
-@login_required
+        # Extracting class year, first name, and last name
+        class_year_match = search(r'Class of (\d{4})', profile['dn'])
+        class_year = int(class_year_match.group(1)) if class_year_match else None
+        full_name = profile['displayname'].split(' ')
+        first_name, last_name = full_name[0], ' '.join(full_name[1:])
+
+        # Update user instance with fetched data only if it's missing
+        user_inst.university_id = profile.get('universityid', user_inst.university_id)
+        user_inst.email = profile.get('mail', user_inst.email)
+        user_inst.first_name = (
+            first_name if not user_inst.first_name else user_inst.first_name
+        )
+        user_inst.last_name = (
+            last_name if not user_inst.last_name else user_inst.last_name
+        )
+        user_inst.class_year = (
+            class_year if not user_inst.class_year else user_inst.class_year
+        )
+        user_inst.save()
+
+    return_data = {
+        'netId': net_id,
+        'universityId': user_inst.university_id,
+        'email': user_inst.email,
+        'firstName': user_inst.first_name,
+        'lastName': user_inst.last_name,
+        'classYear': user_inst.class_year,
+        'department': profile.get('department', None),
+        'major': major,
+        'minors': minors,
+    }
+    return return_data
+
+
 def profile(request):
-    user_info = fetch_user_info(request.user)
+    user_info = fetch_user_info(request.session['net_id'])
     return JsonResponse(user_info)
 
-# @csrf_exempt
-# def login(request):
-#     if request.user.is_authenticated:
-#         return redirect("index")
-#     else:
-#         return django_cas_ng.views.LoginView.as_view()(request)
 
-# def logout(request):
-#     return django_cas_ng.views.LogoutView.as_view()(request)
+def csrf(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
-# TODO: Need to give csrf token instead of exempting it in production
-@csrf_exempt
-@login_required
+
 def update_profile(request):
     # TODO: Validate this stuff
     data = json.loads(request.body)
     updated_first_name = data.get('firstName', '')
     updated_last_name = data.get('lastName', '')
-    updated_major = data.get('major', '')
+    updated_major = data.get('major', {}).get('code', '')
     updated_minors = data.get('minors', [])
     updated_class_year = data.get('classYear', None)
-    print("Updated class year: ", updated_class_year)
 
     # Fetch the user's profile
-    net_id = request.user.net_id
+    net_id = request.session['net_id']
     user_inst = CustomUser.objects.get(net_id=net_id)
-    print(
-        f'USER PROFILE: {user_inst.first_name} {user_inst.last_name} {user_inst.major} {user_inst.minors} {user_inst.class_year}'
-    )
 
     # Update user's profile
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
-    if updated_major != '':
-        user_inst.major = Major.objects.get(code=updated_major['code'])
+
+    if updated_major:
+        user_inst.major = Major.objects.get(code=updated_major)
     else:
         user_inst.major = None
 
@@ -119,34 +155,149 @@ def update_profile(request):
 
     user_inst.class_year = updated_class_year
     user_inst.save()
-    updated_user_info = fetch_user_info(request.user)
-    print(f'UPDATED USER INFO: {updated_user_info}')
+    updated_user_info = fetch_user_info(request.session['net_id'])
     return JsonResponse(updated_user_info)
 
 
 # ------------------------------------ LOG IN -----------------------------------------#
 
 
-def authenticate(request):
-    is_authenticated = request.user.is_authenticated
-    if is_authenticated:
-        user_info = fetch_user_info(request.user)
-        logger.info(
-            f'User is authenticated. User info: {user_info}. Cookies: {request.COOKIES}'
-        )
-        return JsonResponse({'authenticated': True, 'user': user_info})
-    else:
-        logger.info('User is not authenticated.')
-        return JsonResponse({'authenticated': False, 'user': None})
+class CAS(View):
+    """
+    Handles single-sign-on CAS authentication with token-based authentication.
+
+    Attributes:
+        cas_url: The CAS server URL.
+    """
+
+    def __init__(self):
+        self.cas_url = settings.CAS_SERVER_URL
+
+    def _strip_ticket(self, request):
+        """
+        Strips ticket parameter from the URL.
+        """
+        url = request.build_absolute_uri()
+        return sub(r'\?&?$|&$', '', sub(r'ticket=[^&]*&?', '', url))
+
+    def _validate(self, ticket, service_url):
+        """Validates the CAS ticket.
+
+        Args:
+            ticket: CAS ticket string.
+            service_url: Service URL string.
+            timeout: Timeout in seconds.
+
+        Returns:
+            str if successful, None otherwise.
+
+        Returns:
+            The username if validation is successful, otherwise None.
+        """
+        # TODO: Consider removing the loggers for production
+        try:
+            params = {'service': service_url, 'ticket': ticket}
+            validation_url = f'{self.cas_url}validate?{urlencode(params)}'
+            response = urlopen(validation_url, timeout=5).readlines()
+            if len(response) != 2:
+                logger.warning(
+                    f'Validation Warning: Received {len(response)} lines from CAS, expected 2. URL: {validation_url}'
+                )
+                return None
+            first_line, second_line = map(str.strip, map(bytes.decode, response))
+            if first_line.startswith('yes'):
+                logger.info(f'Successful validation for ticket: {ticket}')
+                return second_line
+            else:
+                logger.info(
+                    f'Failed validation for ticket: {ticket}. Response: {first_line}'
+                )
+                return None
+
+        except (HTTPError, URLError) as e:
+            logger.error(
+                f'Network Error during CAS validation: {e}. URL: {validation_url}'
+            )
+            return None
+        except Exception as e:
+            logger.error(
+                f'Unexpected error during CAS validation: {e}. URL: {validation_url}'
+            )
+            return None
+
+    def get(self, request, *args, **kwargs):
+        action = request.GET.get('action')
+        if action == 'login':
+            return self.login(request)
+        elif action == 'logout':
+            return self.logout(request)
+        elif action == 'authenticate':
+            return self.authenticate(request)
+        else:
+            return JsonResponse({'error': 'Invalid action'}, status=400)
+
+    def _is_authenticated(self, request):
+        """Check if the user is authenticated.
+
+        Returns:
+            (bool, str): Tuple of authentication status and username.
+        """
+        return (net_id := request.session.get('net_id', None)) is not None, net_id
+
+    def authenticate(self, request):
+        authenticated, net_id = self._is_authenticated(request)
+        if authenticated:
+            user_info = fetch_user_info(net_id)
+            return JsonResponse({'authenticated': True, 'user': user_info})
+        else:
+            return JsonResponse({'authenticated': False, 'user': None})
+
+    def login(self, request):
+        try:
+            logger.info(
+                f'Incoming GET request: {request.GET}, Session: {request.session}'
+            )
+            logger.info(
+                f"Received login request from {request.META.get('REMOTE_ADDR')}"
+            )
+
+            authenticated, username = self._is_authenticated(request)
+            if authenticated:
+                return redirect(settings.DASHBOARD)
+
+            # Extract ticket from CAS response
+            ticket = request.GET.get('ticket')
+            service_url = self._strip_ticket(request)
+            if ticket:
+                net_id = self._validate(ticket, service_url)
+                logger.debug(f'Validation returned {username}')
+                if net_id:
+                    request.session['net_id'] = net_id
+                    logger.debug(f'Authentication successful for {username}')
+                    return redirect(settings.DASHBOARD)
+            login_url = f'{self.cas_url}login?service={service_url}'
+            return redirect(login_url)
+        except Exception as e:
+            logger.error(f'Exception in login view: {e}')
+            return HttpResponseServerError()
+
+    def logout(self, request):
+        """
+        Logs out the user and redirects to the landing page.
+        """
+        logger.info(f'Incoming GET request: {request.GET}, Session: {request.session}')
+        logger.info(f"Received logout request from {request.META.get('REMOTE_ADDR')}")
+        request.session.flush()
+        return redirect(settings.HOMEPAGE)
 
 
 # ------------------------------- SEARCH COURSES --------------------------------------#
 
-DEPT_NUM_SUFFIX_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', re.IGNORECASE)
-DEPT_NUM_REGEX = re.compile(r'^[a-zA-Z]{1,3}\d{1,3}$', re.IGNORECASE)
-DEPT_ONLY_REGEX = re.compile(r'^[a-zA-Z]{1,3}$', re.IGNORECASE)
-NUM_SUFFIX_ONLY_REGEX = re.compile(r'^\d{1,3}[a-zA-Z]{1}$', re.IGNORECASE)
-NUM_ONLY_REGEX = re.compile(r'^\d{1,3}$', re.IGNORECASE)
+DEPT_NUM_SUFFIX_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
+DEPT_NUM_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}$', IGNORECASE)
+DEPT_ONLY_REGEX = compile(r'^[a-zA-Z]{1,3}$', IGNORECASE)
+NUM_SUFFIX_ONLY_REGEX = compile(r'^\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
+NUM_ONLY_REGEX = compile(r'^\d{1,3}$', IGNORECASE)
 
 
 class SearchCourses(View):
@@ -163,17 +314,19 @@ class SearchCourses(View):
             #     return JsonResponse({'courses': serialized_courses.data})
 
             # process queries
-            trimmed_query = re.sub(r'\s', '', query)
+            trimmed_query = sub(r'\s', '', query)
             # title = ''
             if DEPT_NUM_SUFFIX_REGEX.match(trimmed_query):
-                result = re.split(r'(\d+[a-zA-Z])', string=trimmed_query, maxsplit=1)
+                result = split(r'(\d+[a-zA-Z])', string=trimmed_query, maxsplit=1)
                 dept = result[0]
                 num = result[1]
             elif DEPT_NUM_REGEX.match(trimmed_query):
-                result = re.split(r'(\d+)', string=trimmed_query, maxsplit=1)
+                result = split(r'(\d+)', string=trimmed_query, maxsplit=1)
                 dept = result[0]
                 num = result[1]
-            elif NUM_ONLY_REGEX.match(trimmed_query) or NUM_SUFFIX_ONLY_REGEX.match(trimmed_query):
+            elif NUM_ONLY_REGEX.match(trimmed_query) or NUM_SUFFIX_ONLY_REGEX.match(
+                trimmed_query
+            ):
                 dept = ''
                 num = trimmed_query
             elif DEPT_ONLY_REGEX.match(trimmed_query):
@@ -230,7 +383,7 @@ class GetUserCourses(View):
     """
 
     def get(self, request, *args, **kwargs):
-        net_id = request.user.net_id
+        net_id = request.session['net_id']
         user_inst = CustomUser.objects.get(net_id=net_id)
         user_course_dict = {}
 
@@ -274,11 +427,10 @@ def get_first_course_inst(course_code):
     return course_inst
 
 
-@csrf_exempt
-def update_user_courses(request):
+def update_courses(request):
     try:
         data = json.loads(request.body)
-        print("AMONGUSSSSSSSSSSSSSSSs", data)
+        print('AMONGUSSSSSSSSSSSSSSSs', data)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
         net_id = request.user.net_id
@@ -298,7 +450,9 @@ def update_user_courses(request):
                 user=user_inst, course=course_inst, defaults={'semester': semester}
             )
             if created:
-                message = f'User course added: {semester}, {course_inst.course_id}, {net_id}'
+                message = (
+                    f'User course added: {semester}, {course_inst.course_id}, {net_id}'
+                )
             else:
                 message = f'User course updated: {semester}, {course_inst.course_id}, {net_id}'
 
@@ -314,7 +468,6 @@ def update_user_courses(request):
         )
 
 
-@csrf_exempt
 def update_user(request):
     try:
         class_year = int(request.body)
@@ -340,6 +493,7 @@ def update_user(request):
             {'status': 'error', 'message': 'An internal error has occurred!'}
         )
 
+
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
 def del_duplicates(li):
     res = []
@@ -347,6 +501,7 @@ def del_duplicates(li):
         if x not in res:
             res.append(x)
     return res
+
 
 def settle_cleaning(d):
     for k, v in d.items():
@@ -361,33 +516,21 @@ def settle_cleaning(d):
 
 
 def check_requirements(request):
-    user_info = fetch_user_info(request.user)
+    # Fetch user info from session
+    user_info = fetch_user_info(request.session['net_id'])
 
-    this_major = user_info['major']['code']
-    these_minors = []
-    for minor in user_info['minors']:
-        these_minors.append(minor['code'])
+    # Extract major and minor codes
+    major = user_info['major']['code']
+    minors = [minor['code'] for minor in user_info['minors']]
 
-    req_dict = check_user(user_info['netId'], user_info['major'],
-                          user_info['minors'])
+    # Check user requirements
+    req_dict = check_user(user_info, major, minors)
 
-    print(req_dict)
+    # Stratify req_dict by requirements
+    formatted_dict = {major: req_dict[major]}
+    formatted_dict.update({minor: req_dict['Minors'][minor] for minor in minors})
 
-    # Rewrite req_dict so that it is stratified by requirements being met
-    formatted_dict = {}
-    formatted_dict[this_major] =  req_dict[this_major]
-    for minor in these_minors:
-        formatted_dict[minor] = req_dict['Minors'][minor]
-
-    # Clean Settled
-    #print("this is clean")
-    #cleaned = settle_cleaning(formatted_dict)
-    #print(cleaned)
+    # Optionally, further process the formatted_dict if needed
+    # cleaned = settle_cleaning(formatted_dict)
 
     return JsonResponse(formatted_dict)
-
-
-
-       
-
-
