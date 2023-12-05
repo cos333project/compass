@@ -269,7 +269,7 @@ export function Canvas({
       })
       .catch((error) => console.error('User Courses Error:', error));
 
-    fetch(`${process.env.BACKEND}/check_requirements`, {
+    fetch(`${process.env.BACKEND}/check_requirements/`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -605,7 +605,7 @@ export function Canvas({
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
 
-          fetch(`${process.env.BACKEND}/check_requirements`, {
+          fetch(`${process.env.BACKEND}/check_requirements/`, {
             method: 'GET',
             credentials: 'include',
           })
@@ -702,10 +702,9 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            {/* TODO: Put this back in after verifying CAS works. }}>
-            {/* <div style={{ width: '380px' }}>
+            <div style={{ width: '380px' }}>
               <TabbedMenu tabsData={requirements} />
-            </div> */}
+            </div>
           </div>
         </SortableContext>
 
