@@ -1,121 +1,134 @@
-Minor:
-  code: NEU
-  name: Neuroscience
-  description: >
-    The neuroscience minor provides a basic foundation in the scientific study of the brain and biology of behavior through introductory and advanced undergraduate courses. Students learn about different levels of analysis, from the molecular mechanisms of intercellular signaling to the formation and function of neural circuits to the generation of thought and movements via large-scale neural systems. As neuroscience is highly interdisciplinary, this knowledge can be used to generate new ideas and new perspectives in the student’s major.
+---
+type: Minor
+name: Neuroscience
+code: NEU
+degree:
+description: The minor in neuroscience at Princeton is designed for Princeton University undergraduate students 
+  with a strong interest in the brain but whose primary studies are in a different subject area. The certificate 
+  in neuroscience has been serving this function since 2006, but since neuroscience now has a major, transitioning 
+  the certificate to a minor is appropriate. The PNI faculty believe that the current requirements of the NEU 
+  certificate are sufficient for a minor and have endorsed changing the name without modifications to the requirements. 
+  The requirements for the NEU minor are all related to coursework. There is no independent work requirement for the 
+  neuroscience certificate.
+urls:
+- https://pni.princeton.edu/study/undergraduate-program/minor
+contacts:
+- type: Director
+  name: Mala Murthy
+  email: mmurthy@princeton.edu
+req_list:
+- name: Core Courses
+  max_counted: 1
+  min_needed: 2
+  req_list: 
+  - name: Fundamentals
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - NEU 200
+    - NEU 201
+  - name: Introduction
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - NEU 202
+- name: Electives
+  max_counted: 1
+  min_needed: 4
+  double_counting_allowed: false
+  explanation: Must come from 3 out of 4 subject areas. No course doubling.
+    You can only use NEU courses and electives one time (in one category)
+  req_list:
+  - name: Molecular/Cellular/Disease
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - NEU301
+    - NEU331
+    - NEU385
+    - NEU400 
+    - NEU403
+    - NEU413
+    - NEU428
+    - NEU430
+    - NEU443
+    - NEU447
+    - NEU460
+    - NEU475
+    - NEU490
+    - NEU501A
+    - ECE452
+    - MOL250
+    - MOL433
+    - MOL259
+    - MOL460
+    - PHY562
+    - PSY207
+    - PSY317
+    - QCB515
+  - name: Circuits & Systems
+    max_counted: 1
+    min_counted: 1
+    course_list:
+    - NEU200
+    - NEU260
+    - NEU301
+    - NEU316
+    - NEU325
+    - NEU336
+    - NEU385
+    - NEU413
+    - NEU420
+    - NEU422
+    - NEU427
+    - NEU428
+    - NEU460
+    - NEU457
+    - NEU501A
+    - NEU502A
+    - PHY562
+  - name: Neural Computation
+    max_counted: 1
+    min_counted: 1
+    course_list:
+    - NEU330
+    - NEU338
+    - NEU340
+    - NEU437
+    - NEU443
+    - NEU457
+    - NEU499
+    - COS226
+    - COS343
+    - COS402
+    - COS429
+    - COS324
+    - COS302
+    - COS424
+    - COS485
+    - ECE364
+    - ECE452
+    - MAT323
+    - PSY360
+    - QCB515
+  - name: Cognitive & Social Neuroscience
+    max_counted: 1
+    min_counted: 1
+    course_list:
+    - NEU200
+    - NEU306
+    - NEU316
+    - NEU330
+    - NEU331
+    - NEU337
+    - NEU338
+    - NEU340
+    - NEU422
+    - NEU499
+    - NEU502A
+    - ECE480
+    - PSY248
+    - PSY409    
 
-    Neuroscience minor learning goals include the following:
 
-    Students gain knowledge of the fundamental principles of neuroscience and the nature of the discipline’s challenges and possible solutions.
-    Students develop skills in critical thinking and scientific problem-solving.
-    Students develop relationships with classmates across disciplines.
-  
-  degree_type: "BOTH"
-  excluded_majors: 
-  excluded_minors:
-  max_courses_double_dipped:
-  max_courses_from_major: 2
-
-  courses_required: 6
-  pdfs_allowed:
-
-  prerequisites:
-    fundamentals:
-      choose: 1
-      options:
-        - NEU200
-        - NEU201
-    intro:
-      choose: 1
-      options:
-        - NEU202
-
-  electives:
-    molecular_cellular_disease:
-      options:
-        - NEU301
-        - NEU331
-        - NEU385
-        - NEU400 
-        - NEU403
-        - NEU413
-        - NEU428
-        - NEU430
-        - NEU443
-        - NEU447
-        - NEU460
-        - NEU475
-        - NEU490
-        - NEU501A
-        - ECE452
-        - MOL250
-        - MOL433
-        - MOL259
-        - MOL460
-        - PHY562
-        - PSY207
-        - PSY317
-        - QCB515
-    circuits_systems:
-      options:
-        - NEU200
-        - NEU260
-        - NEU301
-        - NEU316
-        - NEU325
-        - NEU336
-        - NEU385
-        - NEU413
-        - NEU420
-        - NEU422
-        - NEU427
-        - NEU428
-        - NEU460
-        - NEU457
-        - NEU501A
-        - NEU502A
-        - PHY562
-    neural_computation:
-      options:
-        - NEU330
-        - NEU338
-        - NEU340
-        - NEU437
-        - NEU443
-        - NEU457
-        - NEU499
-        - COS226
-        - COS343
-        - COS402
-        - COS429
-        - COS324
-        - COS302
-        - COS424
-        - COS485
-        - ECE364
-        - ECE452
-        - MAT323
-        - PSY360
-        - QCB515
-    cognitive_social_neuroscience:
-      options:
-        - NEU200
-        - NEU306
-        - NEU316
-        - NEU330
-        - NEU331
-        - NEU337
-        - NEU338
-        - NEU340
-        - NEU422
-        - NEU499
-        - NEU502A
-        - ECE480
-        - PSY248
-        - PSY409
-    special_conditions: 4_FROM_3_AREAS
-
-  application_deadline:
-    urls:
-    - https://ua.princeton.edu/fields-study/departmental-majors-degree-bachelor-arts/neuroscience
-    contacts:
+# note: 4 classes from 3 different areas

@@ -4,7 +4,7 @@ name: Latino Studies
 code: LAO
 degree:
 urls:
-- https://ua.princeton.edu/fields-study/minors/latino-studies
+- https://effroncenter.princeton.edu/areas-study/latino-studies
 description: The Program in Latino Studies, administered by the Effron 
 Center for the Study of America, offers an interdisciplinary curriculum 
 that traverses the arts, humanities and social sciences. The program is 
@@ -25,6 +25,7 @@ req_list:
   course_list:
   - AMS 101
 - name: Courses
+  max_counted: 1
   min_needed: 3
   explanation: Three courses in Latino studies, either originating in the program or 
   cross-listed, and preferably representing disciplinary breadth in the social 
@@ -33,22 +34,16 @@ req_list:
   approval of the associate director, a student may substitute a comparative race 
   and ethnicity course that contains substantial Latino studies content for one 
   of these courses.
-  double_counting_allowed: true
-  max_common_with_major: 1
   course_list:
-  - LAO 201 / AMS 211 / LAS 201
-  - AAS 322 / LAS 301 / LAO 322 / AMS 323
-  - LAS 363 / LAO 363 / AMS 356
-  - SPA 222 / LAS 222 / LAO 222
-  - SPA 250 / LAS 250 / HUM 251 / LAO 250
-  - SPA 304 / LAO 304
+  - LAO *
 - name: Advanced Seminar in American Studies
+  max_counted: 1
   min_needed: 1
   explanation: With the approval of the associate director, a student may substitute 
   an advanced seminar with an additional Latino studies elective to further their 
   scholarship in this field.
   course_list:
-  - AMS 403 / SOC 403
-  - AMS 404 / CWR 404 / ENG 454
+  - AMS 403 
+  - AMS 404 
 
   

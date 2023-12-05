@@ -1,34 +1,43 @@
-Minor:
-  code: PHI
-  name: Philosophy
-  description: >
-    Philosophy is of substantial relevance to work in a great variety of other academic subjects, many of which historically emerged originally as branches of philosophy before achieving the status of separate disciplines. The qualities of mind which the study of philosophy aims to cultivate, and which are most often cited by our alumni as their greatest benefit from majoring in the subject, including especially the ability to think and write in a clear and concise, organized and informed and disciplined way about contentious and often confusing issues, are likely to be of value in some way for virtually all students. The option of minoring in philosophy is intended to offer an opportunity to learn such lessons in a structured way, while leaving the student free to pursue virtually any major academic interest. 
-  
-  degree_type: "BOTH"
-  excluded_majors: 
-  excluded_minors:
-  max_courses_double_dipped:
-  max_courses_from_major: 2
-
-  courses_required: 6
+---
+type: Minor
+name: Philosophy
+code: PHI
+degree:
+description: 
+urls:
+- 
+contacts:
+- type:
+  name:
+  email:
+req_list:
+- name: Prerequisites
+  max_counted: 1
+  min_needed: 1
+  explanation: One course in philosophy, to guarantee that students know what they will be getting into.
+  course_list:
+  - PHI *
+- name: Core Courses
+  max_counted: 1
+  min_needed: 5  
   pdfs_allowed: 0
+  explanation: no more than one of them an approved cognate rather than a course listed or cross-listed with a PHI number;          
+    no more than two of them lower-division (200-level) courses; no more than three of them from any single one of the four 
+    distribution areas into which philosophy courses are divided in requirements for majors; and
+    no more than two of them courses used for fulfilling the requirements of the student’s major.  
+    req_list:
+    - name: General
+      max_counted: 5
+      min_needed: 3
+      course_list:
+      - PHI 3*
+      - PHI 4*
+      - PHI 5*
+    - name: 200 Level
+      max_counted: 2
+      min_needed: 0
+      course_list
+      - PHI 2*
+    
 
-  prerequisites:
-    choose: 1
-    options:
-      - PHI2**
-      - PHI3**
-      - PHI4**
 
-  core:
-    choose: 5
-    options:
-      - PHI2**
-      - PHI3**
-      - PHI4**
-    special_conditions: 1_OR_FEWER_COGNATE, 2_OR_FEWER_LOWER_LEVEL, 3_OR_FEWER_PER_AREA
-
-  application_deadline:
-    urls:
-    - https://ua.princeton.edu/fields-study/departmental-majors-degree-bachelor-arts/philosophy
-    contacts:
