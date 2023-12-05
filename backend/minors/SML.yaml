@@ -1,7 +1,8 @@
+---
 type: Minor
 name: Statistics and Machine Learning
 code: SML
-description: |
+description: 
   This minor, under the guidance of the Center for Statistics and 
   Machine Learning (CSML), enables students to grasp the core principles 
   of statistics, coding, and machine learning. It prepares them to apply 
@@ -9,69 +10,78 @@ description: |
   by spring of sophomore year, but no later than the start of senior 
   year, with a declared major.
 urls:
-- https://csml.princeton.edu/undergraduate/certificate-program
+- https://csml.princeton.edu/undergraduate/minor-program
 contacts:
-- type: Executive Committee
-  name: [Program Coordinator's Name]
-  email: [Program Coordinator's Email]
+- type: Executive Committee Statistics & Machine Learning
+  name: Daisy Yan Huang
+  email: daisyhuang@princeton.edu
 req_list:
-- name: Coding
-  max_counted: 1
-  min_needed: 1
-  explanation: |
-    Completion of COS 126, POL 345, or SML 201 for coding principles.
-  double_counting_allowed: false
-  max_common_with_major: 0
-  pdfs_allowed: 0
-  course_list:
-  - COS 126
-  - POL 345
-  - SML 201
-- name: Mathematics
-  max_counted: 2
-  min_needed: 2
-  explanation: |
-    Completion of Linear Algebra (MAT 202/EGR 154/SML 305) and Calculus (MAT 201 or MAT 103 then SML 305). 
-  double_counting_allowed: false
-  max_common_with_major: 0
-  pdfs_allowed: 0
-  course_list:
-  - MAT 202
-  - EGR 154
-  - SML 305
-  - MAT 201
-  - MAT 103
-- name: Probability
-  max_counted: 1
-  min_needed: 1
-  explanation: |
-    Completion of one core statistics course for basic understanding of probability. Additional course from ORF 309/SML 305 recommended for advanced machine learning courses.
-  double_counting_allowed: false
-  max_common_with_major: 0
-  pdfs_allowed: 0
-  course_list:
-  - ORF 309
-  - SML 305
-  - [Core statistics course]
+
 - name: Required Course Work
-  max_counted: 5
+  max_counted: 1
   min_needed: 5
-  explanation: |
+  explanation: 
     One statistics course, one machine learning course, and three additional electives from approved lists or non-cognate courses with approval. Maximum of two courses from major may count toward the minor.
   double_counting_allowed: true
   max_common_with_major: 2
   pdfs_allowed: 0
+  req_list:
+  - name: Foundations of Statistics
+  max_counted: 1
+  min_needed: 1
   course_list:
-  - [List of approved courses]
+  - ECO 202
+  - ORF 245
+  - POL 345
+  - PSY 251
+  - SPI 200
+  - name: Foundations of Machine Learning
+  max_counted: 1
+  min_needed: 1
+  course_list:
+  - COS 324
+  - COS 424
+  - ECE 364
+  - ECE 435
+  - MAT 490
+  - ORF 350
+  - name: Electives
+  max_counted: 1
+  min_needed: 1
+  course_list:
+  - COS 429
+  - COS 484
+  - COS 485 
+  - ORF 418
+  - SOC 306
+  - ECE 434
+  - MAT 385 
+  - ORF 309
+  - ORF 363 
+  - AST 303
+  - CEE 460 
+  - ECO 302
+  - ECO 312 
+  - ECO 313
+  - ECO 491
+  - ECE 382 
+  - ECE 480
+  - GEO 422 
+  - MAE 345 
+  - NEU 330
+  - ORF 405 
+  - ORF 473 
+  - POL 346 
+  - PSY 360
+  - PSY 454
+  - QCB 408 
+  - QCB 455
+  - SOC 400
 - name: Independent Work
   max_counted: 1
   min_needed: 1
-  explanation: |
-    At least one semester of independent work in junior or senior year on a topic applying or investigating SML methods. This work may satisfy the IW requirement of the SML minor and the student's major, subject to review by the SML Minor committee. 
-  double_counting_allowed: true
-  max_common_with_major: 1
-  pdfs_allowed: 0
-  course_list:
-  - [Details of independent work]
-courses:
-- [List of courses as provided, each on a new line]
+  explanation: Students are required to complete at least one semester of independent work in their junior or senior year on a topic that 
+  applies SML methods or investigates these methods. This work may be used to satisfy the IW requirement of the SML minor and the student's 
+  major. All work will be reviewed by the Statistics and Machine Learning Minor committee. In May, there will be an (online) poster session in 
+  which students must present their independent work to other students, researchers, and the faculty. Students must adhere to submission due 
+  dates for independent work papers and poster requirements.
