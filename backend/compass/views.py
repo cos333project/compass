@@ -1,7 +1,8 @@
 import logging
+from collections import OrderedDict
 from re import sub, search, split, compile, IGNORECASE
 from urllib.request import urlopen
-from urllib.parse import quote, urlencode
+from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse, HttpResponseServerError
@@ -27,6 +28,7 @@ from data.req_lib import ReqLib
 from data.check_reqs import check_user
 from datetime import datetime
 from django.conf import settings
+import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -433,7 +435,7 @@ def update_courses(request):
         print('AMONGUSSSSSSSSSSSSSSSs', data)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
-        net_id = request.user.net_id
+        net_id = request.session['net_id']
         user_inst = CustomUser.objects.get(net_id=net_id)
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
@@ -495,42 +497,90 @@ def update_user(request):
 
 
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
-def del_duplicates(li):
-    res = []
-    for x in li:
-        if x not in res:
-            res.append(x)
-    return res
 
 
-def settle_cleaning(d):
-    for k, v in d.items():
-        if isinstance(v, dict):
-            if 'settled' in v.keys():
-                print(v['settled'])
-                print(type(v['settled']))
-                print(del_duplicates(v['settled']))
-                v['settled'] = del_duplicates(v['settled'])
-            settle_cleaning(v)
-    return d
+# def del_duplicates(li):
+#     res = []
+#     for x in li:
+#         if x not in res:
+#             res.append(x)
+#     return res
+
+
+# def settle_cleaning(d):
+#     for k, v in d.items():
+#         if isinstance(v, dict):
+#             if 'settled' in v.keys():
+#                 print(v['settled'])
+#                 print(type(v['settled']))
+#                 print(del_duplicates(v['settled']))
+#                 v['settled'] = del_duplicates(v['settled'])
+#             settle_cleaning(v)
+#     return d
+
+def transform_requirements(requirements):
+    # Base case: If there's no 'subrequirements', return the requirements as is
+    if 'subrequirements' not in requirements:
+        return requirements
+    
+    # Recursively transform each subrequirement
+    transformed = {}
+    for key, subreq in requirements['subrequirements'].items():
+        transformed[key] = transform_requirements(subreq)
+        
+    # After transformation, remove 'subrequirements' key
+    requirements.pop('subrequirements')
+    
+    # Merge the 'satisfied' status and the transformed subrequirements
+    return {**requirements, **transformed}
+
+def transform_data(data):
+    transformed_data = {}
+
+    # Go through each major/minor and transform accordingly
+    for major_key, major_data in data.items():
+        if major_key == 'Minors':
+            # Handle minors separately if needed
+            continue
+        if 'requirements' in major_data:
+            # Extract 'code' and 'satisfied' from 'requirements'
+            code = major_data['requirements'].pop('code')
+            satisfied = major_data['requirements'].pop('satisfied')
+            
+            # Transform the rest of the requirements
+            transformed_reqs = transform_requirements(major_data['requirements'])
+            
+            # Combine 'satisfied' status and transformed requirements
+            transformed_data[code] = {'satisfied': satisfied, **transformed_reqs}
+
+    return transformed_data
 
 
 def check_requirements(request):
-    # Fetch user info from session
     user_info = fetch_user_info(request.session['net_id'])
 
-    # Extract major and minor codes
-    major = user_info['major']['code']
-    minors = [minor['code'] for minor in user_info['minors']]
+    this_major = user_info['major']['code']
+    these_minors = [minor['code'] for minor in user_info['minors']]
 
-    # Check user requirements
-    req_dict = check_user(user_info, major, minors)
+    req_dict = check_user(user_info['netId'], user_info['major'],
+                          user_info['minors'])
 
-    # Stratify req_dict by requirements
-    formatted_dict = {major: req_dict[major]}
-    formatted_dict.update({minor: req_dict['Minors'][minor] for minor in minors})
+    # Rewrite req_dict so that it is stratified by requirements being met
+    formatted_dict = {}
+    formatted_dict[this_major] =  req_dict[this_major]
+    formatted_dict = transform_data(formatted_dict)
+    for minor in these_minors:
+        formatted_dict[minor] = req_dict['Minors'][minor]
 
-    # Optionally, further process the formatted_dict if needed
-    # cleaned = settle_cleaning(formatted_dict)
+    def pretty_print(data, indent=0):
+        for key, value in data.items():
+            print('  ' * indent + str(key))
+            if isinstance(value, dict):
+                pretty_print(value, indent + 1)
+            else:
+                print('  ' * (indent + 1) + str(value))
+
+    pretty_print(formatted_dict)
 
     return JsonResponse(formatted_dict)
+

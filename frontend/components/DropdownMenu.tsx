@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, FC } from 'react';
 
 import { Menu, Transition } from '@headlessui/react';
 import clsx from 'clsx';
@@ -11,7 +11,7 @@ import { Logout } from './Logout';
 import SettingsModal from './Modal';
 import UserSettings from './UserSettings';
 
-const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
+const MenuItem: FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
     className={clsx(
       isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -23,7 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   </div>
 );
 
-const DropdownMenu: React.FC = () => {
+const DropdownMenu: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [blur, setBlur] = useState(false);
   const [username, setUsername] = useState('Profile');

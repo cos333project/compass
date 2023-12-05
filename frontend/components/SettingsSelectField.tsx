@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, FC } from 'react';
 
 import { SelectFieldProps } from '../types';
 
-const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange, multiple }) => {
+const SelectField: FC<SelectFieldProps> = ({ label, options, value, onChange, multiple }) => {
   const [selectedValue, setSelectedValue] = useState(value);
   const selectId = `select-${label.replace(/\s+/g, '-').toLowerCase()}`;
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, FC } from 'react';
 
 import {
   Autocomplete,
@@ -93,7 +93,7 @@ const minors = [
   { code: 'MQE', name: 'Quantitative Economics' },
 ];
 
-const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
+const UserSettings: FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const { updateProfile } = useUserSlice((state) => state);
   const [localFirstName, setLocalFirstName] = useState<string>(profile.firstName);
   const [localLastName, setLocalLastName] = useState<string>(profile.lastName);

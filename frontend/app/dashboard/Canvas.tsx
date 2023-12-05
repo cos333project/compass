@@ -39,7 +39,7 @@ import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { Course, Profile, Requirement } from '@/types';
 
 import Search from '@/components/Search';
-// import { TabbedMenu } from '@/components/TabbedMenu';
+import { TabbedMenu } from '@/components/TabbedMenu';
 import useSearchStore from '@/store/searchSlice';
 
 import { Item, Container, ContainerProps } from '../../components';
@@ -184,9 +184,7 @@ export function Canvas({
   // vertical = false,
   scrollable,
 }: Props) {
-  const classYear = user.classYear ?? 2025;
-  console.log(user.classYear);
-  console.log(user);
+  const classYear = user.classYear;
 
   const generateSemesters = (classYear: number): Items => {
     const semesters: Items = {};
@@ -202,24 +200,24 @@ export function Canvas({
   const updateSemesters = (
     prevItems: Items,
     classYear: number,
-    user_courses: { [key: number]: Course[] }
+    userCourses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
     console.log('updateSemesters called');
 
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
-      prevItems[`Fall ${year}`] = user_courses[semester].map(
+      prevItems[`Fall ${year}`] = userCourses[semester].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
       semester += 1;
-      prevItems[`Spring ${year + 1}`] = user_courses[semester].map(
+      prevItems[`Spring ${year + 1}`] = userCourses[semester].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
       semester += 1;
     }
 
-    console.log(user_courses);
+    console.log(userCourses);
     console.log(prevItems);
     return prevItems;
   };
@@ -229,56 +227,84 @@ export function Canvas({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
     ...semesters,
   }));
+  type Dictionary = {
+    [key: string]: any; // Aim to replace 'any' with more specific types.
+  };
 
-  type RequirementDict = Record<string, Requirement | string>;
-  const [reqDict, setReqDict] = useState<RequirementDict>({});
+  // Initialize a more structured dictionary if possible
+  const initialRequirements: Dictionary = {}; // Adjust as per your data structure
+
+  // State for academic requirements
+  const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
+  const [refreshAcademicPlan, setRefreshedAcademicPlan] = useState(0);
+
+  // Logs for debugging
+  console.log('Initial academic plan:', academicPlan);
 
   // Assuming 'user' is of type User
-  const majorCode = user.major?.code;
-  const minors = user.minors ?? [];
+  const userMajorCode = user.major?.code;
+  const userMinors = user.minors ?? [];
 
-  const requirements: RequirementDict = {};
+  // Log user's major and minors
+  console.log('User Major:', userMajorCode, 'User Minors:', userMinors);
 
-  // Add major to requirements if it exists
-  if (majorCode && reqDict[majorCode]) {
-    requirements[majorCode] = reqDict[majorCode];
+  // Structure to hold degree requirements
+  const degreeRequirements: Dictionary = { General: '' };
+  console.log('Initial degree requirements:', degreeRequirements);
+
+  // Add major to degree requirements if it's a string
+  if (userMajorCode && typeof userMajorCode === 'string') {
+    degreeRequirements[userMajorCode] = academicPlan[userMajorCode] ?? {};
+    console.log(`Added major ${userMajorCode} to degree requirements:`, degreeRequirements);
   }
 
-  // Iterate over minors and add them to requirements
-  minors.forEach((minor) => {
+  // Iterate over minors and add them to degree requirements if their code is a string
+  userMinors.forEach((minor) => {
     const minorCode = minor.code;
-    if (minorCode && reqDict[minorCode]) {
-      requirements[minorCode] = reqDict[minorCode];
+    if (minorCode && typeof minorCode === 'string') {
+      degreeRequirements[minorCode] = academicPlan[minorCode] ?? {};
+      console.log(`Added minor ${minorCode} to degree requirements:`, degreeRequirements);
     }
   });
 
-  useEffect(() => {
-    let user_courses: Record<number, Course[]> = {};
-
-    fetch(`${process.env.BACKEND}/fetch_courses`, {
+  const fetchCourses = () => {
+    fetch(`${process.env.BACKEND}/fetch_courses/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        user_courses = data;
-
+        console.log('Fetched userCourses:', data);
         setItems((prevItems) => ({
-          ...updateSemesters(prevItems, classYear, user_courses),
+          ...updateSemesters(prevItems, classYear, data),
         }));
       })
-      .catch((error) => console.error('User Courses Error:', error));
+      .catch((error) => {
+        console.error('User Courses Error:', error);
+      });
+  };
 
-    fetch(`${process.env.BACKEND}/check_requirements`, {
+  const checkRequirements = () => {
+    console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
+    fetch(`${process.env.BACKEND}/check_requirements/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        setReqDict(data);
-        console.log(reqDict.reqDict);
+        console.log('Fetched academic requirements data:', data);
+        setAcademicPlan(data);
+        setRefreshedAcademicPlan(Date.now()); // Triggering a re-render by updating the number
       })
-      .catch((error) => console.error('Requirements Check Error:', error));
+      .catch((error) => {
+        console.error('Requirements Check Error:', error);
+      });
+  };
+
+  // Fetch user courses and check requirements on initial render
+  useEffect(() => {
+    fetchCourses();
+    checkRequirements();
   }, []);
 
   const { searchResults } = useSearchStore();
@@ -570,29 +596,13 @@ export function Canvas({
             return;
           }
 
-          const overContainer = findContainer(overId);
-
-          if (overContainer) {
-            const activeIndex = items[activeContainer].indexOf(active.id);
-            const overIndex = items[overContainer].indexOf(overId);
-
-            if (activeIndex !== overIndex) {
-              setItems((items) => ({
-                ...items,
-                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
-              }));
-            }
-          }
-
-          setActiveId(null);
-
           const courseId = active.id;
           let semesterId = activeContainer;
           if (overId === TRASH_ID) {
             semesterId = TRASH_ID;
           }
           const csrfToken = await fetchCsrfToken();
-          fetch(`${process.env.BACKEND}/update_courses`, {
+          fetch(`${process.env.BACKEND}/update_courses/`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -605,17 +615,34 @@ export function Canvas({
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
 
-          fetch(`${process.env.BACKEND}/check_requirements`, {
-            method: 'GET',
-            credentials: 'include',
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-              setReqDict(reqDict);
-              console.log(reqDict.reqDict);
-            })
-            .catch((error) => console.error('Requirements Check Error:', error));
+          const overContainer = findContainer(overId);
+
+          if (overContainer) {
+            const activeIndex = items[activeContainer].indexOf(active.id);
+            const overIndex = items[overContainer].indexOf(overId);
+
+            if (activeIndex !== overIndex) {
+              setItems((items) => ({
+                ...items,
+                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
+              }));
+              checkRequirements();
+            }
+          }
+
+          setActiveId(null);
+
+          // TODO: Clean this up or remove if not needed
+          // fetch(`${process.env.BACKEND}/check_requirements`, {
+          //   method: 'GET',
+          //   credentials: 'include',
+          // })
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     console.log('updated data', data);
+          //     setAcademicPlan(data);
+          //   })
+          //   .catch((error) => console.error('Requirements Check Error:', error));
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
@@ -702,10 +729,9 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            {/* TODO: Put this back in after verifying CAS works. }}>
-            {/* <div style={{ width: '380px' }}>
-              <TabbedMenu tabsData={requirements} />
-            </div> */}
+            <div style={{ width: '380px' }}>
+              <TabbedMenu tabsData={academicPlan} refresh={refreshAcademicPlan} />
+            </div>
           </div>
         </SortableContext>
 
@@ -761,6 +787,7 @@ export function Canvas({
           <Item
             key={item}
             value={item}
+            onRemove={() => handleRemove(item)}
             handle={handle}
             style={getItemStyles({
               containerId,

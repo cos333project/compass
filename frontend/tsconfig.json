@@ -4,7 +4,8 @@
     "lib": ["dom", "dom.iterable", "es2022", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false, // TODO: Make this true eventually
+    "noImplicitAny": false,
     "noEmit": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

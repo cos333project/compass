@@ -1,92 +1,84 @@
-import { useState, FC } from 'react';
+import { useEffect, FC } from 'react';
 
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
 
-type DropdownData = Record<string, DropdownValue>;
-type DropdownValue = string | number | boolean | NestedObject | undefined;
+interface Dictionary {
+  [key: string]: any;
+}
 
-type NestedObject = {
-  [key: string]: DropdownValue;
-  satisfied?: boolean;
-};
+interface DropdownProps {
+  data: Dictionary;
+}
 
-type DropdownProps = {
-  data: DropdownData;
-};
-
-type SatisfactionStatusProps = {
-  satisfied: boolean;
-};
+interface SatisfactionStatusProps {
+  satisfied: string;
+}
 
 const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
-  <span className='ml-2 statusIcon'>
-    {satisfied ? (
-      <CheckCircleIcon className='w-5 h-5 text-green-500' />
+  <>
+    {satisfied === 'True' ? (
+      <CheckCircleOutlineIcon style={{ color: 'green', marginLeft: '10px' }} />
     ) : (
-      <XCircleIcon className='w-5 h-5 text-red-500' />
+      <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
     )}
-  </span>
+  </>
 );
 
 const Dropdown: FC<DropdownProps> = ({ data }) => {
-  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
-
-  const toggleDropdown = (key: string) => () => {
-    setIsOpen((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const renderContent = (data: DropdownData) => {
+  const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
-      const isObject = typeof value === 'object' && value !== null;
-      let satisfactionElement = null;
-
-      if (isObject) {
-        const nestedValue = value as NestedObject;
-        if ('satisfied' in nestedValue) {
-          satisfactionElement = <SatisfactionStatus satisfied={nestedValue.satisfied ?? false} />;
-        }
+      if (key === 'satisfied') {
+        // Skip rendering 'satisfied' as a standalone entry
+        return null;
       }
 
+      const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
+      const satisfactionElement =
+        isObject && 'satisfied' in value ? (
+          <SatisfactionStatus satisfied={value.satisfied} />
+        ) : null;
+
+      const subItems = isObject ? { ...value, satisfied: undefined } : value;
+      const hasNestedItems = isObject && Object.keys(subItems).length > 0;
+
       return (
-        <li key={key} className={isObject ? 'mb-2' : ''}>
-          <div
-            className={`flex justify-between items-center p-2 cursor-pointer ${
-              isObject ? 'bg-gray-200 rounded' : 'bg-gray-100'
-            }`}
-            onClick={isObject ? toggleDropdown(key) : undefined}
+        <Accordion
+          key={key}
+          style={{ margin: '0', boxShadow: 'none', borderBottom: '1px solid #ccc' }}
+        >
+          <AccordionSummary
+            expandIcon={hasNestedItems ? <ExpandMoreIcon /> : null}
+            aria-controls={`${key}-content`}
+            id={`${key}-header`}
           >
-            {isObject && (
-              <>
-                <span className={`mr-2 text-lg ${isOpen[key] ? 'transform rotate-90' : ''}`}></span>
-                <span className='flex-grow'>{key}</span>
-              </>
-            )}
-            {!isObject && <span>{key}</span>}
-            {satisfactionElement}
-          </div>
-          {isObject && (
-            <ul className={`pl-4 ${isOpen[key] ? 'block' : 'hidden'}`}>
-              <Dropdown data={value} />
-            </ul>
-          )}
-        </li>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <Typography>{key}</Typography>
+              {satisfactionElement}
+            </div>
+          </AccordionSummary>
+          <AccordionDetails>
+            {hasNestedItems ? renderContent(subItems) : <Typography>{value}</Typography>}
+          </AccordionDetails>
+        </Accordion>
       );
     });
   };
 
-  return <ul className='list-none p-0 m-0'>{renderContent(data)}</ul>;
+  return <>{renderContent(data)}</>;
 };
 
-type RecursiveDropdownProps = {
-  dictionary: DropdownData;
-};
+interface RecursiveDropdownProps {
+  dictionary: Dictionary;
+}
 
 const RecursiveDropdown: FC<RecursiveDropdownProps> = ({ dictionary }) => {
-  return (
-    <div className='text-gray-700 w-full'>
-      <Dropdown data={dictionary} />
-    </div>
-  );
+  return <Dropdown data={dictionary} />;
 };
 
 export default RecursiveDropdown;
