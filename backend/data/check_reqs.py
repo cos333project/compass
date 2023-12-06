@@ -472,6 +472,38 @@ def format_req_output(req):
         output['unsettled'] = unsettled[:-2]
     return output
 
+# ---------------------------- FETCH COURSE DETAILS -----------------------------------#
+
+# dept is the department code (string) and num is the catalog number (int)
+# returns dictionary containing relevant info
+def get_course_info(dept, num):
+    dept = str(dept)
+    num = int(num)
+    try:
+        dept_code = Department.objects.filter(code=dept).first().id
+        try:
+            course = Course.objects.filter(department__id=dept_code, catalog_number=num).first()
+            
+            # get relevant info and put it in a dictionary
+            course_dict = {}
+            if course.title:
+                course_dict["Title"] = course.title
+            if course.description:
+                course_dict["Description"] = course.description
+            if course.distribution_area_short:
+                course_dict["Distribution Area"] = course.distribution_area_short
+            return course_dict
+
+        except Course.DoesNotExist:
+            return None
+    except Course.DoesNotExist:
+        return None
+    
+    #print(dept)
+    
+
+
+
 
 def main():
     output = check_user(
@@ -480,6 +512,7 @@ def main():
         [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
     )
     # print(output['Minors'])
+    # print(get_course_info("SPA", 366))
 
 
 if __name__ == '__main__':

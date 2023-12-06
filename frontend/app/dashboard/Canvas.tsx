@@ -620,21 +620,19 @@ export function Canvas({
           if (overId === TRASH_ID) {
             semesterId = TRASH_ID;
           }
-          // const csrfToken = await fetchCsrfToken();
-          // fetch(`${process.env.BACKEND}/update_courses/`, {
-          //   method: 'POST',
-          //   credentials: 'include',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //     'X-CSRFToken': csrfToken,
-          //   },
-          //   body: JSON.stringify({ courseId, semesterId }),
-          // })
-          //   .then((response) => response.json())
-          //   .then((data) => console.log('Update success', data))
-          //   .catch((error) => console.error('Update Error:', error));
           const csrfToken = await fetchCsrfToken();
-          updateCourses(courseId, semesterId, csrfToken);
+          fetch(`${process.env.BACKEND}/update_courses/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ courseId, semesterId }),
+          })
+            .then((response) => response.json())
+            .then((data) => console.log('Update success', data))
+            .catch((error) => console.error('Update Error:', error));
 
           const overContainer = findContainer(overId);
 
@@ -737,7 +735,7 @@ export function Canvas({
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          onRemove={onRemove(value)}
+                          // onRemove={onRemove(value)}
                           renderItem={renderItem} // This render should be bite-sized
                           containerId={containerId}
                           getIndex={getIndex}

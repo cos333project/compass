@@ -26,6 +26,7 @@ import json
 from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user
+from data.check_reqs import get_course_info
 from datetime import datetime
 from django.conf import settings
 import pprint
@@ -406,7 +407,6 @@ class GetUserCourses(View):
         else:
             return JsonResponse({})
 
-
 # ---------------------------- UPDATE USER COURSES -----------------------------------#
 
 
@@ -555,6 +555,25 @@ def transform_data(data):
 
     return transformed_data
 
+#-------------------------------------- GET COURSE DETAILS --------------------------
+
+def course_details(request):
+    dept = request.GET.get('dept', '')  # Default to empty string if not provided
+    num = request.GET.get('coursenum', '')
+
+    if dept and num:
+        try:
+            num = int(num)  # Convert to integer
+        except ValueError:
+            return JsonResponse({'error': 'Invalid course number'}, status=400)
+
+        course_info = get_course_info(dept, num)
+        return JsonResponse(course_info)
+    else:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+
+#------------------------------------------------------------------------------------
 
 def check_requirements(request):
     user_info = fetch_user_info(request.session['net_id'])
@@ -583,4 +602,3 @@ def check_requirements(request):
     pretty_print(formatted_dict)
 
     return JsonResponse(formatted_dict)
-
