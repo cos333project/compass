@@ -28,7 +28,7 @@ const Dashboard: FC = () => {
     <>
       <Navbar />
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
-        <main className='flex flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}

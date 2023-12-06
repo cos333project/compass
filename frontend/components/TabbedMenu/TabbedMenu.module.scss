@@ -8,6 +8,7 @@
     overflow: hidden; /* Ensures child elements do not break the rounded corners */
     display: flex;
     flex-direction: column;
+    background-color: rgba(246, 246, 246, 1);
   }
   
   .tabMenu {
@@ -44,6 +45,7 @@
     flex-grow: 1;
     overflow-y: auto; /* Makes the content area scrollable */
     height: 650px; /* Fixed height for the content area */
+    background-color: rgba(246, 246, 246, 1);
   }
   
   

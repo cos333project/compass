@@ -36,7 +36,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
-import { Course, Profile, Requirement } from '@/types';
+import { Course, Profile } from '@/types';
 
 import Search from '@/components/Search';
 import { TabbedMenu } from '@/components/TabbedMenu';
@@ -60,6 +60,7 @@ async function fetchCsrfToken() {
     return 'Error fetching CSRF token!';
   }
 }
+const csrfToken = await fetchCsrfToken();
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -114,6 +115,7 @@ function DroppableContainer({
 }
 
 const dropAnimation: DropAnimation = {
+  // TODO: Lowkey, this is where we can render the course card differently -> full title to DEPT CATNUM
   sideEffects: defaultDropAnimationSideEffects({
     styles: {
       active: {
@@ -149,7 +151,7 @@ type Props = {
   itemCount?: number;
   items?: Items;
   handle?: boolean;
-
+  onRemove?(courseId: string): void;
   renderItem?(): React.ReactElement;
 
   strategy?: SortingStrategy;
@@ -282,6 +284,23 @@ export function Canvas({
       .catch((error) => {
         console.error('User Courses Error:', error);
       });
+  };
+
+  const updateCourses = (courseId, semesterId, csrfToken) => {
+    console.log('UPDATING COURSES!!');
+    const backendUrl = `${process.env.BACKEND}/update_courses/`;
+    fetch(backendUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ courseId, semesterId }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Updating courses success', data))
+      .catch((error) => console.error('Updating courses error:', error));
   };
 
   const checkRequirements = () => {
@@ -601,19 +620,21 @@ export function Canvas({
           if (overId === TRASH_ID) {
             semesterId = TRASH_ID;
           }
+          // const csrfToken = await fetchCsrfToken();
+          // fetch(`${process.env.BACKEND}/update_courses/`, {
+          //   method: 'POST',
+          //   credentials: 'include',
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //     'X-CSRFToken': csrfToken,
+          //   },
+          //   body: JSON.stringify({ courseId, semesterId }),
+          // })
+          //   .then((response) => response.json())
+          //   .then((data) => console.log('Update success', data))
+          //   .catch((error) => console.error('Update Error:', error));
           const csrfToken = await fetchCsrfToken();
-          fetch(`${process.env.BACKEND}/update_courses/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ courseId, semesterId }),
-          })
-            .then((response) => response.json())
-            .then((data) => console.log('Update success', data))
-            .catch((error) => console.error('Update Error:', error));
+          updateCourses(courseId, semesterId, csrfToken);
 
           const overContainer = findContainer(overId);
 
@@ -653,7 +674,6 @@ export function Canvas({
             {/* Left Section for Search Results */}
             {containers.includes('Search Results') && (
               <div style={{ width: '380px' }}>
-                {' '}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key='Search Results'
@@ -675,7 +695,7 @@ export function Canvas({
                         handle={handle}
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
-                        renderItem={renderItem}
+                        renderItem={renderItem} // This render function should render with full name
                         containerId='Search Results'
                         getIndex={getIndex}
                       />
@@ -705,7 +725,6 @@ export function Canvas({
                     scrollable={scrollable}
                     style={containerStyle}
                     unstyled={minimal}
-                    onRemove={() => handleRemove(containerId)}
                     height='160px'
                   >
                     <SortableContext items={items[containerId]} strategy={strategy}>
@@ -718,7 +737,8 @@ export function Canvas({
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          renderItem={renderItem}
+                          onRemove={onRemove(value)}
+                          renderItem={renderItem} // This render should be bite-sized
                           containerId={containerId}
                           getIndex={getIndex}
                         />
@@ -737,11 +757,7 @@ export function Canvas({
 
         {createPortal(
           <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-            {activeId
-              ? containers.includes(activeId)
-                ? renderContainerDragOverlay(activeId)
-                : renderSortableItemDragOverlay(activeId)
-              : null}
+            {activeId ? renderSortableItemDragOverlay(activeId) : null}
           </DragOverlay>,
           document.body
         )}
@@ -772,43 +788,62 @@ export function Canvas({
     );
   }
 
-  function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    return (
-      <Container
-        label={`${containerId}`}
-        columns={columns}
-        style={{
-          height: '100%',
-        }}
-        shadow
-        unstyled={false}
-      >
-        {items[containerId].map((item, index) => (
-          <Item
-            key={item}
-            value={item}
-            onRemove={() => handleRemove(item)}
-            handle={handle}
-            style={getItemStyles({
-              containerId,
-              overIndex: -1,
-              index: getIndex(item),
-              value: item,
-              isDragging: false,
-              isSorting: false,
-              isDragOverlay: false,
-            })}
-            color={getColor(item)}
-            wrapperStyle={wrapperStyle({ index })}
-            renderItem={renderItem}
-          />
-        ))}
-      </Container>
-    );
-  }
+  // function renderContainerDragOverlay(containerId: UniqueIdentifier) {
+  //   return (
+  //     <Container
+  //       label={`${containerId}`}
+  //       columns={columns}
+  //       style={{
+  //         height: '100%',
+  //       }}
+  //       shadow
+  //       unstyled={false}
+  //     >
+  //       {items[containerId].map((item, index) => (
+  //         <Item
+  //           key={item}
+  //           value={item}
+  //           handle={handle}
+  //           style={getItemStyles({
+  //             containerId,
+  //             overIndex: -1,
+  //             index: getIndex(item),
+  //             value: item,
+  //             isDragging: false,
+  //             isSorting: false,
+  //             isDragOverlay: false,
+  //           })}
+  //           color={getColor(item)}
+  //           wrapperStyle={wrapperStyle({ index })}
+  //           renderItem={renderItem}
+  //         />
+  //       ))}
+  //     </Container>
+  //   );
+  // }
 
-  function handleRemove(containerID: UniqueIdentifier) {
-    setContainers((containers) => containers.filter((id) => id !== containerID));
+  // TODO: Probably don't need this anymore since containers are not removable
+  // function handleRemove(containerID: UniqueIdentifier) {
+  //   setContainers((containers) => containers.filter((id) => id !== containerID));
+  // }
+  function onRemove(courseId: UniqueIdentifier) {
+    setItems((items) => ({
+      ...items,
+      [SEARCH_RESULTS_ID]: items[SEARCH_RESULTS_ID].filter((id) => id !== courseId),
+    }));
+
+    fetch(`${process.env.BACKEND}/update_courses/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ courseId, semesterId: 'Search Results' }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Update success', data))
+      .catch((error) => console.error('Update Error:', error));
   }
 
   function getNextContainerId() {

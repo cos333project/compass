@@ -1,6 +1,6 @@
 import { memo, forwardRef, useEffect } from 'react';
 
-import type { DraggableSyntheticListeners } from '@dnd-kit/core';
+import type { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
@@ -24,7 +24,7 @@ export type Props = {
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactNode;
-  onRemove?(): void;
+  onRemove?(courseId: UniqueIdentifier): void;
   renderItem?(args: {
     dragOverlay: boolean;
     dragging: boolean;

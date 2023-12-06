@@ -1,4 +1,6 @@
-import { ToggleSwitchProps, FC } from '../types';
+import { FC } from 'react';
+
+import { ToggleSwitchProps } from '../types';
 
 const ToggleSwitch: FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {
   return (
