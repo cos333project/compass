@@ -10,7 +10,6 @@ class ReqLib:
     def _make_request(self, endpoint: str, **kwargs: Any) -> requests.Response:
         base_url = self.configs.get_base_url(endpoint)
         url = f'{base_url}{endpoint}'
-        print(url)
         headers = {
             'Authorization': f'Bearer {self.configs.ACCESS_TOKEN}',
             'Accept': 'application/json',
