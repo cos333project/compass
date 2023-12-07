@@ -3,10 +3,10 @@ import { memo, forwardRef, useEffect } from 'react';
 import type { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import classNames from 'classnames';
-import { InfoComponent } from '../InfoComponent.tsx';
 
 import { Handle, Remove } from './components';
 import styles from './Item.module.scss';
+import { InfoComponent } from '../InfoComponent.tsx';
 
 export type Props = {
   dragOverlay?: boolean;
@@ -133,7 +133,9 @@ export const Item = memo(
             <span className={styles.Actions}>
               {onRemove ? <Remove className={styles.Remove} onClick={onRemove} /> : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
-              <InfoComponent dept="COS" coursenum="126"/>
+              <div>
+                <InfoComponent dept = '126' coursenum='126'/>
+              </div> 
             </span>
           </div>
         </li>

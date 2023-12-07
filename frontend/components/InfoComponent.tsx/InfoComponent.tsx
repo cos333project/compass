@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import styles from './InfoComponent.module.scss';
+import { createPortal } from 'react-dom';
 
 interface InfoComponentProps {
   dept: string;
   coursenum: string;
 }
 
+const portalNode = document.createElement('div');
+portalNode.id = 'info-popup-portal';
+document.body.appendChild(portalNode);
+
 const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [courseDetails, setCourseDetails] = useState<{ [key: string]: any } | null>(null);
+  let hoverTimer;
 
   useEffect(() => {
     if (showPopup && dept && coursenum) {
@@ -30,34 +36,59 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
       })
       .catch((error) => console.error('Error:', error));
     }
+
+    return () => {
+      clearTimeout(hoverTimer);
+    };
   }, [showPopup, dept, coursenum]);
 
+  const handleMouseEnter = () => {
+    hoverTimer = setTimeout(() => {
+      setShowPopup(true);
+    }, 1000); // 1000 milliseconds = 1 second
+  };
+
+  //const handleMouseLeave = () => {
+  //  clearTimeout(hoverTimer);
+  //  setShowPopup(false);
+  //};
+
   return (
-    <div style={{ position: 'relative' }}>
-      <div 
-        className={styles.infoCircle} 
-        onMouseEnter={() => setShowPopup(true)} 
-        onMouseLeave={() => setShowPopup(false)}
-      >
-        i
-      </div>
-      {showPopup && (
-        <div className={styles.infoPopup}>
-          {courseDetails ? (
-            <div>
-              {Object.entries(courseDetails).map(([key, value]) => (
-                <div key={key}>
-                  <strong>{key}:</strong> {value}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div>Loading...</div>
-          )}
+    <>
+      <div style={{ position: 'relative' }}>
+        <div
+          className={styles.infoCircle}
+          onMouseEnter={handleMouseEnter}
+        >
+          i
         </div>
-      )}
-    </div>
+      </div>
+      {showPopup &&
+        createPortal(
+          <>
+            <div className={styles.modalBackdrop} onClick={() => setShowPopup(false)}></div>
+            <div className={styles.modal}>
+              {courseDetails ? (
+                <div>
+                  {Object.entries(courseDetails).map(([key, value]) => (
+                    <div key={key}>
+                      <strong>{key}:</strong> {value}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div>Loading...</div>
+              )}
+            </div>
+          </>,
+          portalNode
+        )}
+    </>
   );
 };
 
 export default InfoComponent;
+
+
+
+
