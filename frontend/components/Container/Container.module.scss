@@ -24,7 +24,7 @@
     margin: 0px;
     max-height: 100%; /* Ensures ul doesn't exceed container's height */
     overflow-y: auto; /* Adds vertical scrollbar to ul */
-    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    overflow-x: auto; /* Adds horizontal scrollbar to ul */
   }
   
   &.scrollable {

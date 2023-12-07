@@ -432,7 +432,6 @@ def get_first_course_inst(course_code):
 def update_courses(request):
     try:
         data = json.loads(request.body)
-        print('AMONGUSSSSSSSSSSSSSSSs', data)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
         net_id = request.session['net_id']
@@ -440,7 +439,7 @@ def update_courses(request):
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
 
-        if container == 'Search Results' or container == 'void':
+        if container == 'Search Results':
             user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
             message = f'User course deleted: {course_inst.course_id}, {net_id}'

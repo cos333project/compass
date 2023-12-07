@@ -157,12 +157,10 @@ type Props = {
   strategy?: SortingStrategy;
   modifiers?: Modifiers;
   minimal?: boolean;
-  trashable?: boolean;
   scrollable?: boolean;
   vertical?: boolean;
 };
 
-export const TRASH_ID = 'void';
 export const PLACEHOLDER_ID = 'placeholder';
 export const SEARCH_RESULTS_ID = 'Search Results';
 
@@ -182,7 +180,6 @@ export function Canvas({
   modifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
-  trashable = false,
   // vertical = false,
   scrollable,
 }: Props) {
@@ -405,10 +402,6 @@ export function Canvas({
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId !== null) {
-        if (overId === TRASH_ID) {
-          // If the intersecting droppable is the trash, return early
-          return intersections;
-        }
 
         if (overId in items) {
           const containerItems = items[overId];
@@ -515,7 +508,6 @@ export function Canvas({
           if (
             overId === null ||
             overId === undefined ||
-            overId === TRASH_ID ||
             active.id in items
           ) {
             return;
@@ -592,14 +584,6 @@ export function Canvas({
             return;
           }
 
-          if (overId === TRASH_ID) {
-            setItems((items) => ({
-              ...items,
-              [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-            }));
-            setActiveId(null);
-          }
-
           if (overId === PLACEHOLDER_ID) {
             const newContainerId = getNextContainerId();
 
@@ -617,9 +601,6 @@ export function Canvas({
 
           const courseId = active.id;
           let semesterId = activeContainer;
-          if (overId === TRASH_ID) {
-            semesterId = TRASH_ID;
-          }
           const csrfToken = await fetchCsrfToken();
           // This also should only be updated if the user drops the course into a new semester
           fetch(`${process.env.BACKEND}/update_courses/`, {
@@ -738,7 +719,7 @@ export function Canvas({
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          // onRemove={onRemove(value)}
+                          onRemove={() => onRemove(value, containerId)}
                           renderItem={renderItem} // This render should be bite-sized
                           containerId={containerId}
                           getIndex={getIndex}
@@ -762,7 +743,6 @@ export function Canvas({
           </DragOverlay>,
           document.body
         )}
-        {trashable && activeId && !containers.includes(activeId) ? <Trash id={TRASH_ID} /> : null}
       </DndContext>
     </>
   );
@@ -827,11 +807,13 @@ export function Canvas({
   // function handleRemove(containerID: UniqueIdentifier) {
   //   setContainers((containers) => containers.filter((id) => id !== containerID));
   // }
-  function onRemove(courseId: UniqueIdentifier) {
-    setItems((items) => ({
-      ...items,
-      [SEARCH_RESULTS_ID]: items[SEARCH_RESULTS_ID].filter((id) => id !== courseId),
-    }));
+  function onRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
+    setItems((items) => {
+      items[containerId].filter((course: string) => course !== value.toString());
+      return {
+        ...items
+      };
+    });
 
     fetch(`${process.env.BACKEND}/update_courses/`, {
       method: 'POST',
@@ -840,7 +822,7 @@ export function Canvas({
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       },
-      body: JSON.stringify({ courseId, semesterId: 'Search Results' }),
+      body: JSON.stringify({ value, semesterId: 'Search Results' }),
     })
       .then((response) => response.json())
       .then((data) => console.log('Update success', data))
@@ -870,34 +852,6 @@ function getColor(id: UniqueIdentifier) {
   return undefined;
 }
 
-function Trash({ id }: { id: UniqueIdentifier }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'fixed',
-        left: '50%',
-        marginLeft: -150,
-        bottom: 20,
-        width: 300,
-        height: 60,
-        borderRadius: 5,
-        border: '1px solid',
-        borderColor: isOver ? 'red' : '#DDD',
-      }}
-    >
-      Drop here to delete
-    </div>
-  );
-}
-
 type SortableItemProps = {
   containerId: UniqueIdentifier;
   id: UniqueIdentifier;
@@ -916,6 +870,8 @@ type SortableItemProps = {
   }): React.CSSProperties;
 
   getIndex(id: UniqueIdentifier): number;
+
+  onRemove?(): void;
 
   renderItem?(): React.ReactElement;
 
