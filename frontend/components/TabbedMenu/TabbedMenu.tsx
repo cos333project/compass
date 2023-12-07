@@ -2,7 +2,16 @@ import { useState, useEffect, FC } from 'react';
 
 import { RecursiveDropdown } from '../RecursiveDropDown';
 
+import LoadingComponent from '../LoadingComponent';
+
 import styles from './TabbedMenu.module.scss';
+// import { tailChase } from 'ldrs'
+
+// tailChase.register()
+
+
+
+
 
 interface TabbedMenuProps {
   tabsData: { [key: string]: object };
@@ -21,11 +30,19 @@ const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh }) => {
   const handleTabClick = (tabKey: string) => {
     setActiveTab(tabKey);
   };
-
+  
   // Check if tabsData is well-defined and not empty
   if (!tabsData || Object.keys(tabsData).length === 0) {
-    // Optionally, render some placeholder or loading indicator
-    return <div>Loading...</div>;
+    return (< LoadingComponent />)
+    // < LoadingComponent />
+    
+  //   <l-tail-chase
+  //   size="40"
+  //   speed="1.75"
+  //   color="black" 
+  // ></l-tail-chase>
+  
+
   }
 
   return (
