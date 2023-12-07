@@ -584,3 +584,4 @@ def check_requirements(request):
 
     return JsonResponse(formatted_dict)
 
+    

@@ -5,12 +5,11 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-project_dir = './compass/backend'
-sys.path.append(project_dir)
-
+sys.path.append(str(Path('../').resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 import django
+
 django.setup()
 from django.db import transaction
 from compass.models import (
@@ -50,14 +49,9 @@ def insert_department(rows):
     # Extract unique departments based on code and name
     unique_departments = {(row['Subject Code'], row['Subject Name']) for row in rows}
 
-    new_departments = [
-        Department(code=code, name=name)
-        for code, name in unique_departments
-        if not Department.objects.filter(code=code).exists()
-    ]
-
-    # Bulk create new departments
-    Department.objects.bulk_create(new_departments)
+    # Process each department
+    for code, name in unique_departments:
+        Department.objects.update_or_create(code=code, defaults={'name': name})
 
     logging.info('Department insertions completed!')
 
@@ -69,27 +63,24 @@ def insert_academic_term(rows):
     logging.info('Starting AcademicTerm insertions...')
 
     def parse_date(date_str):
-        return datetime.strptime(date_str, '%Y-%m-%d').date()
+        return datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else None
 
-    # Extract unique academic terms based on term_code and suffix
-    unique_terms = {
-        (
-            int(row['Term Code'].strip()),
-            row['Term Name'],
-        )
-        for row in rows
-    }
+    # Assuming the first row has the necessary data
+    first_row = rows[0]
 
-    # Create new AcademicTerm objects
-    new_terms = [
-        AcademicTerm(
-            term_code=term_code, suffix=suffix, start_date=start_date, end_date=end_date
-        )
-        for term_code, suffix, start_date, end_date in unique_terms
-    ]
+    term_code = str(first_row['Term Code'].strip())
+    suffix = first_row['Term Name']
+    start_date = parse_date(
+        first_row.get('Course Start Date')
+    )  # Ensure these are the correct column names
+    end_date = parse_date(first_row.get('Course End Date'))
 
-    # Bulk create new academic terms
-    AcademicTerm.objects.bulk_create(new_terms)
+    # Use update_or_create to either update existing records or create a new one
+    AcademicTerm.objects.update_or_create(
+        term_code=term_code,
+        defaults={'suffix': suffix, 'start_date': start_date, 'end_date': end_date},
+    )
+
     logging.info('AcademicTerm insertion completed!')
 
 
@@ -102,7 +93,6 @@ def insert_course(rows):
     # Fetch all departments and store in a dictionary for quick access
     departments = {dept.code: dept for dept in Department.objects.all()}
 
-    new_courses = []
     for row in rows:
         course_id = row['Course ID']
         dept_code = row['Subject Code']
@@ -114,38 +104,45 @@ def insert_course(rows):
             logging.warning(f'Department with code {dept_code} not found!')
             continue
 
-        if not Course.objects.filter(course_id=course_id).exists():
-            course_data = Course(
-                course_id=course_id,
-                department=department,
-                title=title,
-                catalog_number=catalog_number,
-                description=row.get('Course Description'),
-                drop_consent=row.get('Drop Consent'),
-                add_consent=row.get('Add Consent'),
-                web_address=row.get('Web Address'),
-                transcript_title=row.get('Transcript Title'),
-                long_title=row.get('Long Title'),
-                distribution_area_long=row.get('Distribution Area Long'),
-                distribution_area_short=row.get('Distribution Area Short'),
-                reading_writing_assignment=row.get('Reading Writing Assignment'),
-                grading_basis=row.get('Grading Basis'),
-            )
-            # Dynamically add reading list authors and titles
-            for i in range(1, 7):  # For each pair of author and title
-                author_key = f'Reading List Author {i}'
-                title_key = f'Reading List Title {i}'
+        reading_list = ''
+        for i in range(1, 7):  # For each pair of author and title
+            author_key = f'Reading List Author {i}'
+            title_key = f'Reading List Title {i}'
 
-                if row.get(author_key):
-                    course_data[f'reading_list_author_{i}'] = row[author_key]
-                
-                if row.get(title_key):
-                    course_data[f'reading_list_title_{i}'] = row[title_key]
-            
-            course = Course(**course_data)
-            new_courses.append(course)
+            if row.get(author_key) and row.get(title_key):
+                book_entry = f'{row[title_key]}: {row[author_key]}'
+                reading_list += (book_entry + '; ') if reading_list else book_entry
 
-    Course.objects.bulk_create(new_courses)
+        defaults = {
+            'guid': row.get('Course GUID'),
+            'department': department,
+            'title': title,
+            'catalog_number': catalog_number,
+            'description': row.get('Course Description'),
+            'drop_consent': row.get('Drop Consent'),
+            'add_consent': row.get('Add Consent'),
+            'web_address': row.get('Web Address'),
+            'transcript_title': row.get('Transcript Title'),
+            'long_title': row.get('Long Title'),
+            'distribution_area_long': row.get('Distribution Area Long'),
+            'distribution_area_short': row.get('Distribution Area Short'),
+            'reading_writing_assignment': row.get('Reading Writing Assignment'),
+            'grading_basis': row.get('Grading Basis'),
+            'reading_list': reading_list,
+        }
+
+        try:
+            # Try to update or create the course
+            Course.objects.update_or_create(course_id=course_id, defaults=defaults)
+        except Course.MultipleObjectsReturned:
+            # If multiple courses are returned, log their details
+            duplicate_courses = Course.objects.filter(course_id=course_id)
+            logging.error(f'Duplicate courses found for Course ID: {course_id}')
+            for course in duplicate_courses:
+                logging.error(
+                    f'Course ID: {course.course_id}, Title: {course.title}, Department: {course.department.code}, Catalog Number: {course.catalog_number}'
+                )
+            continue
     logging.info('Course insertion completed!')
 
 
@@ -155,36 +152,38 @@ def insert_course(rows):
 def insert_course_equivalent(rows):
     logging.info('Starting CourseEquivalent insertion...')
 
-    new_equivalents = []
     for row in rows:
-        primary_course_id = int(row['Course ID'].strip())
-        equivalent_subject = row['Crosslisting Subjects']
-        equivalent_catalog_number = row['Crosslisting Catalog Numbers']
+        primary_course_id = row['Course ID'].strip()
+        crosslisting_subjects = row['Crosslisting Subjects'].split(',')
+        crosslisting_catalog_numbers = row['Crosslisting Catalog Numbers'].split(',')
 
-        # Fetch primary course and equivalent course
         try:
             primary_course = Course.objects.get(course_id=primary_course_id)
-            equivalent_course = Course.objects.get(
-                department__code=equivalent_subject,
-                catalog_number=equivalent_catalog_number,
-            )
         except Course.DoesNotExist:
             logging.warning(
-                f'Course not found for Course ID: {primary_course_id} or Crosslisting: {equivalent_subject} {equivalent_catalog_number}'
+                f'Primary course not found for Course ID: {primary_course_id}'
             )
             continue
 
-        # Check if this equivalence already exists
-        if not CourseEquivalent.objects.filter(
-            primary_course=primary_course, equivalent_course=equivalent_course
-        ).exists():
-            new_equivalent = CourseEquivalent(
+        for i in range(len(crosslisting_subjects)):
+            equivalent_subject = crosslisting_subjects[i].strip()
+            equivalent_catalog_number = crosslisting_catalog_numbers[i].strip()
+
+            try:
+                equivalent_course = Course.objects.get(
+                    department__code=equivalent_subject,
+                    catalog_number=equivalent_catalog_number,
+                )
+            except Course.DoesNotExist:
+                logging.warning(
+                    f'Equivalent course not found for Department: {equivalent_subject}, Catalog Number: {equivalent_catalog_number}'
+                )
+                continue
+
+            CourseEquivalent.objects.update_or_create(
                 primary_course=primary_course, equivalent_course=equivalent_course
             )
-            new_equivalents.append(new_equivalent)
 
-    # Bulk create new course equivalents
-    CourseEquivalent.objects.bulk_create(new_equivalents)
     logging.info('CourseEquivalent insertion completed!')
 
 
@@ -340,16 +339,16 @@ if __name__ == '__main__':
     try:
         with transaction.atomic():
             insert_department(trimmed_rows)
-        # with transaction.atomic():
-        #     insert_academic_term(trimmed_rows)
+        with transaction.atomic():
+            insert_academic_term(trimmed_rows)
         with transaction.atomic():
             insert_course(trimmed_rows)
-        with transaction.atomic():
-            insert_section(trimmed_rows)
-        with transaction.atomic():
-            insert_class_meeting(trimmed_rows)
-        with transaction.atomic():
-            insert_class_year_enrollment(trimmed_rows)
+        # with transaction.atomic():
+        #     insert_section(trimmed_rows)
+        # with transaction.atomic():
+        #     insert_class_meeting(trimmed_rows)
+        # with transaction.atomic():
+        #     insert_class_year_enrollment(trimmed_rows)
         with transaction.atomic():
             insert_course_equivalent(trimmed_rows)
 
