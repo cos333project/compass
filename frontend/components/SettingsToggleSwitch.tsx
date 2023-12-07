@@ -1,6 +1,6 @@
-import { ToggleSwitchProps } from '../types';
+import { ToggleSwitchProps, FC } from '../types';
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {
+const ToggleSwitch: FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {
   return (
     <label className='flex items-center cursor-pointer'>
       <div className='relative'>

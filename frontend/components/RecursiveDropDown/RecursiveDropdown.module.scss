@@ -1,54 +1,43 @@
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 .recursiveDropdownContainer {
-  .dropdown {
-    li {
-      transition: all 0.9s ease;
+  color: #000; /* All text in black */
+  background-color: transparent;
+}
 
-      &:hover {
-        transform: scale(1.02);
-        background-color: mix($compass-blue, #fff, 80%); // Replace $primaryColor with your primary color variable
+.dropdown {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
-        .categoryTitle, .item {
-          animation: pulse 3s infinite;
-        }
-      }
-    }
+.category {
+  margin: 2px 0;
+  padding-left: 10px;
+}
 
-    .nested {
-      animation: slideDown 0.4s ease-out;
-    }
+.categoryTitle {
+  padding: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0; /* Grey background for categories */
+}
 
-    .indicator {
-      transition: transform 0.3s ease;
+.item {
+  padding: 5px 10px;
+  background-color: #f9f9f9; /* Lighter grey background for items */
+}
 
-      &.open {
-        transform: rotate(90deg);
-      }
-    }
+.indicator {
+  margin-right: 5px;
+  font-size: 0.8em; /* Smaller font size for the indicator */
+}
 
-    .statusIcon {
-      svg {
-        filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
-      }
-    }
-  }
+.nested {
+  display: none;
+  padding-left: 3px;
+}
+
+.nested.active {
+  display: block;
 }

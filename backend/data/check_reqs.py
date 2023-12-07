@@ -1,7 +1,6 @@
 import os
 import sys
-import json
-import yaml
+import ujson as json
 import django
 import logging
 import collections
@@ -63,7 +62,7 @@ def cumulative_time(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         total_time += end_time - start_time
-        # print(f"Current total time for {func.__name__}: {total_time} seconds")
+        # print(f'Current total time for {func.__name__}: {total_time} seconds')
         return result
 
     return wrapper
@@ -74,40 +73,22 @@ def check_user(net_id, major, minors):
     output = {}
     user_courses = create_courses(net_id)
 
-    # get rid of this
-    for sem in user_courses:
-        for course in sem:
-            if course['inst'].catalog_number == '217':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '216':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '218':
-                course['settled'] = [2504]
-            elif course['inst'].catalog_number == '219':
-                course['settled'] = [2516]
-            elif course['inst'].catalog_number == '326':
-                course['settled'] = [2515]
-            elif course['inst'].catalog_number == '520':
-                course['settled'] = [2515]
-
     if major is not None:
-        output[major] = {}
+        major_code = major['code']
+        output[major_code] = {}
         formatted_courses, formatted_req = check_requirements(
-            'Major', major, user_courses
+            'Major', major_code, user_courses
         )
-        # output[major['code']]['courses'] = formatted_courses
-        output[major]['requirements'] = formatted_req
+        output[major_code]['requirements'] = formatted_req
 
     output['Minors'] = {}
     for minor in minors:
+        minor = minor['code']
         output['Minors'][minor] = {}
         formatted_courses, formatted_req = check_requirements(
             'Minor', minor, user_courses
         )
-        # output['minors'][minor['code']]['courses'] = formatted_courses
         output['Minors'][minor]['requirements'] = formatted_req
-
-    # print(output['COS-AB'])
 
     return output
 
@@ -120,15 +101,6 @@ def create_courses(net_id):
     )
     for course_inst in course_insts:
         courses[course_inst.semester - 1].append({'inst': course_inst.course})
-    return courses
-
-
-@cumulative_time
-# course_dict is a dictionary containing course id: semester pairs.
-def create_dummy_courses(course_dict):
-    courses = DEFAULT_SCHEDULE
-    for id in course_dict:
-        courses[course_dict[id] - 1].append({'inst': Course.objects.get(id=id)})
     return courses
 
 
@@ -224,7 +196,7 @@ def assign_settled_courses_to_reqs(req, courses):
     and updates the appropriate counts.
     """
     old_deficit = req['inst'].min_needed - req['count']
-    if req['inst'].max_counted != None:
+    if req['inst'].max_counted is not None:
         old_available = req['inst'].max_counted - req['count']
 
     was_satisfied = old_deficit <= 0
@@ -247,12 +219,12 @@ def assign_settled_courses_to_reqs(req, courses):
     req['count'] += newly_satisfied
     new_deficit = req['inst'].min_needed - req['count']
     if (not was_satisfied) and (new_deficit <= 0):
-        if req['inst'].max_counted == None:
+        if req['inst'].max_counted is None:
             return req['count']
         else:
             return min(req['inst'].max_counted, req['count'])
     elif was_satisfied and (new_deficit <= 0):
-        if req['inst'].max_counted == None:
+        if req['inst'].max_counted is None:
             return newly_satisfied
         else:
             return min(old_available, newly_satisfied)
@@ -471,7 +443,7 @@ def format_req_output(req):
                     # print(subreq)
                     pass
             child = format_req_output(subreq)
-            if child != None:
+            if child is not None:
                 if 'code' in child:
                     code = child.pop('code')
                     req_list[code] = child
@@ -503,11 +475,11 @@ def format_req_output(req):
 
 def main():
     output = check_user(
-        'gc5512',
+        'mn4560',
         {'code': 'COS-AB', 'name': 'Computer Science - AB'},
-        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'DAN', 'name': 'Dance'}],
+        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
     )
-    print(output['minors'])
+    # print(output['Minors'])
 
 
 if __name__ == '__main__':

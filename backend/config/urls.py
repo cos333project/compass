@@ -32,5 +32,5 @@ urlpatterns = [
     path('fetch_courses/', views.GetUserCourses.as_view(), name='fetch_courses'),
     path('update_courses/', views.update_courses, name='update_courses'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
-    path('update_user/', views.update_user, name='update_settings'),
+    path('update_user/', views.update_user, name='update_user'),
 ]

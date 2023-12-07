@@ -1,49 +1,49 @@
+// TabbedMenu.module.scss
 .tabContainer {
-  width: 100%;
-  height: 703px;
-  margin: 10px auto;
-  border: 1px solid #E0E0E0;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background: transparent;
-}
-
-.tabMenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  background: #F7F7F7;
-  border-bottom: 1px solid #E0E0E0;
-}
-
-.tabMenu li {
-  padding: 15px 30px;
-  cursor: pointer;
-  border-right: 1px solid #E0E0E0;
-  &:last-child {
-    border-right: none;
+    width: full;
+    height: 703px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures child elements do not break the rounded corners */
+    display: flex;
+    flex-direction: column;
   }
-  &:hover, &.active {
-    background-color: #fff;
-    font-weight: 500;
+  
+  .tabMenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    background: #f2f2f2;
+    border-bottom: 1px solid #ccc;
   }
-  &.active {
-    border-bottom: 2px solid #6366F1; // A vibrant blue for active tab indicator
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+  
+  .tabMenu li {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-right: 1px solid #ccc;
+    border-top-left-radius: 6px; /* Rounded corners for tabs */
+    border-top-right-radius: 6px; /* Rounded corners for tabs */
+    &:last-child {
+      border-right: none;
+    }
+    &:hover {
+      background-color: #e2e2e2;
+    }
+    &.active {
+      background: white;
+      border-bottom: none;
+    }
   }
-}
-
-.tabContent {
-  padding: 20px;
-  background: white;
-  flex-grow: 1;
-  overflow-y: auto;
-  box-sizing: border-box;
-  border-radius: 0 0 12px 12px;
-  height: calc(100% - 48px); // Adjust height based on the tab height
-}
+  
+  .tabContent {
+    padding: 20px;
+    background: white;
+    border-radius: 0 0 8px 8px; /* Rounded corners for the bottom part of the rectangle */
+    flex-grow: 1;
+    overflow-y: auto; /* Makes the content area scrollable */
+    height: 650px; /* Fixed height for the content area */
+  }
+  
+  

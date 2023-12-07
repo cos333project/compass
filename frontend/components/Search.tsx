@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { LRUCache } from 'typescript-lru-cache';
@@ -12,7 +12,7 @@ const searchCache = new LRUCache<string, Course[]>({
   entryExpirationTimeInMS: 1000 * 60 * 60 * 24,
 });
 
-const Search: React.FC = () => {
+const Search: FC = () => {
   const [query, setQuery] = useState<string>('');
   // const [animatedItems, setAnimatedItems] = useState<Set<string>>(new Set());
   const {

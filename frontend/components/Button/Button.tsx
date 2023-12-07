@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, FC } from 'react';
 
 import classNames from 'classnames';
 
@@ -8,7 +8,7 @@ export type Props = HTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
 };
 
-export const Button: React.FC<Props> = ({ children, ...props }) => {
+export const Button: FC<Props> = ({ children, ...props }) => {
   return (
     <button className={classNames(styles.Button)} {...props}>
       {children}

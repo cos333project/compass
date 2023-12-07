@@ -1,20 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 
-import { Dictionary } from '@/types';
-
-import { RecursiveDropdown } from '../RecursiveDropDown'; // Adjust the import path as necessary
+import { RecursiveDropdown } from '../RecursiveDropDown';
 
 import styles from './TabbedMenu.module.scss';
 
-type TabsData = {
-  [tabName: string]: string | Dictionary;
-};
+interface TabbedMenuProps {
+  tabsData: { [key: string]: object };
+  refresh: number;
+}
 
-type TabbedMenuProps = {
-  tabsData: TabsData;
-};
-
-const TabbedMenu: React.FC<TabbedMenuProps> = ({ tabsData }) => {
+const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,7 +22,9 @@ const TabbedMenu: React.FC<TabbedMenuProps> = ({ tabsData }) => {
     setActiveTab(tabKey);
   };
 
+  // Check if tabsData is well-defined and not empty
   if (!tabsData || Object.keys(tabsData).length === 0) {
+    // Optionally, render some placeholder or loading indicator
     return <div>Loading...</div>;
   }
 
@@ -45,9 +42,7 @@ const TabbedMenu: React.FC<TabbedMenuProps> = ({ tabsData }) => {
         ))}
       </ul>
       <div className={styles.tabContent}>
-        {activeTab && typeof tabsData[activeTab] !== 'string' && (
-          <RecursiveDropdown dictionary={tabsData[activeTab] as Dictionary} />
-        )}
+        {activeTab && <RecursiveDropdown key={`${refresh}`} dictionary={tabsData[activeTab]} />}
       </div>
     </div>
   );

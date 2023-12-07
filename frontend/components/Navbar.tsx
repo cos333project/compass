@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, FC } from 'react';
 
 import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -16,7 +16,7 @@ const navigation = [
   { name: 'Contact Us', href: '/' },
 ];
 
-const Navbar: React.FC = () => {
+const Navbar: FC = () => {
   const { isAuthenticated, login } = useAuthStore((state) => ({
     isAuthenticated: state.isAuthenticated,
     login: state.login,

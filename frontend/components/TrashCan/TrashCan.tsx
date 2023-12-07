@@ -1,3 +1,5 @@
+import { FC } from 'react';
+
 import { useDroppable, UniqueIdentifier } from '@dnd-kit/core';
 import './TrashCan.module.scss';
 
@@ -5,7 +7,7 @@ export type TrashCanProps = {
   id: UniqueIdentifier;
 };
 
-export const TrashCan: React.FC<TrashCanProps> = ({ id }) => {
+export const TrashCan: FC<TrashCanProps> = ({ id }) => {
   const { setNodeRef, isOver } = useDroppable({
     id,
   });
