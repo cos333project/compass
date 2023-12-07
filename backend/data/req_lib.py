@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from .configs import Configs
+from configs import Configs
 import requests
 import ujson as json
 

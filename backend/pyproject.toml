@@ -49,6 +49,10 @@ poetry-plugin-export = "^1.6.0"
 gunicorn = "^21.2.0"
 whitenoise = "^6.6.0"
 django-heroku = "^0.3.1"
+tqdm = "^4.66.1"
+selenium = "^4.16.0"
+webdriver-manager = "^4.0.1"
+bs4 = "^0.0.1"
 
 [tool.poetry.dev-dependencies]
 # See `ruff help` for more on Ruff's top-level commands.

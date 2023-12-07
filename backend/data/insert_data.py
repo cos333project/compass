@@ -2,8 +2,10 @@ import csv
 import logging
 import os
 import sys
+import re
 from datetime import datetime
 from pathlib import Path
+from tqdm import tqdm
 
 sys.path.append(str(Path('../').resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -23,13 +25,21 @@ from compass.models import (
     Instructor,
 )
 
+
+# -------------------------------------------------------------------------------------#
+
+
 logging.basicConfig(level=logging.INFO)
 
+class_year_enrollment_pattern = re.compile(r'Year (\d+): (\d+) students')
+
+
+def parse_class_year_enrollments(enrollment_string, pattern):
+    return pattern.findall(enrollment_string)
+
 
 # -------------------------------------------------------------------------------------#
 
-
-# -------------------------------------------------------------------------------------#
 
 filename = input('Enter the name of the CSV file (without extension): ')
 relative_path = Path(f'../data/{filename}.csv')
@@ -39,6 +49,7 @@ if not relative_path.exists():
     sys.exit(1)
 
 abs_path = relative_path.resolve()
+
 
 # -------------------------------------------------------------------------------------#
 
@@ -90,34 +101,31 @@ def insert_academic_term(rows):
 def insert_course(rows):
     logging.info('Starting Course insertions...')
 
-    # Fetch all departments and store in a dictionary for quick access
     departments = {dept.code: dept for dept in Department.objects.all()}
+    new_courses = []
+    updated_courses = []
 
-    for row in rows:
+    for row in tqdm(rows, desc='Processing Courses'):
         course_id = row['Course ID']
         dept_code = row['Subject Code']
-        title = row['Course Title']
-        catalog_number = row['Catalog Number']
-
         department = departments.get(dept_code)
         if not department:
             logging.warning(f'Department with code {dept_code} not found!')
             continue
 
-        reading_list = ''
-        for i in range(1, 7):  # For each pair of author and title
-            author_key = f'Reading List Author {i}'
-            title_key = f'Reading List Title {i}'
-
-            if row.get(author_key) and row.get(title_key):
-                book_entry = f'{row[title_key]}: {row[author_key]}'
-                reading_list += (book_entry + '; ') if reading_list else book_entry
+        reading_list_entries = [
+            f"{row[f'Reading List Title {i}']}:{row[f'Reading List Author {i}']}"
+            for i in range(1, 7)
+            if row.get(f'Reading List Author {i}')
+            and row.get(f'Reading List Title {i}')
+        ]
+        reading_list = '; '.join(reading_list_entries)
 
         defaults = {
             'guid': row.get('Course GUID'),
             'department': department,
-            'title': title,
-            'catalog_number': catalog_number,
+            'title': row['Course Title'],
+            'catalog_number': row['Catalog Number'],
             'description': row.get('Course Description'),
             'drop_consent': row.get('Drop Consent'),
             'add_consent': row.get('Add Consent'),
@@ -132,17 +140,21 @@ def insert_course(rows):
         }
 
         try:
-            # Try to update or create the course
-            Course.objects.update_or_create(course_id=course_id, defaults=defaults)
+            course, created = Course.objects.get_or_create(
+                course_id=course_id, defaults=defaults
+            )
+            if created:
+                new_courses.append(course)
+            else:
+                updated_courses.append(course)
+
         except Course.MultipleObjectsReturned:
-            # If multiple courses are returned, log their details
-            duplicate_courses = Course.objects.filter(course_id=course_id)
             logging.error(f'Duplicate courses found for Course ID: {course_id}')
-            for course in duplicate_courses:
-                logging.error(
-                    f'Course ID: {course.course_id}, Title: {course.title}, Department: {course.department.code}, Catalog Number: {course.catalog_number}'
-                )
-            continue
+
+    field_names = [field.name for field in Course._meta.fields if field.name != 'id']
+    Course.objects.bulk_create(new_courses)
+    Course.objects.bulk_update(updated_courses, field_names)
+
     logging.info('Course insertion completed!')
 
 
@@ -151,38 +163,65 @@ def insert_course(rows):
 
 def insert_course_equivalent(rows):
     logging.info('Starting CourseEquivalent insertion...')
+    course_cache = {course.guid: course for course in Course.objects.all()}
+    new_course_equivalents = []
+    updated_course_equivalents = []
 
-    for row in rows:
-        primary_course_id = row['Course ID'].strip()
-        crosslisting_subjects = row['Crosslisting Subjects'].split(',')
-        crosslisting_catalog_numbers = row['Crosslisting Catalog Numbers'].split(',')
+    for row in tqdm(rows, desc='Processing Course Equivalents...'):
+        primary_guid = row['Course GUID'].strip()
+        primary_course = course_cache.get(primary_guid)
 
-        try:
-            primary_course = Course.objects.get(course_id=primary_course_id)
-        except Course.DoesNotExist:
-            logging.warning(
-                f'Primary course not found for Course ID: {primary_course_id}'
-            )
+        if not primary_course:
+            logging.warning(f'Primary course not found for Course GUID: {primary_guid}')
             continue
 
-        for i in range(len(crosslisting_subjects)):
-            equivalent_subject = crosslisting_subjects[i].strip()
-            equivalent_catalog_number = crosslisting_catalog_numbers[i].strip()
+        if 'Crosslistings' not in row or pd.isna(row['Crosslistings']):
+            continue  # Skip if no crosslistings
 
-            try:
-                equivalent_course = Course.objects.get(
-                    department__code=equivalent_subject,
-                    catalog_number=equivalent_catalog_number,
-                )
-            except Course.DoesNotExist:
-                logging.warning(
-                    f'Equivalent course not found for Department: {equivalent_subject}, Catalog Number: {equivalent_catalog_number}'
-                )
-                continue
+        crosslistings = set(
+            crosslisting.strip()
+            for crosslisting in str(row['Crosslistings']).split('/')
+        )
+        for crosslisting in crosslistings:
+            crosslisting_parts = crosslisting.split()
+            if len(crosslisting_parts) != 2:
+                continue  # Skip if the format is not as expected
 
-            CourseEquivalent.objects.update_or_create(
-                primary_course=primary_course, equivalent_course=equivalent_course
+            crosslisting_dept, crosslisting_catalog = crosslisting_parts
+            if (
+                crosslisting_dept == row['Subject Code'].strip()
+                and crosslisting_catalog == row['Catalog Number'].strip()
+            ):
+                continue  # Skip the primary course itself
+
+            equivalent_course_key = (crosslisting_dept, crosslisting_catalog)
+            if equivalent_course_key not in course_cache:
+                try:
+                    equivalent_course = Course.objects.get(
+                        department__code=crosslisting_dept,
+                        catalog_number=crosslisting_catalog,
+                    )
+                    course_cache[equivalent_course_key] = equivalent_course
+                except Course.DoesNotExist:
+                    logging.warning(
+                        f'Equivalent course not found for Department: {crosslisting_dept}, Catalog Number: {crosslisting_catalog}'
+                    )
+                    continue
+
+            course_equivalent, created = CourseEquivalent.objects.get_or_create(
+                primary_course=primary_course,
+                equivalent_course=course_cache[equivalent_course_key],
+                defaults={'equivalence_type': 'CROSS_LIST'},
             )
+
+            if not created:
+                updated_course_equivalents.append(course_equivalent)
+
+    field_names = [
+        field.name for field in CourseEquivalent._meta.fields if field.name != 'id'
+    ]
+    CourseEquivalent.objects.bulk_create(new_course_equivalents, ignore_conflicts=True)
+    CourseEquivalent.objects.bulk_update(updated_course_equivalents, field_names)
 
     logging.info('CourseEquivalent insertion completed!')
 
@@ -191,108 +230,120 @@ def insert_course_equivalent(rows):
 
 
 def insert_section(rows):
-    logging.info('Starting Section insertions...')
+    logging.info('Starting Section processing...')
 
-    new_sections = []
-    for row in rows:
-        course_id = int(row['Course ID'].strip())
-        term_code = int(row['Term Code'].strip())
-        class_number = row['Class Number']
+    for row in tqdm(rows, desc='Processing Sections...'):
+        # Extract necessary data from the row
+        guid = int(row['Course GUID'].strip())
+        class_number = int(row['Class Number'].strip())
+        term_code = row['Term Code'].strip()
 
-        # Fetch or create the instructor, if provided
+        # Fetch the Course and AcademicTerm objects
+        try:
+            course_obj = Course.objects.get(guid=guid)
+            term_obj = AcademicTerm.objects.get(term_code=term_code)
+        except (Course.DoesNotExist, AcademicTerm.DoesNotExist) as e:
+            logging.error(f'Required Course or AcademicTerm not found: {e}')
+            continue  # Skip this row if either object is not found
+
+        # Fetch or create the instructor
         instructor_emplid = row.get('Instructor EmplID', '').strip()
-        instructor_full_name = row.get('Instructor Full Name', '').strip()
+        instructor_first_name = row.get('Instructor First Name', '').strip()
+        instructor_last_name = row.get('Instructor Last Name', '').strip()
+        instructor_full_name = f'{instructor_first_name} {instructor_last_name}'.strip()
 
         instructor_obj = None
         if instructor_emplid:
-            instructor_obj, _ = Instructor.objects.get_or_create(
-                emplid=instructor_emplid,
+            try:
+                instructor_obj, _ = Instructor.objects.get_or_create(
+                    emplid=instructor_emplid,
+                    defaults={
+                        'first_name': instructor_first_name,
+                        'last_name': instructor_last_name,
+                        'full_name': instructor_full_name,
+                    },
+                )
+            except Exception as e:
+                logging.error(f'Error creating/updating Instructor: {e}')
+                continue  # Skip this row if there's an error with instructor creation
+
+        # Update or create the section
+        try:
+            section_obj, created = Section.objects.update_or_create(
+                class_number=class_number,
                 defaults={
-                    'full_name': instructor_full_name,
+                    'course': course_obj,
+                    'class_type': row.get('Class Type', ''),
+                    'class_section': row.get('Class Section', ''),
+                    'term': term_obj,
+                    'track': row.get('Course Track', '').strip(),
+                    'seat_reservations': row.get('Has Seat Reservations', '').strip(),
+                    'capacity': int(row.get('Class Capacity', 0)),
+                    'status': row.get('Class Status', ''),
+                    'enrollment': int(row.get('Class Enrollment', 0)),
+                    'instructor': instructor_obj if instructor_obj else None,
                 },
             )
+        except Exception as e:
+            logging.error(f'Error creating/updating Section: {e}')
 
-        if not Section.objects.filter(
-            course__course_id=course_id,
-            term__term_code=term_code,
-            class_number=class_number,
-        ).exists():
-            section = Section(
-                course=Course.objects.get(course_id=course_id),
-                class_number=class_number,
-                class_type=row.get('Class Type', ''),
-                class_section=row.get('Class Section', ''),
-                term=AcademicTerm.objects.get(term_code=term_code),
-                track=row.get('Course Track', '').strip(),
-                seat_reservations=row.get('Class Year Enrollments', '').strip(),
-                instructor=instructor_obj,
-                capacity=int(row.get('Class Capacity', 0)),
-                status=row.get('Class Status', ''),
-                enrollment=int(row.get('Class Enrollment', 0)),
-            )
-            new_sections.append(section)
-
-    Section.objects.bulk_create(new_sections)
-    logging.info('Section insertion completed!')
+    logging.info('Section processing completed!')
 
 
 # -------------------------------------------------------------------------------------#
 
 
 def insert_class_year_enrollment(rows):
-    logging.info('Starting ClassYearEnrollment insertions...')
+    logging.info('Starting ClassYearEnrollment insertions and updates...')
 
-    new_enrollments = []
-    for row in rows:
+    for row in tqdm(rows, desc='Processing Class Year Enrollments...'):
         course_id = int(row['Course ID'].strip())
-        term_code = int(row['Term Code'].strip())
-        class_number = row['Class Number']
-        class_section = row['Class Section']
-        class_year = int(row['Class Year'])
-        enrl_seats = int(row['Enrollment Seats'])
+        guid = int(row['Course GUID'].strip())
+        term_code = row['Term Code'].strip()
+        class_number = row['Class Number'].strip()
+        class_section = row['Class Section'].strip()
 
         try:
             section = Section.objects.get(
                 course__course_id=course_id,
+                course__guid=guid,
                 term__term_code=term_code,
                 class_number=class_number,
             )
         except Section.DoesNotExist:
-            logging.warning(
+            logging.error(  # Changed to error for consistency
                 f'Section not found for Course ID: {course_id}, Term Code: {term_code}, Class Section: {class_section}'
             )
             continue
+        enrollment_info = parse_class_year_enrollments(
+            row['Class Year Enrollments'], class_year_enrollment_pattern
+        )
 
-        if not ClassYearEnrollment.objects.filter(
-            section=section, class_year=class_year
-        ).exists():
-            enrollment = ClassYearEnrollment(
-                section=section, class_year=class_year, enrl_seats=enrl_seats
-            )
-            new_enrollments.append(enrollment)
+    for class_year, enrl_seats in enrollment_info:
+        ClassYearEnrollment.objects.update_or_create(
+            section=section,
+            class_year=int(class_year),
+            defaults={'enrl_seats': int(enrl_seats)},
+        )
 
-    ClassYearEnrollment.objects.bulk_create(new_enrollments)
-    logging.info('ClassYearEnrollment insertion completed!')
+    logging.info('ClassYearEnrollment insertions and updates completed!')
 
 
 # -------------------------------------------------------------------------------------#
 
 
 def insert_class_meeting(rows):
-    logging.info('Starting ClassMeeting insertions...')
+    logging.info('Starting ClassMeeting insertions and updates...')
 
     def parse_time(time_str):
         return datetime.strptime(time_str, '%H:%M').time()
 
-    new_meetings = []
-    for row in rows:
+    for row in tqdm(rows, desc='Processing Class Meetings...'):
         course_id = int(row['Course ID'].strip())
         term_code = int(row['Term Code'].strip())
-        # class_type = row['Class Type']
         class_section = row['Class Section']
         meeting_number = int(row['Meeting Number'].strip())
 
-        # Fetch the section
         try:
             section = Section.objects.get(
                 course__course_id=course_id,
@@ -305,22 +356,19 @@ def insert_class_meeting(rows):
             )
             continue
 
-        if not ClassMeeting.objects.filter(
-            section=section, meeting_number=meeting_number
-        ).exists():
-            meeting = ClassMeeting(
-                section=section,
-                meeting_number=meeting_number,
-                start_time=parse_time(row['Meeting Start Time']),
-                end_time=parse_time(row['Meeting End Time']),
-                room=row.get('Meeting Room', '').strip(),
-                days=row.get('Meeting Days', '').strip(),
-                building_name=row.get('Building Name', '').strip(),
-            )
-            new_meetings.append(meeting)
+        defaults = {
+            'start_time': parse_time(row['Meeting Start Time']),
+            'end_time': parse_time(row['Meeting End Time']),
+            'room': row.get('Meeting Room', '').strip(),
+            'days': row.get('Meeting Days', '').strip(),
+            'building_name': row.get('Building Name', '').strip(),
+        }
 
-    ClassMeeting.objects.bulk_create(new_meetings)
-    logging.info('ClassMeeting insertion completed!')
+        ClassMeeting.objects.update_or_create(
+            section=section, meeting_number=meeting_number, defaults=defaults
+        )
+
+    logging.info('ClassMeeting insertions and updates completed!')
 
 
 # -------------------------------------------------------------------------------------#
@@ -338,19 +386,13 @@ if __name__ == '__main__':
 
     try:
         with transaction.atomic():
-            insert_department(trimmed_rows)
-        with transaction.atomic():
-            insert_academic_term(trimmed_rows)
-        with transaction.atomic():
-            insert_course(trimmed_rows)
-        # with transaction.atomic():
-        #     insert_section(trimmed_rows)
-        # with transaction.atomic():
-        #     insert_class_meeting(trimmed_rows)
-        # with transaction.atomic():
-        #     insert_class_year_enrollment(trimmed_rows)
-        with transaction.atomic():
+            # insert_department(trimmed_rows)
+            # insert_academic_term(trimmed_rows)
+            # insert_course(trimmed_rows)
             insert_course_equivalent(trimmed_rows)
+            # insert_section(trimmed_rows)
+            # insert_class_meeting(trimmed_rows)
+            # insert_class_year_enrollment(trimmed_rows)
 
     except Exception as e:
         logging.error(f'Transaction failed: {e}')
