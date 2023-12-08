@@ -89,39 +89,44 @@ def push_requirement(req):
                 req_fields['min_needed'] = req[field]
             else:
                 req_fields[field] = req[field]
-    req_inst = Requirement.objects.create(**req_fields)
+    # req_inst = Requirement.objects.create(**req_fields)
 
     if ('req_list' in req) and (len(req['req_list']) != 0):
         for sub_req in req['req_list']:
             if "double_counting_allowed" in req_fields:
                 sub_req["double_counting_allowed"] = \
                     req_fields["double_counting_allowed"]
-            sub_req_inst = push_requirement(sub_req)
-            sub_req_inst.parent = req_inst # assign sub_req_inst as child of req_inst
-            sub_req_inst.save()
+            print(sub_req) #delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+            # sub_req_inst = push_requirement(sub_req)
+            # sub_req_inst.parent = req_inst # assign sub_req_inst as child of req_inst
+            # sub_req_inst.save()
 
     elif ('course_list' in req) and (len(req['course_list']) != 0):
         course_inst_list, dept_list = \
             load_course_list(req['course_list'])
         for course_inst in course_inst_list:
-            req_inst.course_list.add(course_inst)
+            print(course_inst) # delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+            # req_inst.course_list.add(course_inst)
         if len(dept_list) != 0:
-            req_inst.dept_list = json.dumps(dept_list)
-            req_inst.save()
+            print(dept_list) # delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+            # req_inst.dept_list = json.dumps(dept_list)
+            # req_inst.save()
 
     elif ('excluded_course_list' in req) and (len(req['excluded_course_list']) != 0):
         course_inst_list = load_course_list(req['excluded_course_list'])
         for course_inst in course_inst_list:
-            req_inst.excluded_course_list.add(course_inst)
+            print(course_inst) #delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+            # req_inst.excluded_course_list.add(course_inst)
 
     elif ((('dist_req' not in req) or (req['dist_req'] == None))
         and (('num_courses' not in req) or (req['num_courses'] == None))
         and (('dept_list' not in req) or (req['dept_list'] == None))):
-        req_inst.max_counted = 1
-        req_inst.min_needed = 0
-        req_inst.save()
-
-    return req_inst
+        print("done") #delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+        # req_inst.max_counted = 1
+        # req_inst.min_needed = 0
+        # req_inst.save()
+    return 0
+    # return req_inst
 
 
 def push_degree(yaml_file):
@@ -187,13 +192,13 @@ def push_minor(yaml_file):
                 minor_fields[field] = data[field]
 
     minor_fields["min_needed"] = len(data['req_list'])
-    minor_inst = Minor.objects.create(**minor_fields)
+    # minor_inst = Minor.objects.create(**minor_fields)
 
     if 'excluded_majors' in data:
         for major_code in data['excluded_majors']:
             try:
                 major_inst = Major.objects.get(code=major_code)
-                minor_inst.excluded_majors.add(major_inst)
+                # minor_inst.excluded_majors.add(major_inst)
             except Major.DoesNotExist:
                 logging.info(f"Major with code {major_code} not found")
 
@@ -201,14 +206,15 @@ def push_minor(yaml_file):
         for minor_code in data['excluded_minors']:
             try:
                 other_minor_inst = Minor.objects.get(code=minor_code)
-                minor_inst.excluded_minors.add(other_minor_inst)
+                # minor_inst.excluded_minors.add(other_minor_inst)
             except Minor.DoesNotExist:
                 logging.info(f"Minor with code {minor_code} not found")
 
     for req in data['req_list']:
-        req_inst = push_requirement(req)
-        req_inst.minor = minor_inst
-        req_inst.save()
+        print(req) #delete this later !!!!!!!!!!!!!!!!!!!!!!!!
+        # req_inst = push_requirement(req)
+        # req_inst.minor = minor_inst
+        # req_inst.save()
 
 
 def push_certificate(yaml_file):
@@ -276,8 +282,8 @@ if __name__ == '__main__':
     # push_major(Path("../majors/COS-AB.yaml").resolve())
     # push_certificate(Path("../certificates/AAS.yaml").resolve())
     # push_minor(Path("../minors/CLA.yaml").resolve())
-    push_minor(Path("../minors/DAN.yaml").resolve())
-    push_minor(Path("../minors/CHI.yaml").resolve())
-    push_minor(Path("../minors/CS.yaml").resolve())
-    push_minor(Path("../minors/MQE.yaml").resolve())
-    push_minor(Path("../minors/FIN.yaml").resolve())
+    push_minor(Path("../minors/AFS.yaml").resolve())
+    # push_minor(Path("../minors/CHI.yaml").resolve())
+    # push_minor(Path("../minors/CS.yaml").resolve())
+    # push_minor(Path("../minors/MQE.yaml").resolve())
+    # push_minor(Path("../minors/FIN.yaml").resolve())
