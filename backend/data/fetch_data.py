@@ -98,11 +98,16 @@ def process_course(term, subject, course, seat_mapping, course_details, writer):
 
 
 def process_courses(courses, seat_info, course_details, writer):
-    """ """
+    """
+    Processes all courses from the courses/courses endpoint.
+    """
     seat_mapping = {seat['course_id']: seat for seat in seat_info.get('course', [])}
     for term in courses.get('term', []):  # Loop through each term
         for subject in term.get('subjects', []):  # Loop through each subject
             for course in subject.get('courses', []):  # Loop through each course
+                if not course_details:  # Check if course_details is None or empty
+                    print(f'No course details available for {course}.')
+                    return
                 # Fetch the course details and process each course
                 course_id = course.get('course_id', '')
                 course_detail = course_details.get(course_id, {}).get(
@@ -365,13 +370,10 @@ def main():
         'f2022': '1232',
         'f2021': '1222',
         'f2020': '1212',
-        'f2019': '1202',
         's2024': '1244',
         's2023': '1234',
         's2022': '1224',
         's2021': '1214',
-        's2020': '1204',
-        's2019': '1194',
     }
 
     # TODO: Standardize this with backend/constants.py

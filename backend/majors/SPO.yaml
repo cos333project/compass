@@ -190,9 +190,9 @@ req_list:
           Spanish or Portuguese may be taken in English, in which case all written
           work must be completed in the target language.
         course_list:
-        - CRW 3*
-        - CRW 4*
-        - CRW 5*
+        - CWR 3*
+        - CWR 4*
+        - CWR 5*
         - DAN 3*
         - DAN 4*
         - DAN 5*
@@ -352,9 +352,9 @@ req_list:
           Spanish or Portuguese may be taken in English, in which case all written
           work must be completed in the target language.
         course_list:
-        - CRW 3*
-        - CRW 4*
-        - CRW 5*
+        - CWR 3*
+        - CWR 4*
+        - CWR 5*
         - DAN 3*
         - DAN 4*
         - DAN 5*

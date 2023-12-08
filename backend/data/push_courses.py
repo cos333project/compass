@@ -7,7 +7,7 @@ from pathlib import Path
 from django.db import transaction
 
 logging.basicConfig(level=logging.INFO)
-sys.path.append(str(Path("..").resolve()))
+sys.path.append(str(Path("../").resolve()))
 from config import django_init
 from compass.models import Course, Department
 

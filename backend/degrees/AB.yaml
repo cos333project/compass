@@ -120,6 +120,7 @@ req_list:
     the language requirement through coursework, we expect successful completion of
     courses normally numbered through 107/108. "
   double_counting_allowed: false
+  # TODO: LANG is not a department in database
   course_list:
   - LANG 1027
   - LANG 107
