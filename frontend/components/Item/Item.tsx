@@ -1,13 +1,13 @@
 import { memo, forwardRef, useEffect } from 'react';
 
-import type { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
+import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
-import { Handle, Remove } from './components';
-import styles from './Item.module.scss';
 import { InfoComponent } from '../InfoComponent.tsx';
 
+import { Handle, Remove } from './components';
+import styles from './Item.module.scss';
 
 export type Props = {
   dragOverlay?: boolean;
@@ -79,7 +79,6 @@ export const Item = memo(
         };
       }, [dragOverlay]);
 
-
       return renderItem ? (
         renderItem({
           dragOverlay: Boolean(dragOverlay),
@@ -134,9 +133,12 @@ export const Item = memo(
             {value}
             <span className={styles.Actions}>
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
-                <div id="modal-root">
-                  <InfoComponent dept = {value.toString().split(' ')[0]} coursenum={value.toString().split(' ')[1]} />
-                </div>
+              <div id='modal-root'>
+                <InfoComponent
+                  dept={value.toString().split(' ')[0]}
+                  coursenum={value.toString().split(' ')[1]}
+                />
+              </div>
               <Remove className={styles.Remove} onClick={onRemove} />
             </span>
           </div>

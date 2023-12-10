@@ -1,5 +1,4 @@
 import logging
-from collections import OrderedDict
 from re import sub, search, split, compile, IGNORECASE
 from urllib.request import urlopen
 from urllib.parse import urlencode
@@ -12,12 +11,8 @@ from django.shortcuts import redirect
 from .models import (
     models,
     Course,
-    Department,
-    Degree,
     Major,
     Minor,
-    Certificate,
-    Requirement,
     CustomUser,
     UserCourses,
 )
@@ -29,7 +24,6 @@ from data.check_reqs import check_user
 from data.check_reqs import get_course_info
 from datetime import datetime
 from django.conf import settings
-import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +130,7 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
+    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 
@@ -402,6 +397,7 @@ class GetUserCourses(View):
         else:
             return JsonResponse({})
 
+
 # ---------------------------- UPDATE USER COURSES -----------------------------------#
 
 
@@ -512,21 +508,23 @@ def update_user(request):
 #             settle_cleaning(v)
 #     return d
 
+
 def transform_requirements(requirements):
     # Base case: If there's no 'subrequirements', return the requirements as is
     if 'subrequirements' not in requirements:
         return requirements
-    
+
     # Recursively transform each subrequirement
     transformed = {}
     for key, subreq in requirements['subrequirements'].items():
         transformed[key] = transform_requirements(subreq)
-        
+
     # After transformation, remove 'subrequirements' key
     requirements.pop('subrequirements')
-    
+
     # Merge the 'satisfied' status and the transformed subrequirements
     return {**requirements, **transformed}
+
 
 def transform_data(data):
     transformed_data = {}
@@ -540,16 +538,18 @@ def transform_data(data):
             # Extract 'code' and 'satisfied' from 'requirements'
             code = major_data['requirements'].pop('code')
             satisfied = major_data['requirements'].pop('satisfied')
-            
+
             # Transform the rest of the requirements
             transformed_reqs = transform_requirements(major_data['requirements'])
-            
+
             # Combine 'satisfied' status and transformed requirements
             transformed_data[code] = {'satisfied': satisfied, **transformed_reqs}
 
     return transformed_data
 
-#-------------------------------------- GET COURSE DETAILS --------------------------
+
+# -------------------------------------- GET COURSE DETAILS --------------------------
+
 
 def course_details(request):
     dept = request.GET.get('dept', '')  # Default to empty string if not provided
@@ -567,7 +567,8 @@ def course_details(request):
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
 
-#------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+
 
 def check_requirements(request):
     user_info = fetch_user_info(request.session['net_id'])
@@ -575,12 +576,11 @@ def check_requirements(request):
     this_major = user_info['major']['code']
     these_minors = [minor['code'] for minor in user_info['minors']]
 
-    req_dict = check_user(user_info['netId'], user_info['major'],
-                          user_info['minors'])
+    req_dict = check_user(user_info['netId'], user_info['major'], user_info['minors'])
 
     # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
-    formatted_dict[this_major] =  req_dict[this_major]
+    formatted_dict[this_major] = req_dict[this_major]
     formatted_dict = transform_data(formatted_dict)
     for minor in these_minors:
         formatted_dict[minor] = req_dict['Minors'][minor]
@@ -593,6 +593,6 @@ def check_requirements(request):
             else:
                 print('  ' * (indent + 1) + str(value))
 
-    pretty_print(formatted_dict)
+    # pretty_print(formatted_dict)
 
     return JsonResponse(formatted_dict)

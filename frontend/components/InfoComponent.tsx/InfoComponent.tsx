@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { useState, useEffect } from 'react';
+
+import { createPortal } from 'react-dom';
+
 import styles from './InfoComponent.module.scss';
 
 interface InfoComponentProps {
@@ -24,11 +26,11 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
           'Content-Type': 'application/json',
         },
       })
-      .then((response) => response.json())
-      .then((data) => {
-        setCourseDetails(data);
-      })
-      .catch((error) => console.error('Error:', error));
+        .then((response) => response.json())
+        .then((data) => {
+          setCourseDetails(data);
+        })
+        .catch((error) => console.error('Error:', error));
     }
   }, [showPopup, dept, coursenum]);
 
@@ -44,7 +46,9 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop} onClick={(e) => e.stopPropagation()}>
       <div className={styles.modal}>
-        <button className={styles.closeButton} onClick={handleClose}>X</button>
+        <button className={styles.closeButton} onClick={handleClose}>
+          X
+        </button>
         {courseDetails ? (
           <div>
             {Object.entries(courseDetails).map(([key, value]) => (
@@ -62,18 +66,28 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
 
   return (
     <>
-      <div onClick={handleClick} style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+      <div
+        onClick={handleClick}
+        style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          strokeWidth={1.5}
+          stroke='currentColor'
+          className='w-6 h-6'
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
+          />
         </svg>
       </div>
-      {modalContent && ReactDOM.createPortal(
-        modalContent,
-        document.body
-      )}
+      {modalContent && createPortal(modalContent, document.body)}
     </>
   );
 };
 
 export default InfoComponent;
-

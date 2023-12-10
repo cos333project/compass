@@ -12,18 +12,13 @@ logging.basicConfig(level=logging.INFO)
 sys.path.append(str(Path('../').resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
-import constants
-from config import django_init
 from compass.models import (
     Course,
-    Section,
     Department,
     Degree,
     Major,
     Minor,
     Certificate,
-    Requirement,
-    CustomUser,
     UserCourses,
 )
 
@@ -473,7 +468,9 @@ def format_req_output(req):
         output['unsettled'] = unsettled[:-2]
     return output
 
+
 # ---------------------------- FETCH COURSE DETAILS -----------------------------------#
+
 
 # dept is the department code (string) and num is the catalog number (int)
 # returns dictionary containing relevant info
@@ -483,48 +480,47 @@ def get_course_info(dept, num):
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
-            course = Course.objects.filter(department__id=dept_code, catalog_number=num).first()
+            course = Course.objects.filter(
+                department__id=dept_code, catalog_number=num
+            ).first()
             if course.course_id:
                 co_id = course.course_id
                 print(co_id)
-                #instructor = "None"
-                #try:
+                # instructor = "None"
+                # try:
                 #    instructor = Section.objects.filter(course_id=13248).first()
-                #    
+                #
                 #    print(instructor)
-                #except Section.DoesNotExist:
+                # except Section.DoesNotExist:
                 #    instructor = "Information Unavailable"
             # get relevant info and put it in a dictionary
             course_dict = {}
             if course.title:
-                course_dict["Title"] = course.title
+                course_dict['Title'] = course.title
             if course.description:
-                course_dict["Description"] = course.description
+                course_dict['Description'] = course.description
             if course.distribution_area_short:
-                course_dict["Distribution Area"] = course.distribution_area_short
-            #if instructor:
+                course_dict['Distribution Area'] = course.distribution_area_short
+            # if instructor:
             #    course_dict["Professor"] = instructor
             if course.reading_list:
-                course_dict["Reading List"] = course.reading_list
+                course_dict['Reading List'] = course.reading_list
             if course.reading_writing_assignment:
-                course_dict["Reading / Writing Assignments"] = course.reading_writing_assignment
+                course_dict[
+                    'Reading / Writing Assignments'
+                ] = course.reading_writing_assignment
             if course.grading_basis:
-                course_dict["Grading Basis"] = course.grading_basis
+                course_dict['Grading Basis'] = course.grading_basis
             if course.web_address:
-                course_dict["Relevant Links"] = course.web_address
+                course_dict['Relevant Links'] = course.web_address
             return course_dict
-
-
 
         except Course.DoesNotExist:
             return None
     except Course.DoesNotExist:
         return None
-    
-    #print(dept)
-    
 
-
+    # print(dept)
 
 
 def main():

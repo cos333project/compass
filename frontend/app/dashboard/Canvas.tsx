@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   CancelDrop,
@@ -16,7 +16,7 @@ import {
   MouseSensor,
   TouchSensor,
   Modifiers,
-  useDroppable,
+  // TODO: Should probably delete this: useDroppable,
   UniqueIdentifier,
   useSensors,
   useSensor,
@@ -35,7 +35,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
-import { FixedSizeList as Results } from 'react-window';
 
 import { Course, Profile } from '@/types';
 
@@ -227,12 +226,13 @@ export function Canvas({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
     ...semesters,
   }));
+
   type Dictionary = {
-    [key: string]: any; // Aim to replace 'any' with more specific types.
+    [key: string]: any; // TODO: Aim to replace 'any' with more specific types.
   };
 
   // Initialize a more structured dictionary if possible
-  const initialRequirements: Dictionary = {}; // Adjust as per your data structure
+  const initialRequirements: Dictionary = {};
 
   // State for academic requirements
   const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
@@ -284,22 +284,23 @@ export function Canvas({
       });
   };
 
-  const updateCourses = (courseId, semesterId, csrfToken) => {
-    console.log('UPDATING COURSES!!');
-    const backendUrl = `${process.env.BACKEND}/update_courses/`;
-    fetch(backendUrl, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({ courseId, semesterId }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log('Updating courses success', data))
-      .catch((error) => console.error('Updating courses error:', error));
-  };
+  // TODO: Use this somewhere
+  // const updateCourses = (courseId, semesterId, csrfToken) => {
+  //   console.log('UPDATING COURSES!!');
+  //   const backendUrl = `${process.env.BACKEND}/update_courses/`;
+  //   fetch(backendUrl, {
+  //     method: 'POST',
+  //     credentials: 'include',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'X-CSRFToken': csrfToken,
+  //     },
+  //     body: JSON.stringify({ courseId, semesterId }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => console.log('Updating courses success', data))
+  //     .catch((error) => console.error('Updating courses error:', error));
+  // };
 
   const checkRequirements = () => {
     console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
@@ -646,10 +647,12 @@ export function Canvas({
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: 'flex', flexDirection: 'row'}}>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
             {/* Left Section for Search Results */}
             {containers.includes('Search Results') && (
-              <div style={{ width: '380px'}}> {/* issue here with resizing + with requirements dropdowns*/}
+              <div style={{ width: '380px' }}>
+                {' '}
+                {/* issue here with resizing + with requirements dropdowns*/}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key='Search Results'
@@ -663,7 +666,6 @@ export function Canvas({
                 >
                   <SortableContext items={items['Search Results']} strategy={strategy}>
                     {items['Search Results'].map((value, index) => (
-                   
                       <SortableItem
                         disabled={isSortingContainer}
                         key={index}
@@ -769,10 +771,10 @@ export function Canvas({
   //   setContainers((containers) => containers.filter((id) => id !== containerID));
   // }
   function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
-    console.log('attempting to remove')
+    console.log('attempting to remove');
     setItems((items) => ({
-        ...items,
-        [containerId]: items[containerId].filter((course) => course !== value.toString()),
+      ...items,
+      [containerId]: items[containerId].filter((course) => course !== value.toString()),
     }));
 
     fetch(`${process.env.BACKEND}/update_courses/`, {

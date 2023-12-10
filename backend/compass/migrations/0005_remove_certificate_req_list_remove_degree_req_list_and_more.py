@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('compass', '0004_customuser_net_id_customuser_university_id_and_more'),
     ]
@@ -74,27 +73,52 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='requirement',
             name='certificate',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='req_list', to='compass.certificate'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='req_list',
+                to='compass.certificate',
+            ),
         ),
         migrations.AddField(
             model_name='requirement',
             name='degree',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='req_list', to='compass.degree'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='req_list',
+                to='compass.degree',
+            ),
         ),
         migrations.AddField(
             model_name='requirement',
             name='major',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='req_list', to='compass.major'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='req_list',
+                to='compass.major',
+            ),
         ),
         migrations.AddField(
             model_name='requirement',
             name='minor',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='req_list', to='compass.minor'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='req_list',
+                to='compass.minor',
+            ),
         ),
         migrations.AddField(
             model_name='requirement',
             name='parent',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='req_list', to='compass.requirement'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='req_list',
+                to='compass.requirement',
+            ),
         ),
         migrations.AlterField(
             model_name='certificate',

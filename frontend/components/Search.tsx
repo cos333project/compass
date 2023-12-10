@@ -1,43 +1,37 @@
 import { useState, useEffect, FC, useCallback } from 'react';
+
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { LRUCache } from 'typescript-lru-cache';
 
 import { Course } from '@/types';
-import useSearchStore from '../store/searchSlice';
+
+import useSearchStore from '@/store/searchSlice';
 
 const searchCache = new LRUCache<string, Course[]>({
   maxSize: 50,
   entryExpirationTimeInMS: 1000 * 60 * 60 * 24,
 });
 
-// Custom debounce function
 function debounce(func, delay) {
   let inDebounce;
-  return function(...args) {
-    const context = this;
+  return (...args) => {
     clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func.apply(context, args), delay);
+    inDebounce = setTimeout(() => func(...args), delay);
   };
 }
 
 const Search: FC = () => {
   const [query, setQuery] = useState<string>('');
 
-  const {
-    setSearchResults,
-    searchResults,
-    addRecentSearch,
-    recentSearches,
-    setError,
-    setLoading,
-  } = useSearchStore((state) => ({
-    setSearchResults: state.setSearchResults,
-    searchResults: state.searchResults,
-    addRecentSearch: state.addRecentSearch,
-    recentSearches: state.recentSearches,
-    setError: state.setError,
-    setLoading: state.setLoading,
-  }));
+  const { setSearchResults, searchResults, addRecentSearch, recentSearches, setError, setLoading } =
+    useSearchStore((state) => ({
+      setSearchResults: state.setSearchResults,
+      searchResults: state.searchResults,
+      addRecentSearch: state.addRecentSearch,
+      recentSearches: state.recentSearches,
+      setError: state.setError,
+      setLoading: state.setLoading,
+    }));
 
   useEffect(() => {
     setSearchResults(searchResults);
@@ -73,7 +67,7 @@ const Search: FC = () => {
     }
   };
 
-  const debouncedSearch = useCallback(debounce(search, 500), []);
+  const debouncedSearch = useCallback(debounce(search, 500), [search]);
 
   useEffect(() => {
     if (query) {
@@ -123,4 +117,3 @@ const Search: FC = () => {
 };
 
 export default Search;
-

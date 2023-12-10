@@ -188,8 +188,12 @@ class Course(models.Model):
     web_address = models.URLField(max_length=255, db_index=True, blank=True, null=True)
     transcript_title = models.CharField(max_length=150, blank=True, null=True)
     long_title = models.CharField(max_length=250, db_index=True, blank=True, null=True)
-    distribution_area_long = models.CharField(max_length=150, db_index=True, blank=True, null=True)
-    distribution_area_short = models.CharField(max_length=10, db_index=True, blank=True, null=True)
+    distribution_area_long = models.CharField(
+        max_length=150, db_index=True, blank=True, null=True
+    )
+    distribution_area_short = models.CharField(
+        max_length=10, db_index=True, blank=True, null=True
+    )
     reading_writing_assignment = models.TextField(blank=True, db_index=True, null=True)
     grading_basis = models.CharField(max_length=5, blank=True, db_index=True, null=True)
     reading_list = models.TextField(blank=True, db_index=True, null=True)
@@ -340,7 +344,9 @@ class ClassMeeting(models.Model):
 
 
 class ClassYearEnrollment(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, db_index=True, null=True)
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE, db_index=True, null=True
+    )
     class_year = models.IntegerField(null=True)
     enrl_seats = models.IntegerField(null=True)
 
@@ -498,7 +504,9 @@ class UserCourses(models.Model):
         ('completed', 'Completed'),
     )
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, db_index=True, null=True)
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, db_index=True, null=True
+    )
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, db_index=True, null=True
     )
