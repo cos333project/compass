@@ -272,7 +272,7 @@ class CAS(View):
                     )
                     if created:
                         user.set_unusable_password()
-                        user.save()
+                    user.save()
                     request.session['net_id'] = net_id
                     return redirect(settings.DASHBOARD)
             login_url = f'{self.cas_url}login?service={service_url}'

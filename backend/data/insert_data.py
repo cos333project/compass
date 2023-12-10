@@ -324,7 +324,6 @@ def insert_instructors(rows):
 def insert_sections(rows):
     logging.info('Starting Section insertions and updates...')
 
-    # create separate instructor bulk creating instance so that you can use it here
     term_cache = {term.term_code: term for term in AcademicTerm.objects.all()}
     course_cache = {course.guid: course for course in Course.objects.all()}
     instructor_cache = insert_instructors(rows)
