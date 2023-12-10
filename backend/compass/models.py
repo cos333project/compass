@@ -51,6 +51,7 @@ class Degree(models.Model):
     - department: Foreign key to the associated department.
     - degree_type: Type of degree, either 'AB' (Bachelor of Arts) or 'BSE' (Bachelor of Science in Engineering).
     """
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=10, null=True)
     code = models.CharField(max_length=10, null=True)
@@ -74,6 +75,7 @@ class Major(models.Model):
     - name: The full name of the major.
     - degree_type: The type of degree, either 'AB' or 'BSE'.
     """
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150, null=True)
     code = models.CharField(max_length=10, null=True)
@@ -99,6 +101,7 @@ class Minor(models.Model):
     - compatible_with: The type of degree this minor is compatible with ('AB', 'BSE', or 'Both').
     - max_courses_double_dipped: Max number of courses that can be counted toward other minors.
     """
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150, null=True)
     code = models.CharField(max_length=10, null=True)
@@ -125,6 +128,7 @@ class Certificate(models.Model):
     - name: The full name of the certificate.
     - departments: The departments offering this certificate.
     """
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150, null=True)
     code = models.CharField(max_length=10, null=True)
@@ -229,9 +233,25 @@ class CourseEquivalent(models.Model):
 
 
 class Instructor(models.Model):
-    emplid = models.CharField(max_length=50, unique=True, null=True)
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
+    """
+    Represents an instructor in the university's course management system.
+
+    Attributes:
+        emplid (CharField): Unique employee ID for the instructor. Nullable.
+        first_name (CharField): Instructor's first name. Nullable.
+        last_name (CharField): Instructor's last name. Nullable.
+        full_name (CharField): Full name of the instructor. Nullable and optionally provided by API.
+
+    Meta:
+        db_table: 'Instructor'
+
+    Methods:
+        __str__: Returns the full name of the instructor.
+    """
+
+    emplid = models.CharField(max_length=50, unique=True, db_index=True, null=True)
+    first_name = models.CharField(max_length=100, db_index=True, null=True)
+    last_name = models.CharField(max_length=100, db_index=True, null=True)
     full_name = models.CharField(
         max_length=255, null=True
     )  # Optional, provided by API.
@@ -244,6 +264,29 @@ class Instructor(models.Model):
 
 
 class Section(models.Model):
+    """
+    Represents a specific section of a course in the context of Princeton University's course planning system.
+
+    Attributes:
+        course (ForeignKey): The course to which this section belongs. Nullable.
+        class_number (IntegerField): Unique number identifying the class. Nullable.
+        class_type (CharField): Type of class (e.g., Seminar, Lecture). Default is empty.
+        class_section (CharField): Section number of the class. Nullable.
+        term (ForeignKey): Academic term in which the section is offered. Nullable.
+        track (CharField): Track code for the section. Nullable.
+        seat_reservations (CharField): Seat reservation status. Nullable.
+        instructor (ForeignKey): Instructor for the section. Nullable.
+        capacity (IntegerField): Maximum capacity of the section. Nullable.
+        status (CharField): Current status of the section (e.g., open, closed). Nullable.
+        enrollment (IntegerField): Current enrollment number. Defaults to 0.
+
+    Meta:
+        db_table: 'Section'
+
+    Methods:
+        __str__: Returns a string representation of the section, including course title and term code.
+    """
+
     CLASS_TYPE_CHOICES = [
         ('Seminar', 'Seminar'),
         ('Lecture', 'Lecture'),
@@ -255,17 +298,22 @@ class Section(models.Model):
         ('Lab', 'Lab'),
         ('Ear training', 'Ear training'),
     ]
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    class_number = models.IntegerField(unique=True, null=True)
-    class_type = models.CharField(max_length=50, choices=CLASS_TYPE_CHOICES, default='')
-    class_section = models.CharField(max_length=10, null=True)
-    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE, null=True)
-    track = models.CharField(max_length=5, null=True)
-    seat_reservations = models.CharField(max_length=1)
+    class_number = models.IntegerField(unique=True, db_index=True, null=True)
+    class_type = models.CharField(
+        max_length=50, choices=CLASS_TYPE_CHOICES, db_index=True, default=''
+    )
+    class_section = models.CharField(max_length=10, db_index=True, null=True)
+    term = models.ForeignKey(
+        AcademicTerm, on_delete=models.CASCADE, db_index=True, null=True
+    )
+    track = models.CharField(max_length=5, db_index=True, null=True)
+    seat_reservations = models.CharField(max_length=1, db_index=True, null=True)
     instructor = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)
-    capacity = models.IntegerField(null=True)
-    status = models.CharField(max_length=1, null=True)
-    enrollment = models.IntegerField(default=0)
+    capacity = models.IntegerField(db_index=True, null=True)
+    status = models.CharField(max_length=10, db_index=True, null=True)
+    enrollment = models.IntegerField(db_index=True, default=0)
 
     class Meta:
         db_table = 'Section'
@@ -278,12 +326,12 @@ class Section(models.Model):
 
 class ClassMeeting(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True)
-    meeting_number = models.PositiveIntegerField(null=True)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    room = models.CharField(max_length=50, null=True)
-    days = models.CharField(max_length=20, null=True)
-    building_name = models.CharField(max_length=255, null=True)
+    meeting_number = models.PositiveIntegerField(db_index=True, null=True)
+    start_time = models.TimeField(db_index=True, null=True)
+    end_time = models.TimeField(db_index=True, null=True)
+    room = models.CharField(max_length=50, db_index=True, null=True)
+    days = models.CharField(max_length=20, db_index=True, null=True)
+    building_name = models.CharField(max_length=255, db_index=True, null=True)
 
     class Meta:
         db_table = 'ClassMeeting'
@@ -306,58 +354,110 @@ class ClassYearEnrollment(models.Model):
 
 class Requirement(models.Model):
     """
-    TODO: Update comment
-    Represents an academic requirement for a particular degree.
+    Represents an academic requirement in the context of Princeton University's course planning system.
 
-    Fields:
-    - degree: Foreign key to the associated degree.
-    - description: Detailed description of the requirement.
-    - min_needed: Minimum number of courses/credits needed to fulfill this requirement.
-    - deadline: When this requirement should ideally be completed.
-    - double_counting_allowed: Whether a course can count for multiple requirements.
-    - pdfs_allowed: Whether courses taken as pass/D/fail can fulfill the requirement.
+    Attributes:
+        id (AutoField): Primary key, auto-incrementing.
+        name (CharField): Name of the requirement. Nullable.
+        max_counted (IntegerField): Max courses counted towards this requirement.
+        min_needed (IntegerField): Min courses needed to fulfill this requirement.
+        explanation (TextField): Explanation of the requirement. Nullable.
+        double_counting_allowed (BooleanField): If double counting is allowed. Nullable.
+        max_common_with_major (IntegerField): Max common courses with major.
+        pdfs_allowed (IntegerField): If PDF (Pass/D/Fail) courses are allowed.
+        min_grade (FloatField): Min grade required for this requirement.
+        completed_by_semester (IntegerField): Semester by which requirement should be completed.
+        parent (ForeignKey): Reference to parent requirement, if any. Nullable.
+        degree (ForeignKey): Associated degree. Nullable.
+        major (ForeignKey): Associated major. Nullable.
+        minor (ForeignKey): Associated minor. Nullable.
+        certificate (ForeignKey): Associated certificate. Nullable.
+        course_list (ManyToManyField): Courses satisfying this requirement.
+        dept_list (JSONField): Departments associated with this requirement. Nullable.
+        excluded_course_list (ManyToManyField): Courses not satisfying this requirement.
+        dist_req (JSONField): Distribution requirements. Nullable.
+        num_courses (IntegerField): Number of courses for this requirement. Nullable.
+
+    Meta:
+        db_table: Custom 'Requirement' name for readability
     """
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, null=True)
-    max_counted = models.IntegerField(default=1)
-    min_needed = models.IntegerField(default=1)
-    explanation = models.TextField(null=True)
-    double_counting_allowed = models.BooleanField(null=True)
-    max_common_with_major = models.IntegerField(default=0)
-    pdfs_allowed = models.IntegerField(default=0)
-    min_grade = models.FloatField(default=0.0)
-    completed_by_semester = models.IntegerField(default=8)
-    parent = models.ForeignKey("self", on_delete=models.CASCADE,
-                                 related_name='req_list', null=True)
-    degree = models.ForeignKey("Degree", on_delete=models.CASCADE,
-                                 related_name='req_list', null=True)
-    major = models.ForeignKey("Major", on_delete=models.CASCADE,
-                                 related_name='req_list', null=True)
-    minor = models.ForeignKey("Minor", on_delete=models.CASCADE,
-                                 related_name='req_list', null=True)
-    certificate = models.ForeignKey("Certificate", on_delete=models.CASCADE,
-                                 related_name='req_list', null=True)
-    course_list = models.ManyToManyField('Course', related_name='satisfied_by')
-    dept_list = models.JSONField(null=True)
-    excluded_course_list = models.ManyToManyField('Course', related_name='not_satisfied_by')
-    dist_req = models.JSONField(null=True)
-    num_courses = models.IntegerField(null=True)
+    name = models.CharField(max_length=150, db_index=True, null=True)
+    max_counted = models.IntegerField(default=1, db_index=True)
+    min_needed = models.IntegerField(default=1, db_index=True)
+    explanation = models.TextField(db_index=True, null=True)
+    double_counting_allowed = models.BooleanField(db_index=True, null=True)
+    max_common_with_major = models.IntegerField(db_index=True, default=0)
+    pdfs_allowed = models.IntegerField(db_index=True, default=0)
+    min_grade = models.FloatField(db_index=True, default=0.0)
+    completed_by_semester = models.IntegerField(db_index=True, default=8)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='req_list',
+        null=True,
+    )
+    degree = models.ForeignKey(
+        'Degree',
+        on_delete=models.CASCADE,
+        related_name='req_list',
+        null=True,
+    )
+    major = models.ForeignKey(
+        'Major',
+        on_delete=models.CASCADE,
+        related_name='req_list',
+        null=True,
+    )
+    minor = models.ForeignKey(
+        'Minor',
+        on_delete=models.CASCADE,
+        related_name='req_list',
+        null=True,
+    )
+    certificate = models.ForeignKey(
+        'Certificate',
+        on_delete=models.CASCADE,
+        related_name='req_list',
+        null=True,
+    )
+    course_list = models.ManyToManyField(
+        'Course', db_index=True, related_name='satisfied_by'
+    )
+    dept_list = models.JSONField(db_index=True, null=True)
+    excluded_course_list = models.ManyToManyField(
+        'Course', related_name='not_satisfied_by'
+    )
+    dist_req = models.JSONField(db_index=True, null=True)
+    num_courses = models.IntegerField(db_index=True, null=True)
 
     class Meta:
         db_table = 'Requirement'
 
 
-# ----------------------------------------------------------------------#
+# --------------------------------------------------------------------------------------#
 
 
 class CustomUser(AbstractUser):
     """
-    Custom User model that extends Django's built-in AbstractUser.
-    Adds a 'role' field to differentiate between admins and students.
+    Extends Django's built-in AbstractUser to include additional
+    fields specific to the context of Compass at Princeton University.
 
-    Fields:
-    - role: The role of the user, either 'admin' or 'student'.
+    Attributes:
+        role (str): The role of the user within Compass.
+        major (ForeignKey): The user's major. Nullable.
+        minors (ManyToManyField): The user's minor(s). Nullable.
+        net_id (str): The user's Princeton Net ID. Nullable.
+        email (EmailField): The user's email address. Unique and nullable.
+        first_name (str): The user's first name. Nullable.
+        last_name (str): The user's last name. Nullable.
+        class_year (int): The user's class year, represented as an integer. Nullable.
+        created_at (DateTimeField): Timestamp indicating when the user record was created.
+        updated_at (DateTimeField): Timestamp indicating the last update to the user record.
+
+    Meta:
+        db_table: Custom 'User' name for readability
     """
 
     ROLE_CHOICES = (
@@ -365,12 +465,11 @@ class CustomUser(AbstractUser):
         ('student', 'Student'),
     )
 
-    role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True)
     minors = models.ManyToManyField(Minor)
     net_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    university_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    email = models.EmailField(max_length=254, unique=True, null=True, blank=True)
+    email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     class_year = models.IntegerField(null=True, blank=True)
@@ -383,13 +482,15 @@ class CustomUser(AbstractUser):
 
 class UserCourses(models.Model):
     """
-    Maps courses a user plans to take or has taken.
+    Represents the courses the user planned on the Dashboard page.
 
-    Fields:
-    - user: The student who is taking or has taken the course.
-    - course: The course the student is taking or has taken.
-    - semester: The semester when the course is or was taken.
-    - status: Whether the course is planned, in-progress, or completed.
+    Attributes:
+        user (ForeignKey): Indicates which user the course is associated with.
+        course (ForeignKey): Indicates which course is being referred to.
+        semester (IntegerField): Indicates the planned semester for the course.
+
+    Meta:
+        db_table: Custom 'UserCourses' name for readability
     """
 
     STATUS_CHOICES = (
@@ -397,13 +498,87 @@ class UserCourses(models.Model):
         ('in-progress', 'In Progress'),
         ('completed', 'Completed'),
     )
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    semester = models.IntegerField(choices=TIMELINE_CHOICES, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planned')
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, db_index=True, null=True)
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, db_index=True, null=True
+    )
+    semester = models.IntegerField(choices=TIMELINE_CHOICES, db_index=True, null=True)
 
     class Meta:
         db_table = 'UserCourses'
+
+
+# class CourseEvaluations(models.Model):
+#     """
+#     Stores student course evaluations, including various quality metrics and recommendations.
+
+#     Attributes:
+#         course (ForeignKey): Indicates which course is being evaluated.
+#         term (ForeignKey): Indicates the term during which the course was evaluated.
+#         quality_of_classes (FloatField): Numeric rating of the class quality. Nullable.
+#         quality_of_course (FloatField): Numeric rating of the overall course quality. Nullable.
+#         quality_of_lectures (FloatField): Numeric rating of the lecture quality. Nullable.
+#         quality_of_precepts (FloatField): Numeric rating of precepts. Nullable.
+#         quality_of_readings (FloatField): Numeric rating of the course readings. Nullable.
+#         quality_of_written_assignments (FloatField): Numeric rating of the written assignments. Nullable.
+#         recommend_to_other_students (FloatField): Numeric rating of the course. Nullable.
+
+#     Meta:
+#         db_table: Custom 'CourseEvaluations' name for readability.
+
+#     Methods:
+#         __str__: Returns a string representation of the CourseEvaluations instance.
+#     """
+
+#     course = models.ForeignKey(
+#         Course, on_delete=models.CASCADE, db_index=True, null=True
+#     )
+#     term = models.ForeignKey(
+#         AcademicTerm, on_delete=models.CASCADE, db_index=True, null=True
+#     )
+#     quality_of_classes = models.FloatField(null=True)
+#     quality_of_course = models.FloatField(null=True)
+#     quality_of_lectures = models.FloatField(null=True)
+#     quality_of_precepts = models.FloatField(null=True)
+#     quality_of_readings = models.FloatField(null=True)
+#     quality_of_written_assignments = models.FloatField(null=True)
+#     recommend_to_other_students = models.FloatField(null=True)
+
+#     class Meta:
+#         db_table = 'CourseEvaluations'
+
+#     def __str__(self):
+#         return f'Evaluation for {self.course.name} - {self.term.name}'
+
+
+# class CourseComments(models.Model):
+#     """
+#     A collection of student comments from the Princeton Course Evaluation portal.
+
+#     Attributes:
+#         course_evaluation (ForeignKey): The corresponding CourseEvaluation of the comment.
+#         comment (TextField): The contents of the comment.
+
+#     Meta:
+#         db_table: Custom 'CourseComments' name for readability.
+
+#     Methods:
+#         __str__: Returns a string representation of the CourseComments instance.
+#     """
+
+#     course_evaluation = models.ForeignKey(
+#         CourseEvaluations, on_delete=models.CASCADE, related_name='comments'
+#     )
+#     comment = models.TextField(null=True)
+
+#     class Meta:
+#         db_table = 'CourseComments'
+
+#     def __str__(self):
+#         return (
+#             f'Comment for CourseEvaluation {self.course_evaluation_id}: {self.comment}'
+#         )
 
 
 # ----------------------------------------------------------------------#

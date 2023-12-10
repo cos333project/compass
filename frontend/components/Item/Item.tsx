@@ -25,7 +25,7 @@ export type Props = {
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactNode;
-  onRemove?(courseId: UniqueIdentifier): void;
+  onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
     dragging: boolean;
@@ -131,8 +131,8 @@ export const Item = memo(
           >
             {value}
             <span className={styles.Actions}>
-              {onRemove ? <Remove className={styles.Remove} onClick={onRemove} /> : null}
-              {handle ? <Handle {...handleProps} {...listeners} /> : null} 
+              <Remove className={styles.Remove} onClick={onRemove} />
+              {handle ? <Handle {...handleProps} {...listeners} /> : null}
             </span>
           </div>
         </li>
