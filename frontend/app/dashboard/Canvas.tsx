@@ -60,7 +60,7 @@ async function fetchCsrfToken() {
     return 'Error fetching CSRF token!';
   }
 }
-const csrfToken = await fetchCsrfToken();
+const csrfToken = await fetchCsrfToken() ?? null;
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -283,24 +283,6 @@ export function Canvas({
         console.error('User Courses Error:', error);
       });
   };
-
-  // TODO: Use this somewhere
-  // const updateCourses = (courseId, semesterId, csrfToken) => {
-  //   console.log('UPDATING COURSES!!');
-  //   const backendUrl = `${process.env.BACKEND}/update_courses/`;
-  //   fetch(backendUrl, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'X-CSRFToken': csrfToken,
-  //     },
-  //     body: JSON.stringify({ courseId, semesterId }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => console.log('Updating courses success', data))
-  //     .catch((error) => console.error('Updating courses error:', error));
-  // };
 
   const checkRequirements = () => {
     console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
@@ -598,7 +580,7 @@ export function Canvas({
 
           const courseId = active.id;
           const semesterId = activeContainer;
-          const csrfToken = await fetchCsrfToken();
+          const csrfToken = await fetchCsrfToken() ?? null;
           // This also should only be updated if the user drops the course into a new semester
           fetch(`${process.env.BACKEND}/update_courses/`, {
             method: 'POST',
@@ -766,10 +748,6 @@ export function Canvas({
     );
   }
 
-  // TODO: Probably don't need this anymore since containers are not removable
-  // function handleRemove(containerID: UniqueIdentifier) {
-  //   setContainers((containers) => containers.filter((id) => id !== containerID));
-  // }
   function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
     setItems((items) => {
       const updatedCourses = {
