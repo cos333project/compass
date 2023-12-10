@@ -45,7 +45,6 @@ def fetch_user_info(net_id):
         net_id=net_id,
         defaults={
             'role': 'student',
-            'university_id': '',
             'email': '',
             'first_name': '',
             'last_name': '',
@@ -75,8 +74,7 @@ def fetch_user_info(net_id):
 
     # External API call for additional info only if necessary attributes are missing
     if (
-        not user_inst.university_id
-        or not user_inst.email
+        not user_inst.email
         or not user_inst.first_name
         or not user_inst.last_name
         or not user_inst.class_year
@@ -91,7 +89,6 @@ def fetch_user_info(net_id):
         first_name, last_name = full_name[0], ' '.join(full_name[1:])
 
         # Update user instance with fetched data only if it's missing
-        user_inst.university_id = profile.get('universityid', user_inst.university_id)
         user_inst.email = profile.get('mail', user_inst.email)
         user_inst.first_name = (
             first_name if not user_inst.first_name else user_inst.first_name
@@ -106,12 +103,10 @@ def fetch_user_info(net_id):
 
     return_data = {
         'netId': net_id,
-        'universityId': user_inst.university_id,
         'email': user_inst.email,
         'firstName': user_inst.first_name,
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
-        'department': profile.get('department', None),
         'major': major,
         'minors': minors,
     }
