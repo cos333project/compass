@@ -20,7 +20,7 @@ interface TabbedMenuProps {
 
 const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
-
+  console.log('refresh token in tabbed menu', refresh);
   useEffect(() => {
     if (tabsData && Object.keys(tabsData).length > 0) {
       setActiveTab(Object.keys(tabsData)[0]);

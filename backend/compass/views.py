@@ -434,6 +434,7 @@ def update_courses(request):
         data = json.loads(request.body)
         print('AMONGUSSSSSSSSSSSSSSSs', data)
         course_code = data.get('courseId')  # might have to adjust this, print
+        print('course code', course_code)
         container = data.get('semesterId')
         net_id = request.session['net_id']
         user_inst = CustomUser.objects.get(net_id=net_id)
