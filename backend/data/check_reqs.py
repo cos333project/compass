@@ -478,7 +478,7 @@ def format_req_output(req):
 # returns dictionary containing relevant info
 def get_course_info(dept, num):
     dept = str(dept)
-    num = int(num)
+    num = str(num)
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
@@ -492,6 +492,14 @@ def get_course_info(dept, num):
                 course_dict["Description"] = course.description
             if course.distribution_area_short:
                 course_dict["Distribution Area"] = course.distribution_area_short
+            if course.reading_list:
+                course_dict["Reading List"] = course.reading_list
+            if course.reading_writing_assignment:
+                course_dict["Reading / Writing Assignments"] = course.reading_writing_assignment
+            if course.grading_basis:
+                course_dict["Grading Basis"] = course.grading_basis
+            if course.web_address:
+                course_dict["Relevant Links"] = course.web_address
             return course_dict
 
         except Course.DoesNotExist:

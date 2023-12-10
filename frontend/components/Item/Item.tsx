@@ -8,6 +8,7 @@ import { Handle, Remove } from './components';
 import styles from './Item.module.scss';
 import { InfoComponent } from '../InfoComponent.tsx';
 
+
 export type Props = {
   dragOverlay?: boolean;
   color?: string;
@@ -78,6 +79,7 @@ export const Item = memo(
         };
       }, [dragOverlay]);
 
+
       return renderItem ? (
         renderItem({
           dragOverlay: Boolean(dragOverlay),
@@ -132,6 +134,9 @@ export const Item = memo(
             {value}
             <span className={styles.Actions}>
               <Remove className={styles.Remove} onClick={onRemove} />
+              <div id="modal-root">
+                <InfoComponent dept = {value.toString().split(' ')[0]} coursenum={value.toString().split(' ')[1]} />
+              </div>
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
             </span>
           </div>

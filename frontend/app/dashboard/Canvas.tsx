@@ -663,6 +663,7 @@ export function Canvas({
                 >
                   <SortableContext items={items['Search Results']} strategy={strategy}>
                     {items['Search Results'].map((value, index) => (
+                   
                       <SortableItem
                         disabled={isSortingContainer}
                         key={index}

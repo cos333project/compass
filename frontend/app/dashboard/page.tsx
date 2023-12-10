@@ -31,9 +31,6 @@ const Dashboard: FC = () => {
       <Navbar />
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
-          <div>
-            <InfoComponent dept = "COS" coursenum = "126" />
-          </div>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
