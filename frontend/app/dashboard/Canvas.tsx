@@ -171,7 +171,7 @@ export function Canvas({
   // itemCount = 3, // remove this?
   cancelDrop,
   columns = 2,
-  handle = false,
+  handle = true,
   // initialItems, // remove
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
@@ -611,8 +611,6 @@ export function Canvas({
             .then((response) => response.json())
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
-          // const csrfToken = await fetchCsrfToken();
-          // updateCourses(courseId, semesterId, csrfToken);
 
           const overContainer = findContainer(overId);
 
