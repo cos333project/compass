@@ -34,7 +34,7 @@ class Department(models.Model):
     """
 
     code = models.CharField(max_length=4, unique=True, db_index=True, null=True)
-    name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, db_index=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,12 +53,12 @@ class Degree(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=10, null=True)
-    code = models.CharField(max_length=10, null=True)
-    description = models.TextField(null=True)
-    urls = models.JSONField(null=True)
-    max_counted = models.IntegerField(null=True)
-    min_needed = models.IntegerField(default=1)
+    name = models.CharField(max_length=10, db_index=True, null=True)
+    code = models.CharField(max_length=10, db_index=True, null=True)
+    description = models.TextField(db_index=True, null=True)
+    urls = models.JSONField(db_index=True, null=True)
+    max_counted = models.IntegerField(db_index=True, null=True)
+    min_needed = models.IntegerField(db_index=True, default=1)
 
     class Meta:
         db_table = 'Degree'
@@ -77,13 +77,13 @@ class Major(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, null=True)
-    code = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=150, db_index=True, null=True)
+    code = models.CharField(max_length=10, db_index=True, null=True)
     degree = models.ManyToManyField('Degree')
-    description = models.TextField(null=True)
-    urls = models.JSONField(null=True)
-    max_counted = models.IntegerField(null=True)
-    min_needed = models.IntegerField(default=1)
+    description = models.TextField(db_index=True, null=True)
+    urls = models.JSONField(db_index=True, null=True)
+    max_counted = models.IntegerField(db_index=True, null=True)
+    min_needed = models.IntegerField(db_index=True, default=1)
 
     class Meta:
         db_table = 'Major'
@@ -103,15 +103,15 @@ class Minor(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, null=True)
-    code = models.CharField(max_length=10, null=True)
-    description = models.TextField(null=True)
+    name = models.CharField(max_length=150, db_index=True, null=True)
+    code = models.CharField(max_length=10, db_index=True, null=True)
+    description = models.TextField(db_index=True, null=True)
     excluded_majors = models.ManyToManyField('Major')
     excluded_minors = models.ManyToManyField('Minor')
-    urls = models.JSONField(null=True)
+    urls = models.JSONField(db_index=True, null=True)
     apply_by_semester = models.IntegerField(default=6)
-    max_counted = models.IntegerField(null=True)
-    min_needed = models.IntegerField(default=1)
+    max_counted = models.IntegerField(db_index=True, null=True)
+    min_needed = models.IntegerField(db_index=True, default=1)
 
     class Meta:
         db_table = 'Minor'
@@ -130,14 +130,14 @@ class Certificate(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, null=True)
-    code = models.CharField(max_length=10, null=True)
-    description = models.TextField(null=True)
+    name = models.CharField(max_length=150, db_index=True, null=True)
+    code = models.CharField(max_length=10, db_index=True, null=True)
+    description = models.TextField(db_index=True, null=True)
     excluded_majors = models.ManyToManyField('Major')
-    urls = models.JSONField(null=True)
+    urls = models.JSONField(db_index=True, null=True)
     apply_by_semester = models.IntegerField(default=8)
-    max_counted = models.IntegerField(null=True)
-    min_needed = models.IntegerField(default=1)
+    max_counted = models.IntegerField(db_index=True, null=True)
+    min_needed = models.IntegerField(db_index=True, default=1)
     # to help with phasing out certificates
     # filter out for new users, keep for existing users pursuing it
     active_until = models.DateField(null=True, blank=True)
@@ -164,8 +164,8 @@ class AcademicTerm(models.Model):
     2. Provide a reference for 'completed_by_semester' in the Requirement table.
     """
 
-    term_code = models.CharField(max_length=10, unique=True, null=True)
-    suffix = models.CharField(max_length=10)  # e.g., "F2023"
+    term_code = models.CharField(max_length=10, db_index=True, unique=True, null=True)
+    suffix = models.CharField(max_length=10, db_index=True)  # e.g., "F2023"
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
 
@@ -178,22 +178,21 @@ class AcademicTerm(models.Model):
 
 class Course(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
-    guid = models.CharField(max_length=50, null=True)
-    course_id = models.CharField(max_length=10, null=True)
+    guid = models.CharField(max_length=50, db_index=True, null=True)
+    course_id = models.CharField(max_length=10, db_index=True, null=True)
     catalog_number = models.CharField(max_length=10, db_index=True, null=True)
     title = models.CharField(max_length=150, db_index=True, null=True)
-    description = models.TextField(null=True)
-    drop_consent = models.CharField(max_length=1, blank=True, null=True)
-    add_consent = models.CharField(max_length=1, blank=True, null=True)
-    web_address = models.URLField(max_length=255, blank=True, null=True)
-    pu_flag = models.CharField(max_length=1, blank=True, null=True)
+    description = models.TextField(db_index=True, null=True)
+    drop_consent = models.CharField(max_length=1, db_index=True, blank=True, null=True)
+    add_consent = models.CharField(max_length=1, db_index=True, blank=True, null=True)
+    web_address = models.URLField(max_length=255, db_index=True, blank=True, null=True)
     transcript_title = models.CharField(max_length=150, blank=True, null=True)
-    long_title = models.CharField(max_length=250, blank=True, null=True)
-    distribution_area_long = models.CharField(max_length=150, blank=True, null=True)
-    distribution_area_short = models.CharField(max_length=10, blank=True, null=True)
-    reading_writing_assignment = models.TextField(blank=True, null=True)
-    grading_basis = models.CharField(max_length=5, blank=True, null=True)
-    reading_list = models.TextField(blank=True, null=True)
+    long_title = models.CharField(max_length=250, db_index=True, blank=True, null=True)
+    distribution_area_long = models.CharField(max_length=150, db_index=True, blank=True, null=True)
+    distribution_area_short = models.CharField(max_length=10, db_index=True, blank=True, null=True)
+    reading_writing_assignment = models.TextField(blank=True, db_index=True, null=True)
+    grading_basis = models.CharField(max_length=5, blank=True, db_index=True, null=True)
+    reading_list = models.TextField(blank=True, db_index=True, null=True)
 
     class Meta:
         db_table = 'Course'
@@ -341,7 +340,7 @@ class ClassMeeting(models.Model):
 
 
 class ClassYearEnrollment(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, db_index=True, null=True)
     class_year = models.IntegerField(null=True)
     enrl_seats = models.IntegerField(null=True)
 
@@ -509,76 +508,76 @@ class UserCourses(models.Model):
         db_table = 'UserCourses'
 
 
-# class CourseEvaluations(models.Model):
-#     """
-#     Stores student course evaluations, including various quality metrics and recommendations.
+class CourseEvaluations(models.Model):
+    """
+    Stores student course evaluations, including various quality metrics and recommendations.
 
-#     Attributes:
-#         course (ForeignKey): Indicates which course is being evaluated.
-#         term (ForeignKey): Indicates the term during which the course was evaluated.
-#         quality_of_classes (FloatField): Numeric rating of the class quality. Nullable.
-#         quality_of_course (FloatField): Numeric rating of the overall course quality. Nullable.
-#         quality_of_lectures (FloatField): Numeric rating of the lecture quality. Nullable.
-#         quality_of_precepts (FloatField): Numeric rating of precepts. Nullable.
-#         quality_of_readings (FloatField): Numeric rating of the course readings. Nullable.
-#         quality_of_written_assignments (FloatField): Numeric rating of the written assignments. Nullable.
-#         recommend_to_other_students (FloatField): Numeric rating of the course. Nullable.
+    Attributes:
+        course (ForeignKey): Indicates which course is being evaluated.
+        term (ForeignKey): Indicates the term during which the course was evaluated.
+        quality_of_classes (FloatField): Numeric rating of the class quality. Nullable.
+        quality_of_course (FloatField): Numeric rating of the overall course quality. Nullable.
+        quality_of_lectures (FloatField): Numeric rating of the lecture quality. Nullable.
+        quality_of_precepts (FloatField): Numeric rating of precepts. Nullable.
+        quality_of_readings (FloatField): Numeric rating of the course readings. Nullable.
+        quality_of_written_assignments (FloatField): Numeric rating of the written assignments. Nullable.
+        recommend_to_other_students (FloatField): Numeric rating of the course. Nullable.
 
-#     Meta:
-#         db_table: Custom 'CourseEvaluations' name for readability.
+    Meta:
+        db_table: Custom 'CourseEvaluations' name for readability.
 
-#     Methods:
-#         __str__: Returns a string representation of the CourseEvaluations instance.
-#     """
+    Methods:
+        __str__: Returns a string representation of the CourseEvaluations instance.
+    """
 
-#     course = models.ForeignKey(
-#         Course, on_delete=models.CASCADE, db_index=True, null=True
-#     )
-#     term = models.ForeignKey(
-#         AcademicTerm, on_delete=models.CASCADE, db_index=True, null=True
-#     )
-#     quality_of_classes = models.FloatField(null=True)
-#     quality_of_course = models.FloatField(null=True)
-#     quality_of_lectures = models.FloatField(null=True)
-#     quality_of_precepts = models.FloatField(null=True)
-#     quality_of_readings = models.FloatField(null=True)
-#     quality_of_written_assignments = models.FloatField(null=True)
-#     recommend_to_other_students = models.FloatField(null=True)
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, db_index=True, null=True
+    )
+    term = models.ForeignKey(
+        AcademicTerm, on_delete=models.CASCADE, db_index=True, null=True
+    )
+    quality_of_classes = models.FloatField(null=True)
+    quality_of_course = models.FloatField(null=True)
+    quality_of_lectures = models.FloatField(null=True)
+    quality_of_precepts = models.FloatField(null=True)
+    quality_of_readings = models.FloatField(null=True)
+    quality_of_written_assignments = models.FloatField(null=True)
+    recommend_to_other_students = models.FloatField(null=True)
 
-#     class Meta:
-#         db_table = 'CourseEvaluations'
+    class Meta:
+        db_table = 'CourseEvaluations'
 
-#     def __str__(self):
-#         return f'Evaluation for {self.course.name} - {self.term.name}'
+    def __str__(self):
+        return f'Evaluation for {self.course.name} - {self.term.name}'
 
 
-# class CourseComments(models.Model):
-#     """
-#     A collection of student comments from the Princeton Course Evaluation portal.
+class CourseComments(models.Model):
+    """
+    A collection of student comments from the Princeton Course Evaluation portal.
 
-#     Attributes:
-#         course_evaluation (ForeignKey): The corresponding CourseEvaluation of the comment.
-#         comment (TextField): The contents of the comment.
+    Attributes:
+        course_evaluation (ForeignKey): The corresponding CourseEvaluation of the comment.
+        comment (TextField): The contents of the comment.
 
-#     Meta:
-#         db_table: Custom 'CourseComments' name for readability.
+    Meta:
+        db_table: Custom 'CourseComments' name for readability.
 
-#     Methods:
-#         __str__: Returns a string representation of the CourseComments instance.
-#     """
+    Methods:
+        __str__: Returns a string representation of the CourseComments instance.
+    """
 
-#     course_evaluation = models.ForeignKey(
-#         CourseEvaluations, on_delete=models.CASCADE, related_name='comments'
-#     )
-#     comment = models.TextField(null=True)
+    course_evaluation = models.ForeignKey(
+        CourseEvaluations, on_delete=models.CASCADE, related_name='comments'
+    )
+    comment = models.TextField(null=True)
 
-#     class Meta:
-#         db_table = 'CourseComments'
+    class Meta:
+        db_table = 'CourseComments'
 
-#     def __str__(self):
-#         return (
-#             f'Comment for CourseEvaluation {self.course_evaluation_id}: {self.comment}'
-#         )
+    def __str__(self):
+        return (
+            f'Comment for CourseEvaluation {self.course_evaluation_id}: {self.comment}'
+        )
 
 
 # ----------------------------------------------------------------------#
