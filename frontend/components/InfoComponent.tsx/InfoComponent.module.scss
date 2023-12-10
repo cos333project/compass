@@ -21,21 +21,8 @@
   z-index: 11;
 }
 
-.infoCircle {
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  text-align: center;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-}
-
 .infoCircle:before {
-  content: 'i';
+  content: 'ballsack';
   font-size: 14px;
   font-weight: bold;
 }

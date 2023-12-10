@@ -557,7 +557,7 @@ def course_details(request):
 
     if dept and num:
         try:
-            num = int(num)  # Convert to integer
+            num = str(num)  # Convert to string
         except ValueError:
             return JsonResponse({'error': 'Invalid course number'}, status=400)
 
