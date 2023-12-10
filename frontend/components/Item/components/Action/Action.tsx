@@ -1,8 +1,8 @@
-import { forwardRef, CSSProperties } from 'react';
+import { forwardRef, CSSProperties, MouseEvent } from 'react';
 
 import classNames from 'classnames';
 
-import styles from './Action.module.css';
+import styles from './Action.module.scss';
 
 export type ActionProps = React.HTMLAttributes<HTMLButtonElement> & {
   active?: {
@@ -10,10 +10,16 @@ export type ActionProps = React.HTMLAttributes<HTMLButtonElement> & {
     background: string;
   };
   cursor?: CSSProperties['cursor'];
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const Action = forwardRef<HTMLButtonElement, ActionProps>(
-  ({ active, className, cursor, style, ...props }, ref) => {
+  ({ active, className, cursor, style, onClick, ...props }, ref) => {
+    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      onClick?.(event);
+    };
+
     return (
       <button
         ref={ref}
@@ -28,6 +34,7 @@ export const Action = forwardRef<HTMLButtonElement, ActionProps>(
             '--background': active?.background,
           } as CSSProperties
         }
+        onClick={handleClick}
       />
     );
   }

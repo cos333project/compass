@@ -1,7 +1,7 @@
 from typing import Dict, Any
-from .configs import Configs
 import requests
 import ujson as json
+from .configs import Configs
 
 
 class ReqLib:

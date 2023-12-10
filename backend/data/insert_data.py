@@ -32,18 +32,27 @@ from compass.models import (
 
 logging.basicConfig(level=logging.INFO)
 
-class_year_enrollment_pattern = re.compile(r'Year (\d+): (\d+) students')
+CLASS_YEAR_ENROLLMENT_PATTERN = re.compile(r'Year (\d+): (\d+) students')
 
 
-def parse_class_year_enrollments(enrollment_string, pattern):
-    return pattern.findall(enrollment_string)
+def _parse_class_year_enrollments(str, pattern):
+    if str == 'Class year demographics unavailable':
+        return []
+    return pattern.findall(str)
+
+
+def _parse_time(time_str):
+    try:
+        return datetime.strptime(time_str, '%I:%M %p').strftime('%H:%M')
+    except ValueError:
+        return None
 
 
 # -------------------------------------------------------------------------------------#
 
 
 def insert_departments(rows):
-    logging.info('Starting Department insertions...')
+    logging.info('Starting Department insertions and updates...')
 
     unique_departments = {(row['Subject Code'], row['Subject Name']) for row in rows}
     existing_departments = Department.objects.filter(
@@ -74,7 +83,7 @@ def insert_departments(rows):
 
 
 def insert_academic_terms(rows):
-    logging.info('Starting AcademicTerm insertions...')
+    logging.info('Starting AcademicTerm insertions and updates...')
 
     def parse_date(date_str):
         return datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else None
@@ -82,7 +91,7 @@ def insert_academic_terms(rows):
     # Assuming the first row has the necessary data
     first_row = rows[0]
 
-    term_code = str(first_row['Term Code'].strip())
+    term_code = first_row['Term Code'].strip()
     suffix = first_row['Term Name']
     start_date = parse_date(
         first_row.get('Course Start Date')
@@ -173,7 +182,7 @@ def insert_courses(rows):
 
 
 def insert_course_equivalents(rows):
-    logging.info('Starting CourseEquivalent insertion...')
+    logging.info('Starting CourseEquivalent insertions and updates...')
 
     departments = {dept.code: dept for dept in Department.objects.all()}
     course_cache = {course.guid: course for course in Course.objects.all()}
@@ -313,7 +322,7 @@ def insert_instructors(rows):
 
 
 def insert_sections(rows):
-    logging.info('Starting Section processing...')
+    logging.info('Starting Section insertions and updates...')
 
     # create separate instructor bulk creating instance so that you can use it here
     term_cache = {term.term_code: term for term in AcademicTerm.objects.all()}
@@ -384,30 +393,35 @@ def insert_sections(rows):
 
 def insert_class_meetings(rows):
     logging.info('Starting ClassMeeting insertions and updates...')
-
-    def parse_time(time_str):
-        try:
-            return datetime.strptime(time_str, '%I:%M %p').time()
-        except ValueError:
-            return None  # Return None if time parsing fails
-
     section_cache = {
-        (str(section.course.course_id), section.term.id, section.class_section): section
+        (section.course.course_id, section.term.id, section.class_section): section
         for section in Section.objects.select_related('course', 'term')
     }
+
     term_id_map = {term.term_code: term.id for term in AcademicTerm.objects.all()}
 
-    print(section_cache)
-    print(term_id_map)
+    # Collect relevant section IDs
+    relevant_section_ids = set()
+    for row in tqdm(rows, desc='Checking for updates in Class Meetings...'):
+        course_id = row['Course ID'].strip()
+        term_code = row['Term Code'].strip()
+        class_section = row['Class Section'].strip()
+        term_id = term_id_map.get(term_code)
+        section_key = (course_id, term_id, class_section)
+        section = section_cache.get(section_key)
+        if section:
+            relevant_section_ids.add(section.id)
 
+    # Fetch only relevant ClassMeeting objects
     existing_meetings = {
         (meeting.section.id, meeting.meeting_number): meeting
-        for meeting in ClassMeeting.objects.all()
+        for meeting in ClassMeeting.objects.filter(section_id__in=relevant_section_ids)
     }
+
     new_meetings = []
     updated_meetings = []
 
-    for row in tqdm(rows[:3], desc='Processing Class Meetings'):
+    for row in tqdm(rows, desc='Processing Class Meetings'):
         course_id = row['Course ID'].strip()
         term_code = row['Term Code'].strip()
         class_section = row['Class Section'].strip()
@@ -417,32 +431,28 @@ def insert_class_meetings(rows):
         if term_id is None:
             logging.warning(f'Term code {term_code} not found in AcademicTerm table')
             continue
-
         section_key = (course_id, term_id, class_section)
 
         section = section_cache.get(section_key)
-
         if not section:
             logging.warning(
                 f'Section not found for Course ID: {course_id}, Term Code: {term_code}, Class Section: {class_section}'
             )
             continue
 
-        start_time = parse_time(row.get('Meeting Start Time', ''))
-        end_time = parse_time(row.get('Meeting End Time', ''))
-        print('Start Time:', start_time, 'End Time:', end_time)  # Debug print
+        start_time = _parse_time(row.get('Meeting Start Time', ''))
+        end_time = _parse_time(row.get('Meeting End Time', ''))
 
         if not start_time or not end_time:
             logging.error('Invalid meeting time format')
             continue
 
         meeting_key = (section.id, meeting_number)
-        print('Meeting Key:', meeting_key)  # Debug print
         if meeting_key in existing_meetings:
             # Update existing class meeting
             meeting = existing_meetings[meeting_key]
-            meeting.start_time = parse_time(row['Meeting Start Time'])
-            meeting.end_time = parse_time(row['Meeting End Time'])
+            meeting.start_time = _parse_time(row['Meeting Start Time'])
+            meeting.end_time = _parse_time(row['Meeting End Time'])
             meeting.room = row.get('Meeting Room', '').strip()
             meeting.days = row.get('Meeting Days', '').strip()
             meeting.building_name = row.get('Building Name', '').strip()
@@ -452,8 +462,8 @@ def insert_class_meetings(rows):
             new_meeting = ClassMeeting(
                 section=section,
                 meeting_number=meeting_number,
-                start_time=parse_time(row['Meeting Start Time']),
-                end_time=parse_time(row['Meeting End Time']),
+                start_time=_parse_time(row['Meeting Start Time']),
+                end_time=_parse_time(row['Meeting End Time']),
                 room=row.get('Meeting Room', '').strip(),
                 days=row.get('Meeting Days', '').strip(),
                 building_name=row.get('Building Name', '').strip(),
@@ -478,60 +488,74 @@ def insert_class_year_enrollments(rows):
     logging.info('Starting ClassYearEnrollment insertions and updates...')
 
     # Cache for Section objects to reduce database queries
-    section_cache = {
-        (
-            section.course.course_id,
-            section.course.guid,
-            section.term.term_code,
-            section.class_number,
-        ): section
-        for section in Section.objects.select_related('course', 'term')
+    # Assuming class_number is unique across semesters
+    section_cache = {section.class_number: section for section in Section.objects.all()}
+
+    # Collect relevant section IDs
+    relevant_section_ids = set()
+    for row in tqdm(rows, desc='Checking for updates in Class Year Enrollments...'):
+        class_number = int(row['Class Number'].strip())
+        if class_number in section_cache:
+            relevant_section_ids.add(section_cache[class_number].id)
+
+    # Fetch only relevant ClassYearEnrollment objects
+    existing_enrollments = {
+        (enrollment.section.id, enrollment.class_year): enrollment
+        for enrollment in ClassYearEnrollment.objects.filter(
+            section_id__in=relevant_section_ids
+        )
     }
 
-    class_year_enrollment_updates = []
+    new_enrollments = []
+    updated_enrollments = []
 
     for row in tqdm(rows, desc='Processing Class Year Enrollments...'):
-        course_id = int(row['Course ID'].strip())
-        guid = int(row['Course GUID'].strip())
-        term_code = row['Term Code'].strip()
-        class_number = row['Class Number'].strip()
+        class_number = int(row['Class Number'].strip())
 
-        # Use the cache instead of querying the database
-        section_key = (course_id, guid, term_code, class_number)
-        section = section_cache.get(section_key)
-
+        section = section_cache.get(class_number)
         if not section:
-            logging.error(
-                f'Section not found for Course ID: {course_id}, Term Code: {term_code}, Class Number: {class_number}'
-            )
+            logging.error(f'Section not found for Class Number: {class_number}')
             continue
 
-        enrollment_info = parse_class_year_enrollments(
-            row['Class Year Enrollments'], class_year_enrollment_pattern
+        enrollment_info = _parse_class_year_enrollments(
+            row['Class Year Enrollments'], CLASS_YEAR_ENROLLMENT_PATTERN
         )
 
+        if not enrollment_info:  # No restrictions
+            key = (section.id, None)
+            if key not in existing_enrollments:
+                new_enrollment = ClassYearEnrollment(section=section)
+                new_enrollments.append(new_enrollment)
+            continue
+
         for class_year, enrl_seats in enrollment_info:
-            # Collect information for bulk update or create
-            class_year_enrollment_updates.append(
-                ClassYearEnrollment(
+            key = (section.id, int(class_year))
+            if key in existing_enrollments:
+                # Update existing enrollment
+                enrollment = existing_enrollments[key]
+                enrollment.enrl_seats = int(enrl_seats)
+                updated_enrollments.append(enrollment)
+            else:
+                # Create new enrollment
+                new_enrollment = ClassYearEnrollment(
                     section=section,
                     class_year=int(class_year),
                     enrl_seats=int(enrl_seats),
                 )
-            )
+                new_enrollments.append(new_enrollment)
 
-    # Perform bulk update or create
-    for entry in class_year_enrollment_updates:
-        ClassYearEnrollment.objects.update_or_create(
-            section=entry.section,
-            class_year=entry.class_year,
-            defaults={'enrl_seats': entry.enrl_seats},
-        )
+    # Bulk operations for efficiency
+    update_fields = ['enrl_seats']
+    try:
+        ClassYearEnrollment.objects.bulk_create(new_enrollments)
+        ClassYearEnrollment.objects.bulk_update(updated_enrollments, update_fields)
+    except Exception as e:
+        logging.error(f'Error in bulk operation: {e}')
 
     logging.info('ClassYearEnrollment insertions and updates completed!')
-    
 
-#-------------------------------------------------------------------------------------#
+
+# -------------------------------------------------------------------------------------#
 
 
 def get_semesters_from_args():
@@ -574,16 +598,13 @@ def insert_course_data(semester):
 
     try:
         with transaction.atomic():
-            # insert_departments(trimmed_rows)
-            # insert_academic_terms(trimmed_rows)
-            # insert_courses(trimmed_rows)
-            # insert_course_equivalents(trimmed_rows)
-
-            # insert_sections(trimmed_rows)
-
-            # These two don't work yet
+            insert_departments(trimmed_rows)
+            insert_academic_terms(trimmed_rows)
+            insert_courses(trimmed_rows)
+            insert_course_equivalents(trimmed_rows)
+            insert_sections(trimmed_rows)
             insert_class_meetings(trimmed_rows)
-            # insert_class_year_enrollments(trimmed_rows)
+            insert_class_year_enrollments(trimmed_rows)
 
     except Exception as e:
         logging.error(f'Transaction failed: {e}')

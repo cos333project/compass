@@ -38,7 +38,7 @@ def fetch_data(subject, term, req_lib):
     print(f'Fetched {len(course_ids)} course IDs from {subject}.')
 
     # Parallel fetching of course details
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=8) as executor:
         futures = [
             executor.submit(fetch_course_detail, course_id, term, req_lib)
             for course_id in course_ids
@@ -55,7 +55,7 @@ def fetch_data(subject, term, req_lib):
     )
 
     if not seat_info.get('course'):
-        print(f'No seat info returned for course_ids: {course_ids} in {subject}')
+        print(f'No reserved seating info found for course_ids: {course_ids}')
 
     return courses, seat_info, course_details
 
@@ -105,14 +105,19 @@ def process_courses(courses, seat_info, course_details, writer):
     for term in courses.get('term', []):  # Loop through each term
         for subject in term.get('subjects', []):  # Loop through each subject
             for course in subject.get('courses', []):  # Loop through each course
-                if not course_details:  # Check if course_details is None or empty
+                if not course_details:
                     print(f'No course details available for {course}.')
                     return
                 # Fetch the course details and process each course
                 course_id = course.get('course_id', '')
-                course_detail = course_details.get(course_id, {}).get(
-                    'course_details', {}
-                )
+                course_dict = course_details.get(course_id)
+
+                if course_dict is None:
+                    print(
+                        f'Data for course ID {course_id} not found. Possible issue with the server.'
+                    )
+                    return
+                course_detail = course_dict.get('course_details', {})
                 process_course(
                     term, subject, course, seat_mapping, course_detail, writer
                 )
@@ -218,7 +223,9 @@ def extract_class_data(course_class, seat_mapping):
     else:
         class_year_enrollments = []
 
-    class_year_enrollments_str = ', '.join(class_year_enrollments) or 'N/A'
+    class_year_enrollments_str = (
+        ', '.join(class_year_enrollments) or 'Class year demographics unavailable'
+    )
 
     return {
         'Class Number': class_number,
@@ -318,8 +325,8 @@ def extract_meeting_data(meeting):
         'Meeting Start Time': meeting.get('start_time', ''),
         'Meeting End Time': meeting.get('end_time', ''),
         'Meeting Days': days,
-        'Building Name': meeting.get('building', {}).get('name', ''),
-        'Meeting Room': meeting.get('room', ''),
+        'Building Name': meeting.get('building', {}).get('name', 'Canceled'),
+        'Meeting Room': meeting.get('room', 'TBD'),
     }
 
 
