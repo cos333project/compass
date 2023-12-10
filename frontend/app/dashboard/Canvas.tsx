@@ -55,12 +55,22 @@ async function fetchCsrfToken() {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
-    return data.csrfToken;
+    return data.csrfToken ? String(data.csrfToken) : '';
   } catch (error) {
     return 'Error fetching CSRF token!';
   }
 }
-const csrfToken = await fetchCsrfToken() ?? null;
+let csrfToken: string;
+
+if (typeof window === 'undefined') {
+  // Server-side or during prerendering/build time
+  csrfToken = '';
+} else {
+  // Client-side
+  (async () => {
+    csrfToken = await fetchCsrfToken();
+  })();
+}
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -79,15 +89,14 @@ function DroppableContainer({
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
-  const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } =
-    useSortable({
-      id,
-      data: {
-        type: 'container',
-        children: items,
-      },
-      animateLayoutChanges,
-    });
+  const { active, isDragging, over, setNodeRef, transition, transform } = useSortable({
+    id,
+    data: {
+      type: 'container',
+      children: items,
+    },
+    animateLayoutChanges,
+  });
   const isOverContainer = over
     ? (id === over.id && active?.data.current?.type !== 'container') || items.includes(over.id)
     : false;
@@ -102,10 +111,6 @@ function DroppableContainer({
         opacity: isDragging ? 0.5 : undefined,
       }}
       hover={isOverContainer}
-      handleProps={{
-        ...attributes,
-        ...listeners,
-      }}
       columns={columns}
       {...props}
     >
@@ -580,7 +585,7 @@ export function Canvas({
 
           const courseId = active.id;
           const semesterId = activeContainer;
-          const csrfToken = await fetchCsrfToken() ?? null;
+          const csrfToken = await fetchCsrfToken();
           // This also should only be updated if the user drops the course into a new semester
           fetch(`${process.env.BACKEND}/update_courses/`, {
             method: 'POST',
@@ -589,7 +594,7 @@ export function Canvas({
               'Content-Type': 'application/json',
               'X-CSRFToken': csrfToken,
             },
-            body: JSON.stringify({ courseId, semesterId }),
+            body: JSON.stringify({ courseId: courseId, semesterId: semesterId }),
           })
             .then((response) => response.json())
             .then((data) => console.log('Update success', data))
