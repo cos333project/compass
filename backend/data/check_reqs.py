@@ -16,6 +16,7 @@ import constants
 from config import django_init
 from compass.models import (
     Course,
+    Section,
     Department,
     Degree,
     Major,
@@ -483,7 +484,16 @@ def get_course_info(dept, num):
         dept_code = Department.objects.filter(code=dept).first().id
         try:
             course = Course.objects.filter(department__id=dept_code, catalog_number=num).first()
-            
+            if course.course_id:
+                co_id = course.course_id
+                print(co_id)
+                #instructor = "None"
+                #try:
+                #    instructor = Section.objects.filter(course_id=13248).first()
+                #    
+                #    print(instructor)
+                #except Section.DoesNotExist:
+                #    instructor = "Information Unavailable"
             # get relevant info and put it in a dictionary
             course_dict = {}
             if course.title:
@@ -492,6 +502,8 @@ def get_course_info(dept, num):
                 course_dict["Description"] = course.description
             if course.distribution_area_short:
                 course_dict["Distribution Area"] = course.distribution_area_short
+            #if instructor:
+            #    course_dict["Professor"] = instructor
             if course.reading_list:
                 course_dict["Reading List"] = course.reading_list
             if course.reading_writing_assignment:
@@ -501,6 +513,8 @@ def get_course_info(dept, num):
             if course.web_address:
                 course_dict["Relevant Links"] = course.web_address
             return course_dict
+
+
 
         except Course.DoesNotExist:
             return None
