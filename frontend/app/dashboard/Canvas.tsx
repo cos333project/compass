@@ -707,17 +707,17 @@ export function Canvas({
                     height='160px'
                   >
                     <SortableContext items={items[containerId]} strategy={strategy}>
-                      {items[containerId].map((value, index) => (
+                      {items[containerId].map((course, index) => (
                         <SortableItem
                           disabled={isSortingContainer}
                           key={index}
-                          id={value}
+                          id={course}
                           index={index}
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          onRemove={() => handleRemove(value, containerId)}
-                          renderItem={renderItem} // This render should be bite-sized
+                          onRemove={() => handleRemove(course, containerId)}
+                          renderItem={renderItem} // TODO: This render should be bite-sized (dept + catnum)
                           containerId={containerId}
                           getIndex={getIndex}
                         />
@@ -771,11 +771,13 @@ export function Canvas({
   //   setContainers((containers) => containers.filter((id) => id !== containerID));
   // }
   function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
-    console.log('attempting to remove');
-    setItems((items) => ({
-      ...items,
-      [containerId]: items[containerId].filter((course) => course !== value.toString()),
-    }));
+    setItems((items) => {
+      const updatedCourses = {
+        ...items,
+        [containerId]: items[containerId].filter((course) => course !== value.toString()),
+      };
+      return updatedCourses;
+    });
 
     fetch(`${process.env.BACKEND}/update_courses/`, {
       method: 'POST',
