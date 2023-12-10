@@ -172,7 +172,7 @@ export function Canvas({
   // itemCount = 3, // remove this?
   cancelDrop,
   columns = 2,
-  handle = false,
+  handle = true,
   // initialItems, // remove
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,

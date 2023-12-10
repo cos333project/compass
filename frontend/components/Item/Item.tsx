@@ -132,10 +132,7 @@ export const Item = memo(
             {value}
             <span className={styles.Actions}>
               {onRemove ? <Remove className={styles.Remove} onClick={onRemove} /> : null}
-              {handle ? <Handle {...handleProps} {...listeners} /> : null}
-              <div>
-                <InfoComponent dept = '126' coursenum='126'/>
-              </div> 
+              {handle ? <Handle {...handleProps} {...listeners} /> : null} 
             </span>
           </div>
         </li>
