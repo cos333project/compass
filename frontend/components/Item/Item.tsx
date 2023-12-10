@@ -133,11 +133,11 @@ export const Item = memo(
           >
             {value}
             <span className={styles.Actions}>
-              <Remove className={styles.Remove} onClick={onRemove} />
-              <div id="modal-root">
-                <InfoComponent dept = {value.toString().split(' ')[0]} coursenum={value.toString().split(' ')[1]} />
-              </div>
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
+                <div id="modal-root">
+                  <InfoComponent dept = {value.toString().split(' ')[0]} coursenum={value.toString().split(' ')[1]} />
+                </div>
+              <Remove className={styles.Remove} onClick={onRemove} />
             </span>
           </div>
         </li>

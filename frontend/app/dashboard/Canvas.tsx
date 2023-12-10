@@ -646,10 +646,10 @@ export function Canvas({
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'row'}}>
             {/* Left Section for Search Results */}
             {containers.includes('Search Results') && (
-              <div style={{ width: '380px' }}>
+              <div style={{ width: '380px'}}> {/* issue here with resizing + with requirements dropdowns*/}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key='Search Results'
@@ -714,7 +714,7 @@ export function Canvas({
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          onRemove={() => onRemove(value, containerId)}
+                          onRemove={() => handleRemove(value, containerId)}
                           renderItem={renderItem} // This render should be bite-sized
                           containerId={containerId}
                           getIndex={getIndex}
@@ -768,14 +768,12 @@ export function Canvas({
   // function handleRemove(containerID: UniqueIdentifier) {
   //   setContainers((containers) => containers.filter((id) => id !== containerID));
   // }
-  function onRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
-    setItems((items) => {
-      const updatedItems = {
+  function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
+    console.log('attempting to remove')
+    setItems((items) => ({
         ...items,
         [containerId]: items[containerId].filter((course) => course !== value.toString()),
-      };
-      return updatedItems;
-    });
+    }));
 
     fetch(`${process.env.BACKEND}/update_courses/`, {
       method: 'POST',
@@ -784,7 +782,7 @@ export function Canvas({
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       },
-      body: JSON.stringify({ value, semesterId: 'Search Results' }),
+      body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
     })
       .then((response) => response.json())
       .then((data) => console.log('Button clicked!', data))
@@ -845,6 +843,7 @@ function SortableItem({
   id,
   index,
   handle,
+  onRemove,
   renderItem,
   style,
   containerId,
@@ -891,6 +890,7 @@ function SortableItem({
       fadeIn={mountedWhileDragging}
       listeners={listeners}
       renderItem={renderItem}
+      onRemove={onRemove}
     />
   );
 }

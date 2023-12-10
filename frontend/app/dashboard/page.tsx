@@ -28,13 +28,12 @@ const Dashboard: FC = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar/>
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
-              trashable
               columns={2}
               strategy={rectSortingStrategy}
               wrapperStyle={() => ({

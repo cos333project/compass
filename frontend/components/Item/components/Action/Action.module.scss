@@ -1,13 +1,13 @@
 .Action {
-  padding: 8px;
+  padding: 6px;
+  border-radius: 5px;
   background-color: transparent;
   -webkit-tap-highlight-color: transparent;
 }
 
 .Action svg {
-  flex: 0 0 auto;
+  display: block;
   margin: auto;
-  height: 100%;
   overflow: visible;
   fill: #919eab;
 }
