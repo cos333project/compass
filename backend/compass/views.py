@@ -3,6 +3,7 @@ from re import sub, search, split, compile, IGNORECASE
 from urllib.request import urlopen
 from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
+from django.contrib.auth import get_user_model
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse, HttpResponseServerError
 from django.middleware.csrf import get_token
@@ -265,8 +266,14 @@ class CAS(View):
                 net_id = self._validate(ticket, service_url)
                 logger.debug(f'Validation returned {username}')
                 if net_id:
+                    User = get_user_model()
+                    user, created = User.objects.get_or_create(
+                        username=net_id, defaults={'net_id': net_id, 'role': 'student'}
+                    )
+                    if created:
+                        user.set_unusable_password()
+                        user.save()
                     request.session['net_id'] = net_id
-                    logger.debug(f'Authentication successful for {username}')
                     return redirect(settings.DASHBOARD)
             login_url = f'{self.cas_url}login?service={service_url}'
             return redirect(login_url)

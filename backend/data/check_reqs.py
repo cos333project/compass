@@ -152,7 +152,7 @@ def _init_courses(courses):
             course[
                 'num_settleable'
             ] = 0  # number of reqs to which can be settled. autosettled if 1
-            if 'settled' not in course or course['settled'] == None:
+            if 'settled' not in course or course['settled'] is None:
                 course['settled'] = []
     return courses
 
@@ -344,7 +344,7 @@ def check_degree_progress(req, courses):
     """
     by_semester = req['inst'].completed_by_semester
     num_courses = 0
-    if by_semester == None or by_semester > len(courses):
+    if by_semester is None or by_semester > len(courses):
         by_semester = len(courses)
     for i in range(by_semester):
         num_courses += len(courses[i])
@@ -529,8 +529,8 @@ def main():
         {'code': 'COS-AB', 'name': 'Computer Science - AB'},
         [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
     )
-    # print(output['Minors'])
-    # print(get_course_info("SPA", 366))
+    print(output['Minors'])
+    print(get_course_info('SPA', 366))
 
 
 if __name__ == '__main__':
