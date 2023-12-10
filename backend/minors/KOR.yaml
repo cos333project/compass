@@ -31,14 +31,30 @@ req_list:
   by the deadline of one week before Dean's Date in the spring of the 
   student's senior year, at the latest.
 - name: Language Courses
+  max_counted: 1
   min_needed: 6
   pdfs_allowed: 0
   explanation: six language courses (two or more of which must be beyond 
   the second-year level). 
-- name: Course
+  req_list:
+  - name: Advanced Language
+      max_counted: 6
+      min_needed: 1
+      course_list:
+      - KOR 3*
+      - KOR 4*
+    - name: Basic Language
+      max_counted: 4
+      min_needed: 1
+      course_list:
+      - KOR *
+- name: EAS or cognate
+  max_counted: 1
   min_needed: 1
   explanation: one EAS or cognate course
   pdfs_allowed: 0
+  course_list:
+  - EAS *
 - name: Research
   max_counted: 1
   min_needed: 1
@@ -57,10 +73,3 @@ req_list:
   serve as the faculty reviewer. The faculty reviewer does not need to 
   be an EAS department faculty, but their field must have relevancy to 
   the topic and region of the student’s written work. 
-- name: Independent Work
-  double_counting_allowed: true
-  explanation: The written work requirement can be a paper written 
-  exclusively/independently for the language minor, another piece of work 
-  (i.e., a senior thesis, junior paper or substantial seminar paper), or a 
-  hybrid (i.e., a previous paper that is independently expanded to meet all criteria)
-  

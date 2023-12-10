@@ -18,22 +18,10 @@ description: Understanding the human past is essential to living in the
   intellectual journey. For students majoring in other humanities or social
   science disciplines, the History minor complements their course of study.
 contacts:
-  - type: Adviser
-    name: Michael A. Blaakman
-    email: blaakman@princeton.edu
-  - type: Undergraduate Administrator
-    name: Judie Miller
-    email: jlmiller@princeton.edu
+  - type: Chair 
+    name: Angela N. Creager
+    email: creager@princeton.edu
 req_list:
-  - name: Prerequisites
-    min_needed:
-    explanation: The history minor is open to all undergraduate students, without prerequisite.
-      Students majoring in history or pursuing a minor in the history of science, technology, and
-      medicine are not eligible.
-    double_counting_allowed:
-    pdfs_allowed:
-    completed_by_semester: 6
-    course_list:
   - name: Coursework
     min_needed: 5
     explanation: Students are required to complete five history courses. These
@@ -42,6 +30,8 @@ req_list:
     double_counting_allowed: true
     max_common_with_major: 1
     pdfs_allowed: 0
+    course_list:
+    - HIS *
   - name: Independent Work
     explanation: Students are required to write a research paper (minimum length
       of 12 pages) with substantive primary source engagement. The research paper
@@ -50,3 +40,8 @@ req_list:
       methodological reflection on the research and writing process. The
       undergraduate program director for history will review the submitted
       work and verify that it satisfies departmental requirements.
+
+# note: The History minor is open to all undergraduate students, without prerequisite.
+
+The exceptions are History majors and students pursuing the History of Science, Technology, 
+and Medicine minor (HSTM), who are not eligible for the HIS minor.

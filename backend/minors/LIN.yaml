@@ -1,73 +1,82 @@
-Minor:
-  code: LIN
-  name: Linguistics
-  description: >
-    Students at Princeton develop the skills of a linguist through 
-    hands-on engagement with gathering and interpreting data from many different 
-    languages, the employment of diverse methodologies, and the investigation of 
-    language through a variety of lenses, including;
-
-    Working with native speakers of an unfamiliar language (Field Methods).
-    Engaging with descriptive grammars and large-scale statistical correlations to investigate 
-    similarities and differences across languages (Linguistic Typology).
-    Analyzing texts to elucidate how language changes over time (Historical Linguistics).
-    Modeling linguistic differences across dialects and social contexts (Sociolinguistics).
-    Measuring linguistic behaviors in controlled experimental contexts (Psycholinguistics).
-    Observing how languages develop/coexist within speakers (Language Acquisition, Bilingualism).
-
-    Beyond the linguistic knowledge mastered through such coursework, students of 
-    linguistics will gain a number of valuable skills that extend to nearly every domain, 
-    including; logical problem-solving, gathering and organizing large data sets, 
-    recognizing patterns, making and testing hypotheses, and 
-    identifying problems in and prospects for analytical approaches.
-
-  degree_type: "BOTH"
-  excluded_majors: 
-  - LIN
-  excluded_minors:
-  max_courses_double_dipped:
-  max_courses_from_major: 1
-  
-  courses_required: 5
-
-  intro:
+---
+type: Minor
+name: Linguistics
+code: LIN
+degree:
+urls: 
+- https://linguistics.princeton.edu/certificate/
+description: 
+  Students at Princeton develop the skills of a linguist through 
+  hands-on engagement with gathering and interpreting data from many different 
+  languages, the employment of diverse methodologies, and the investigation of 
+  language through a variety of lenses, including;
+  Working with native speakers of an unfamiliar language (Field Methods).
+  Engaging with descriptive grammars and large-scale statistical correlations to investigate 
+  similarities and differences across languages (Linguistic Typology).
+  Analyzing texts to elucidate how language changes over time (Historical Linguistics).
+  Modeling linguistic differences across dialects and social contexts (Sociolinguistics).
+  Measuring linguistic behaviors in controlled experimental contexts (Psycholinguistics).
+  Observing how languages develop/coexist within speakers (Language Acquisition, Bilingualism).
+contacts:
+- type: Director
+  name: Adam N. Elga
+  email: adame@princeton.edu
+- name: LIN 201
+  max_counted: 1
+  min_needed:
+  explanation: Permission may be granted to substitute a different LIN course in place of 201; 
+    decisions will be made by the Director of Undergraduate Studies on a case-by-case basis.  
+  course_list:
+  - LIN 201
+- name: Courses
+  max_counted: 1
+  min_needed: 4
+  max_common_with_major: 1
+  req_list:
+  - name: Core Courses
+    max_counted: 3
+    min_needed: 1
+    explanation: 
+    req_list: LIN 303 may be substituted with LIN 334/PHI 334
+    - name: Core without Overlap
+      max_counted: 3
+      min_needed: 1
+      course_list:
+      - LIN 301
+      - LIN 302
+      - LIN 306
+    - name: Core Overlap
+      max_counted: 1
+      min_needed: 1
+      course_list:
+      - LIN 303
+      - LIN 334
+  - name: Methods Courses
+    max_counted: 3
+    min_needed: 1
+    course_list:
+    - LIN 210
+    - LIN 310
+    - LIN 355
+    - LIN 356
+  - name: Elective Courses
+    max_counted: 2
+    min_needed: 0
     pdfs_allowed: 1
-    choose: 1
-    options:
-      - LIN201
-
-  electives:
-    pdfs_allowed: 1
-    core:
-      choose: 1
-      options:
-        - LIN301
-        - LIN302
-        - LIN303 OR PHI334
-        - LIN306
-
-    methods:
-      choose: 1
-      options:
-        - LIN210
-        - LIN310
-        - LIN355
-        - LIN356
-
-    extra:
-      choose: 2
-      options: 
-        - LIN2**
-        - LIN3**
-        - LIN4**
-
-  independent_work:
-    choose: 1
-    options:
-      - INDEPENDENT_WORK
-      - SENIOR_THESIS
-
-  application_deadline:
-    urls:
-    - https://ua.princeton.edu/fields-study/minors/linguistics
-    contacts:
+    course_list:
+    - LIN 2*
+    - LIN 3*
+    - LIN 4*
+    - LIN 5*
+- name: Independent Work
+  max_counted: 1
+  min_needed: 1
+  explanation: Some substantial aspect of linguistics should be incorporated either into the 
+    student’s junior independent work or into their senior thesis. This requirement is typically 
+    met either by writing a junior paper or senior thesis on a linguistics topic or topic related 
+    to linguistics (i.e., a topic that satisfies the requirements of both the student’s major 
+    and minor), or by including a chapter on a linguistics topic in a senior thesis whose general 
+    topic is not directly related to linguistics. If this is not feasible, students should contact 
+    the director of undergraduate program for alternative arrangements, which in most cases will 
+    involve writing a short piece of independent work on a topic related to linguistics, 
+    supervised by a member of the LIN faculty.

@@ -1,79 +1,76 @@
-Minor:
-  code: MUS
-  name: MUSIC
-  description: >
-    Through an open-ended set of course requirements, the minor will introduce students to the wide range of possible fields of study within music and give them the flexibility to forge paths inspired by their own imaginations.
-
-    It is our goal that the resulting teaching and research afforded by this open-ended minor will continue to expand our core identity beyond the borders of western cultural traditions and provide a vibrant pathway to/through EDI work. Further, we anticipate that this minor will foster more of the interdisciplinary opportunities that are so fundamental and unique to the Princeton experience; by inviting students to bring what they are studying in their majors to bear on our music practices and, in turn, offering new lenses through which they can metabolize their studies in other areas, the potential of music to suggest new modes of thinking, making and learning can be more fully realized.
-
-    While independent work is not required, there are ample opportunities for students in the music minor to further their classroom work via private lessons in composition and electronic music, studies in music cognition (through the Music Cognition Lab) or research projects with faculty.
-  
-  degree_type: "BOTH"
-  excluded_majors: 
-  excluded_minors:
-  max_courses_double_dipped:
-  max_courses_from_major: 2
-
-  courses_required: 5
-  pdfs_allowed:
-
-  intro:
-    choose: 1
-    options:
-      - MUS105
-    special_conditions: CAN_REPLACE_WITH_MUS_ELECTIVE
-
-  mandm:
-    choose: 1
-    options:
-      - MUS209B
-      - MUS209A
-      - MUS329
-      - MUS319
-      - MUS316
-      - MUS312
-      - MUS248
-      - MUS210
-      - MUS106
-      - MUS345
-      - MUS340
-      - MUS314
-      - MUS308
-      - MUS106
-      - MUS560
-      - MUS204
-      - MUS537
-      - MUS528
-      - MUS351
-      - MUS310
-
-  candc:
-    choose: 1
-    options:
-      - MUS230
-      - MUS238
-      - MUS248
-      - MUS262
-      - MUS203
-      - MUS240
-      - MUS223
-      - MUS232
-      - MUS242
-      - MUS262
-      - MUS203
-      - MUS350
-
-  extra:
-    choose: 2
-    options:
-      - MUS1**
-      - MUS2**
-      - MUS3**
-      - MUS4**
-      - MUS5**
-    special_conditions: CAN_PETITION_OUT_OF_MUS
-
-  application_deadline:
-    urls:
-    - https://ua.princeton.edu/fields-study/departmental-majors-degree-bachelor-arts/music
-    contacts:
+---
+type: Minor
+name: Music
+code: MUS
+degree:
+description: The minor in the Department of Music invites students to explore a diverse range of fields of study, from composition and electronic music, to musicology, theory, sound 
+  studies, music cognition, jazz studies and more. Students pursue work in two loosely defined areas; Culture and Criticism (C&C) and Materials and Making (M&M). M&M encompasses 
+  topics usually explored in hands-on, exploratory ways, such as composition, improvisation, theory, analysis and electronic music. The C&C area focuses on the scholarly study of 
+  music, from historical and formalist analysis to cognitive science and ethnography. While independent work is not required, there are options for students interested in 
+  pursuing private lessons (in composition and electronic music), studies in music cognition (through the Music Cognition Lab), research projects with faculty, or the Music 
+  Mentorship program that pairs music undergraduates with graduate students.
+urls:
+- https://music.princeton.edu/undergraduate/music-minors-program/#MUS
+contacts:
+- type: Chair
+  name: Daniel L. Trueman
+  email: dtrueman@princeton.edu
+req_list:
+- name: Requirements
+  max_counted: 1
+  min_needed: 5
+  max_common_with_major: 2
+  req_list:
+  - name: MUS 105
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - MUS 105
+  - name: Materials and Making Course
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - MUS209B
+    - MUS209A
+    - MUS329
+    - MUS319
+    - MUS316
+    - MUS312
+    - MUS248
+    - MUS210
+    - MUS106
+    - MUS345
+    - MUS340
+    - MUS314
+    - MUS308
+    - MUS106
+    - MUS560
+    - MUS204
+    - MUS537
+    - MUS528
+    - MUS351
+    - MUS310
+  - name: Culture and Criticism Course
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - MUS230
+    - MUS238
+    - MUS248
+    - MUS262
+    - MUS203
+    - MUS240
+    - MUS223
+    - MUS232
+    - MUS242
+    - MUS262
+    - MUS203
+    - MUS350
+  - name: 2 MUS Courses
+    max_counted: 1
+    min_needed: 2
+    explanation: 2 Additional MUS courses. By petition to the DUS, one of these electives can be outside 
+    MUS, though must reflect a coherent plan of study (for instance, a particular psychology 
+      course in support of a plan of study focusing on music cognition)
+    course_list:
+    - MUS *

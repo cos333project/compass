@@ -1,58 +1,83 @@
+---
+type: Minor
+name: Medival Studies
+code: Med
+degree:
+urls:
+- https://medievalstudies.princeton.edu/minor-in-medieval-studies/
+description: 
 Minor:
-  code: MED
-  name: Medieval Studies
-  description: >
-    The Program in Medieval Studies provides a platform for the study of histories and cultures from roughly the 3rd to the 16th centuries C.E. The program brings together faculty, graduates and undergraduates from various departments and units across the humanities and social sciences, as well as computer sciences and engineering. We offer a capacious minor degree, in which students explore the past through the cutting-edge methods and questions of various contemporary disciplines, including archaeology, biology, art history, computer science, anthropology, literatures and languages, manuscript studies, archival studies, history, religious studies, environmental history, and biology and chemistry. Guided by members of our faculty, students develop individual approaches and techniques to studying cultures of the past and their continued importance today. Courses and independent work prioritize students' direct engagement with primary sources, often working out of Princeton's extraordinary collections. The program prizes scholarly community: undergraduates study in formal collaboration through their senior colloquium and enjoy many opportunities to engage with faculty, graduate students and one another through regular program activities.
-
-    The minor's multidisciplinary training in the study of history, culture and society fosters students' future work in fields such as media, heritage management, archives and museums, publishing industries, legal studies, public scholarship and academic research.
-
-  degree_type: "BOTH"
-  excluded_majors: 
-  excluded_minors:
-  max_courses_double_dipped:
-  max_courses_from_major: 2
-
-  courses_required: 4
-  pdfs_allowed:
-
-  intro:
-    choose: 1
-    options:
-      - MED227
-      - HUM216 AND HUM217
-      - HIS210
-      - ART228
-
-  extra:
-    choose: 3
-    options:
-      - GER218
-      - GEZ101
-      - NES502
-      - HIS345
-      - ITA303
-      - ENG313
-      - HIS207
-      - HIS343
-      - ART478
-      - COM310
-      - HIS367
-      - NES369
-      - NES547
-      - MEDIEVAL_LANG1** x 2
-      - MEDIEVAL_LANG2**
-      - MEDIEVAL_LANG3**
-      - MEDIEVAL_LANG4**
-      - MEDIEVAL_LANG5**
-
-  independent_work:
-    choose: 1
-    options:
-      - SENIOR_THESIS AND SENIOR_THESIS_COLLOQUIUM
-      - extra4** AND SENIOR_THESIS_COLLOQUIUM
-      - extra5** AND SENIOR_THESIS_COLLOQUIUM
-
-  application_deadline:
-    urls:
-    - https://ua.princeton.edu/fields-study/minors/medieval-studies
-    contacts:
+The Program in Medieval Studies encourages the interdisciplinary study 
+  of the Middle Ages; its art, literature (Latin and vernacular), music, 
+  religion, science, philosophy, politics, and economic and social structures. 
+  Supported by the vast resources for medieval studies at Princeton 
+  (including an outstanding medieval manuscript collection and the 
+  photographic archive known as the Index of Medieval Art), the program 
+  sponsors one course; an introductory seminar, and a (noncredit) thesis 
+  writers' colloquium for seniors. Other courses directly relevant to 
+  medieval studies are listed under the courses section.  
+contacts:
+- type: Director
+  name: William C. Jordan
+  email: wchester@princeton.edu
+req_list:
+- name: Introductory Course
+  max_counted: 1
+  min_needed: 1
+  explanation: MED HUM HIS HLS 227 (Worlds of the Middle Ages), offered in 
+    alternate falls, is the designated introductory course for the minor. 
+    Students may consult the director for comparably broad introductory 
+    course offerings that may be taken instead (e.g., HUM216–217, HIS210, 
+    ART228). Students are encouraged to complete their introductory class 
+    as early as possible in their course of study.
+  course_list:
+  - MED 227
+  - HIS 210
+  - ART 228
+  - HUM 216-217
+- name: Additional Courses
+  max_counted: 1
+  min_needed: 3
+  max_common_with_major: 2
+  course_list:
+  - ART 228
+  - ART 361
+  - CLA 565
+  - EAS 326
+  - GER 206
+  - HIS 205
+  - HIS 210
+  - HIS 344
+  - HIS 536
+  - HIS 544
+  - HUM 372
+  - MUS 338
+  - REL 251
+  - FRE 560
+- name: Independent Work or 400-level course with a substantive final paper
+  max_counted: 1
+  min_needed: 1
+  explanation: Students may complete a fifth course at the 400 level (or 500 level with the 
+    permission of the instructor) in lieu of independent work, but are also required to present and discuss these projects in the senior thesis colloquium.
+  req_list:
+  - name: Independent work
+    max_counted: 1
+    min_needed: 1
+    explanation: One larger final project on a relevant topic completed in the senior year, amounting to the equivalent of one thesis chapter or more. 
+      Project forms include a departmental senior thesis, a substantive data-based project on primary sources and materials, internships that require 
+      intensive work with primary sources. Please discuss the range of possibilities (and Princeton’s own opportunities) with the director. In the 
+      senior thesis colloquium, taught by the director of the program, these projects, activities, experiences and expertise will be regularly 
+      presented and discussed during senior year.
+  - name: 400-level Course;
+    max_counted: 1
+    min_needed: 1
+    course_list:
+    - MED 4*
+    - MED 5*
+- name: Language Requirements
+  max_counted: 1
+  min_needed: 0
+  explanation: Students are encouraged to study an appropriate source language in the department of their choice. Two semesters of a relevant medieval 
+    source language at the 100 level, or one medieval source language course at the 200 level or above, will count as one course toward the minor. 
+    Relevant languages include Latin, Classical Greek, Hebrew, Arabic, Classical Chinese, Classical Japanese and Persian; for other relevant languages, 
+    including possible graduate courses, students should consult with the program director.
