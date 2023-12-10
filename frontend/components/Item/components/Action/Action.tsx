@@ -1,4 +1,4 @@
-import { forwardRef, CSSProperties } from 'react';
+import { forwardRef, CSSProperties, MouseEvent } from 'react';
 
 import classNames from 'classnames';
 

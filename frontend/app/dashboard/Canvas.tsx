@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   CancelDrop,
@@ -35,6 +35,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
+import { FixedSizeList as Results } from 'react-window';
 
 import { Course, Profile } from '@/types';
 
@@ -170,7 +171,7 @@ export function Canvas({
   // itemCount = 3, // remove this?
   cancelDrop,
   columns = 2,
-  handle = false,
+  handle = true,
   // initialItems, // remove
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
@@ -402,7 +403,6 @@ export function Canvas({
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId !== null) {
-
         if (overId in items) {
           const containerItems = items[overId];
 
@@ -505,11 +505,7 @@ export function Canvas({
             overId: over?.id,
           });
           const overId = over?.id;
-          if (
-            overId === null ||
-            overId === undefined ||
-            active.id in items
-          ) {
+          if (overId === null || overId === undefined || active.id in items) {
             return;
           }
 
@@ -600,7 +596,7 @@ export function Canvas({
           }
 
           const courseId = active.id;
-          let semesterId = activeContainer;
+          const semesterId = activeContainer;
           const csrfToken = await fetchCsrfToken();
           // This also should only be updated if the user drops the course into a new semester
           fetch(`${process.env.BACKEND}/update_courses/`, {
@@ -615,8 +611,6 @@ export function Canvas({
             .then((response) => response.json())
             .then((data) => console.log('Update success', data))
             .catch((error) => console.error('Update Error:', error));
-          // const csrfToken = await fetchCsrfToken();
-          // updateCourses(courseId, semesterId, csrfToken);
 
           const overContainer = findContainer(overId);
 
@@ -652,10 +646,10 @@ export function Canvas({
         modifiers={modifiers}
       >
         <SortableContext items={[...containers, PLACEHOLDER_ID]}>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'row'}}>
             {/* Left Section for Search Results */}
             {containers.includes('Search Results') && (
-              <div style={{ width: '380px' }}>
+              <div style={{ width: '380px'}}> {/* issue here with resizing + with requirements dropdowns*/}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key='Search Results'
@@ -719,7 +713,7 @@ export function Canvas({
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          onRemove={() => onRemove(value, containerId)}
+                          onRemove={() => handleRemove(value, containerId)}
                           renderItem={renderItem} // This render should be bite-sized
                           containerId={containerId}
                           getIndex={getIndex}
@@ -769,51 +763,16 @@ export function Canvas({
     );
   }
 
-  // function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-  //   return (
-  //     <Container
-  //       label={`${containerId}`}
-  //       columns={columns}
-  //       style={{
-  //         height: '100%',
-  //       }}
-  //       shadow
-  //       unstyled={false}
-  //     >
-  //       {items[containerId].map((item, index) => (
-  //         <Item
-  //           key={item}
-  //           value={item}
-  //           handle={handle}
-  //           style={getItemStyles({
-  //             containerId,
-  //             overIndex: -1,
-  //             index: getIndex(item),
-  //             value: item,
-  //             isDragging: false,
-  //             isSorting: false,
-  //             isDragOverlay: false,
-  //           })}
-  //           color={getColor(item)}
-  //           wrapperStyle={wrapperStyle({ index })}
-  //           renderItem={renderItem}
-  //         />
-  //       ))}
-  //     </Container>
-  //   );
-  // }
-
   // TODO: Probably don't need this anymore since containers are not removable
   // function handleRemove(containerID: UniqueIdentifier) {
   //   setContainers((containers) => containers.filter((id) => id !== containerID));
   // }
-  function onRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
-    setItems((items) => {
-      items[containerId].filter((course: string) => course !== value.toString());
-      return {
-        ...items
-      };
-    });
+  function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
+    console.log('attempting to remove')
+    setItems((items) => ({
+        ...items,
+        [containerId]: items[containerId].filter((course) => course !== value.toString()),
+    }));
 
     fetch(`${process.env.BACKEND}/update_courses/`, {
       method: 'POST',
@@ -822,10 +781,10 @@ export function Canvas({
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       },
-      body: JSON.stringify({ value, semesterId: 'Search Results' }),
+      body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
     })
       .then((response) => response.json())
-      .then((data) => console.log('Update success', data))
+      .then((data) => console.log('Button clicked!', data))
       .catch((error) => console.error('Update Error:', error));
   }
 
@@ -883,6 +842,7 @@ function SortableItem({
   id,
   index,
   handle,
+  onRemove,
   renderItem,
   style,
   containerId,
@@ -929,6 +889,7 @@ function SortableItem({
       fadeIn={mountedWhileDragging}
       listeners={listeners}
       renderItem={renderItem}
+      onRemove={onRemove}
     />
   );
 }

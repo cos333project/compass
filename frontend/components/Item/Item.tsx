@@ -6,6 +6,7 @@ import classNames from 'classnames';
 
 import { Handle, Remove } from './components';
 import styles from './Item.module.scss';
+import { InfoComponent } from '../InfoComponent.tsx';
 
 export type Props = {
   dragOverlay?: boolean;
@@ -130,8 +131,8 @@ export const Item = memo(
           >
             {value}
             <span className={styles.Actions}>
-              <Remove className={styles.Remove} onClick={onRemove} />
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
+              <Remove className={styles.Remove} onClick={onRemove} />
             </span>
           </div>
         </li>

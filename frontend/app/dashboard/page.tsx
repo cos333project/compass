@@ -6,10 +6,12 @@ import { rectSortingStrategy } from '@dnd-kit/sortable';
 
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
+import { InfoComponent } from '../../components/InfoComponent.tsx';
 import useAuthStore from '../../store/authSlice';
 import UserState from '../../store/userSlice';
 
 import { Canvas } from './Canvas';
+
 
 const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,13 +28,15 @@ const Dashboard: FC = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar/>
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
+          <div>
+            <InfoComponent dept = "COS" coursenum = "126" />
+          </div>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
-              trashable
               columns={2}
               strategy={rectSortingStrategy}
               wrapperStyle={() => ({
