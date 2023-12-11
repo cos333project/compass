@@ -56,6 +56,9 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
       <div className={styles.modal}>
         {courseDetails ? (
           <div>
+            <div className={styles.detailRow}>
+              <strong className={styles.strong}>{`${dept} ${coursenum}`}</strong>
+            </div>
             {Object.entries(courseDetails).map(([key, value]) => (
               <div key={key} className={styles.detailRow}>
                 <strong className={styles.strong}>{key}:</strong> {value}
@@ -81,7 +84,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
         style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
         className={classNames(styles.Action)}
       >
-        {dept + coursenum}
+        {`${dept} ${coursenum}`}
       </div>
       {modalContent && createPortal(modalContent, document.body)}
     </>

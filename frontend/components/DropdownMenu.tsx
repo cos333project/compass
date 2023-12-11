@@ -14,8 +14,8 @@ import UserSettings from './UserSettings';
 const MenuItem: FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
     className={clsx(
-      isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-      'block px-4 py-2 text-sm'
+      isActive ? 'bg-gray-100 text-gray-600' : 'text-black',
+      'block px-4 py-2 text-sm text-center'
     )}
     onClick={onClick}
   >
@@ -80,9 +80,9 @@ const DropdownMenu: FC = () => {
 
   return (
     <div>
-      <Menu as='div' className='relative inline-block text-left'>
+      <Menu as='div' className='relative text-left'>
         <Menu.Button
-          className='inline-flex w-full justify-center items-center rounded-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50'
+          className='inline-flex w-full justify-center items-center rounded-md px-4 py-2 bg-white text-sm font-medium hover:bg-gray-50'
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {username}
@@ -107,7 +107,7 @@ const DropdownMenu: FC = () => {
                     closeMenu();
                   }}
                 >
-                  Account settings
+                  Account Settings
                 </MenuItem>
                 <MenuItem
                   isActive={false}

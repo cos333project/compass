@@ -48,7 +48,7 @@ const Navbar: FC = () => {
 
   return (
     <header
-      className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform ${
+      className={`bg --system-text-color absolute inset-x-0 top-0 z-50 transform ${
         isAuthInitialized ? fadeIn : hidden
       } ${!isAuthInitialized ? fadeOut : ''}`}
     >
@@ -122,6 +122,7 @@ const Navbar: FC = () => {
                     {item.name}
                   </a>
                 ))}
+                {isAuthenticated ? <DropdownMenu /> : <Login />}
                 {/* TODO: Need to implement this for mobile port */}
                 {/* <a
                   onClick={handleUserSettingsClick}

@@ -687,6 +687,9 @@ export function Canvas({
     setItems((items) => {
       const updatedCourses = {
         ...items,
+        [SEARCH_RESULTS_ID]: searchResults.map(
+          (course) => `${course.department_code} ${course.catalog_number}`
+        ),
         [containerId]: items[containerId].filter((course) => course !== value.toString()),
       };
       return updatedCourses;
@@ -711,15 +714,83 @@ export function Canvas({
 }
 
 function getColor(id: UniqueIdentifier) {
-  switch (String(id)[0]) {
-    case 'A':
-      return '#7193f1';
-    case 'B':
-      return '#ffda6c';
-    case 'C':
-      return '#00bcd4';
-    case 'D':
-      return '#ef769f';
+  switch (String(id)[0] + String(id)[1] + String(id)[2]) {
+    case 'AAS':
+      return '#FF0000'; // Red
+    case 'ANT':
+      return '#00FF00'; // Green
+    case 'ARC':
+      return '#0000FF'; // Blue
+    case 'ART':
+      return '#FFFF00'; // Yellow
+    case 'AST':
+      return '#FF00FF'; // Magenta
+    case 'CBE':
+      return '#00FFFF'; // Cyan
+    case 'CEE':
+      return '#FFA500'; // Orange
+    case 'CHM':
+      return '#800080'; // Purple
+    case 'CLA':
+      return '#008000'; // Dark Green
+    case 'COM':
+      return '#FFC0CB'; // Pink
+    case 'COS':
+      return '#FFD700'; // Gold
+    case 'EAS':
+      return '#FF4500'; // Orange Red
+    case 'ECE':
+      return '#7FFFD4'; // Aquamarine
+    case 'ECO':
+      return '#2E8B57'; // Sea Green
+    case 'EEB':
+      return '#8A2BE2'; // Blue Violet
+    case 'ENG':
+      return '#008080'; // Teal
+    case 'FIT':
+      return '#800000'; // Maroon
+    case 'GEO':
+      return '#4682B4'; // Steel Blue
+    case 'GER':
+      return '#FF6347'; // Tomato
+    case 'HIS':
+      return '#696969'; // Dim Gray
+    case 'MAE':
+      return '#DC143C'; // Crimson
+    case 'MAT':
+      return '#B0C4DE'; // Light Steel Blue
+    case 'MOL':
+      return '#20B2AA'; // Light Sea Green
+    case 'MUS':
+      return '#8B008B'; // Dark Magenta
+    case 'NES':
+      return '#556B2F'; // Dark Olive Green
+    case 'NEU':
+      return '#9932CC'; // Dark Orchid
+    case 'ORF':
+      return '#FF8C00'; // Dark Orange
+    case 'PHI':
+      return '#A52A2A'; // Brown
+    case 'PHY':
+      return '#F08080'; // Light Coral
+    case 'POL':
+      return '#00CED1'; // Dark Turquoise
+    case 'PSY':
+      return '#FFE4E1'; // Misty Rose
+    case 'REL':
+      return '#FFA07A'; // Light Salmon
+    case 'SLA':
+      return '#9370DB'; // Medium Purple
+    case 'SOC':
+      return '#32CD32'; // Lime Green
+    case 'SPO':
+      return '#FF00FF'; // Magenta
+    case 'SPI':
+      return '#1E90FF'; // Dodger Blue
+    case 'IND':
+      return '#D3D3D3'; // Light Gray
+    default:
+      return '#FFFFFF'; // White for unknown department codes
   }
 
   return undefined;
