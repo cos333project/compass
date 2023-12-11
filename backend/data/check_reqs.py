@@ -510,7 +510,9 @@ def get_course_info(dept, num):
             # if instructor:
             #    course_dict["Professor"] = instructor
             if course.reading_list:
-                course_dict['Reading List'] = course.reading_list
+                reading_list = course.reading_list.replace('//', ', ').strip()
+                reading_list = reading_list.replace(';', '; ').strip()
+                course_dict['Reading List'] = reading_list
             if course.reading_writing_assignment:
                 course_dict[
                     'Reading / Writing Assignments'

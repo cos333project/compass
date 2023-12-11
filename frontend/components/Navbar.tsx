@@ -37,6 +37,8 @@ const Navbar: FC = () => {
   };
 
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
+  // const renderUserMenu = () => (isAuthenticated ? <DropdownMenu onUserSettingsClick={handleUserSettingsClick}/> : <Login />);
+
 
   // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
   const fadeIn = 'transform transition-all duration-700 ease-out opacity-100 translate-y-0';
