@@ -1,52 +1,55 @@
-import * as React from 'react';
-
-import Box from '@mui/material/Box';
-import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/joy/Skeleton'; 
 
 export default function Loading() {
   return (
-    <Box sx={{ width: '100%' }}>
-      {/* Simulating Navbar */}
-      <Skeleton variant='rectangular' width='100%' height={50} />
+    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
+      {/* Body container */}
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+        {/* Left sidebar with search bar */}
+        <div style={{ width: '29%', marginRight: '12px', marginLeft: '12px' }}>
+          <Skeleton 
+            variant='rectangular' 
+            height='110px' 
+            sx={{ mt: '10px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }} 
+          />
+          <Skeleton
+            variant='rectangular'
+            height='calc(100vh - 110px)'
+            sx={{ mt: '2px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
+          />
+        </div>
 
-      {/* Main Content Area */}
-      <Stack direction='row' spacing={2} sx={{ mt: 2 }}>
-        {/* Simulating Sidebar for Search */}
-        <Stack spacing={1} sx={{ width: '20%' }}>
-          <Skeleton variant='text' width='80%' />
-          <Skeleton variant='rectangular' height={40} />
-          <Skeleton variant='rectangular' height={400} />
-        </Stack>
+        {/* Middle 2x4 grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridAutoRows: '1fr',
+            gap: '25px',
+            width: '53%',
+            marginTop: '10px',
+            marginLeft: '10px',
+          }}
+        >
+          {Array.from({ length: 8 }).map((_, index) => (
+            <Skeleton 
+              key={index} 
+              variant='rectangular' 
+              height='155px' 
+              sx={{ bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }} 
+            />
+          ))}
+        </div>
 
-        {/* Simulating Carousel for Courses */}
-        <Stack spacing={1} sx={{ flexGrow: 1 }}>
-          <Stack direction='row' spacing={1}>
-            <Skeleton variant='rectangular' width={100} height={40} />
-            <Skeleton variant='rectangular' width={100} height={40} />
-          </Stack>
-          <Skeleton variant='rectangular' height={300} />
-        </Stack>
-      </Stack>
-
-      {/* Simulating Planning Hub */}
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ mt: 2 }}>
-        {/* Left Panel */}
-        <Box sx={{ width: '20%' }}>
-          <Skeleton variant='rectangular' height={150} />
-          <Stack spacing={1} sx={{ mt: 1 }}>
-            <Skeleton variant='text' width='50%' />
-            <Skeleton variant='rectangular' height={100} />
-            <Skeleton variant='rectangular' height={100} />
-          </Stack>
-        </Box>
-
-        {/* Right Panel */}
-        <Skeleton variant='rectangular' width='100%' height={200} />
-      </Stack>
-
-      {/* Simulating Footer */}
-      <Skeleton variant='rectangular' width='100%' height={30} sx={{ mt: 2 }} />
-    </Box>
+        {/* Right large vertical space */}
+        <div style={{ width: '28%', marginRight: '12px', marginLeft: '20px', marginTop: '10px'}}>
+          <Skeleton
+            variant='rectangular'
+            height='calc(100vh)'
+            sx={{ mt: '2px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

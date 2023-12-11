@@ -7,7 +7,7 @@ import { rectSortingStrategy } from '@dnd-kit/sortable';
 import Footer from '../../components/Footer';
 // import LoadingComponent from '../../components/LoadingComponent';
 import Navbar from '../../components/Navbar';
-import SkeletonApp from '../../components/SkeletonApp';
+// import SkeletonApp from '../../components/SkeletonApp';
 import useAuthStore from '../../store/authSlice';
 import UserState from '../../store/userSlice';
 
@@ -31,7 +31,6 @@ const Dashboard: FC = () => {
       <Navbar />
       <div className='flex flex-col min-h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
-          {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
               columns={2}
@@ -41,11 +40,6 @@ const Dashboard: FC = () => {
                 height: 150,
               })}
             />
-          ) : (
-            <div>
-              <SkeletonApp />
-            </div> // FIXME: We can replace this with a proper loading component or message
-          )}
         </main>
         <Footer />
       </div>
