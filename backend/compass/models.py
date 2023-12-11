@@ -480,6 +480,7 @@ class CustomUser(AbstractUser):
     class_year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    manually_settled = models.JSONField(db_index=True, null=True)
 
     class Meta:
         db_table = 'CustomUser'
