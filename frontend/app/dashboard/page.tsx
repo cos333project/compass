@@ -5,7 +5,9 @@ import { useEffect, useState, FC } from 'react';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
 
 import Footer from '../../components/Footer';
+// import LoadingComponent from '../../components/LoadingComponent';
 import Navbar from '../../components/Navbar';
+import SkeletonApp from '../../components/SkeletonApp';
 import useAuthStore from '../../store/authSlice';
 import UserState from '../../store/userSlice';
 
@@ -27,7 +29,7 @@ const Dashboard: FC = () => {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col h-screen pt-24 rounded-xl'>
+      <div className='flex flex-col min-h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
@@ -40,12 +42,13 @@ const Dashboard: FC = () => {
               })}
             />
           ) : (
-            <div>Loading...</div> // You can replace this with a proper loading component or message
+            <div>
+              <SkeletonApp />
+            </div> // FIXME: We can replace this with a proper loading component or message
           )}
         </main>
+        <Footer />
       </div>
-      <div className='py-12 sm:py-16 lg:pb-20' />
-      <Footer />
     </>
   );
 };

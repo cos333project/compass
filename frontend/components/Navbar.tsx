@@ -30,6 +30,14 @@ const Navbar: FC = () => {
     login();
   };
 
+  // FIXME: Commenting out for now since we need to build successfully.
+  // const handleUserSettingsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  //   // Logic to open User Settings goes here
+  //   console.log('User Settings Clicked');
+
+  //   // e.g., navigate to the user settings page or open a settings modal
+  // };
+
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
 
   // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
@@ -114,6 +122,13 @@ const Navbar: FC = () => {
                     {item.name}
                   </a>
                 ))}
+                {/* TODO: Need to implement this for mobile port */}
+                {/* <a
+                  onClick={handleUserSettingsClick}
+                  className='-mx-3 block cursor-pointer rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800'
+                >
+                  User Settings
+                </a> */}
               </div>
               <div className='hidden lg:flex lg:flex-1 lg:justify-end'>{renderUserMenu()}</div>
             </div>

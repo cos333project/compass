@@ -33,6 +33,13 @@ const DropdownMenu: FC = () => {
   ]);
   const closeMenu = () => setIsMenuOpen(false);
 
+  // const handleSave = () => {
+  //   // Implement the save logic here instead of reloading the page.
+  //   // After saving, you can update the state accordingly to reflect the changes.
+  //   setBlur(false);
+  //   // If you need to fetch updated data from the server, do it here.
+  // };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -129,6 +136,14 @@ const DropdownMenu: FC = () => {
           />
         </SettingsModal>
       )}
+      {/* TODO: Use this to re-render TabbedMenu / RecursiveDropdown without re-rendering entire page. */}
+      {/* TODO: To re-render the name, re-render this DropdownMenu component itself. */}
+      {/* <div className={blur ? 'blur-effect' : 'blur-effect hidden'}>...</div>
+      {blur && (
+        <SettingsModal onClose={() => setBlur(false)}>
+          <UserSettings profile={userProfile} onClose={() => setBlur(false)} onSave={handleSave} />
+        </SettingsModal>
+      )} */}
     </div>
   );
 };

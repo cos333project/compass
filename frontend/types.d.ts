@@ -44,7 +44,6 @@ export type SettingsModalProps = {
   onClose: () => void;
 };
 
-
 export type Course = {
   id: number;
   guid: number;
@@ -116,7 +115,6 @@ export type MenuItemProps = {
   children: React.ReactNode;
   onClick: () => void;
 };
-
 
 export type Planner = {
   classYear: number | null;
