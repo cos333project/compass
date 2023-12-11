@@ -7,4 +7,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['course_id', 'department_code', 'catalog_number']
+        fields = '__all__'

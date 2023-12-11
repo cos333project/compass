@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useCallback } from 'react';
+import { useRef, useState, useEffect, FC } from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { LRUCache } from 'typescript-lru-cache';
@@ -12,17 +12,9 @@ const searchCache = new LRUCache<string, Course[]>({
   entryExpirationTimeInMS: 1000 * 60 * 60 * 24,
 });
 
-function debounce(func, delay) {
-  let inDebounce;
-  return (...args) => {
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func(...args), delay);
-  };
-}
-
 const Search: FC = () => {
   const [query, setQuery] = useState<string>('');
-
+  const timerRef = useRef<number>();
   const { setSearchResults, searchResults, addRecentSearch, recentSearches, setError, setLoading } =
     useSearchStore((state) => ({
       setSearchResults: state.setSearchResults,
@@ -35,15 +27,9 @@ const Search: FC = () => {
 
   useEffect(() => {
     setSearchResults(searchResults);
-  }, [searchResults]);
+  }, [searchResults, setSearchResults]);
 
   const search = async (searchQuery: string) => {
-    // const cachedResults = searchCache.get(searchQuery);
-    // if (cachedResults) {
-    //   setSearchResults(cachedResults);
-    //   return;
-    // }
-
     setLoading(true);
     try {
       const response = await fetch(
@@ -67,20 +53,24 @@ const Search: FC = () => {
     }
   };
 
-  const debouncedSearch = debounce(search, 500);
-
   function retrieveCachedSearch(search) {
     setSearchResults(searchCache.get(search));
   }
 
   useEffect(() => {
     if (query) {
-      debouncedSearch(query);
+      search(query);
     }
   }, [query]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+      setQuery(event.target.value);
+    }, 500);
   };
 
   return (
