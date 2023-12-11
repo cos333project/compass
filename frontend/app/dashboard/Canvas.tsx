@@ -28,13 +28,12 @@ import {
   AnimateLayoutChanges,
   SortableContext,
   useSortable,
-  arrayMove,
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
   SortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createPortal, unstable_batchedUpdates } from 'react-dom';
+import { createPortal } from 'react-dom';
 
 import { Course, Profile } from '@/types';
 
@@ -346,18 +345,14 @@ export function Canvas({
     });
   }, [searchResults]);
 
-  // TODO: Clean this up or remove if not needed
-  // useEffect(() => {
-  //   const updatedSemesters = generateSemesters(classYear);
-  //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
-  // }, [classYear]);
-
   const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(semesters)];
-  const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
+  const containers = initialContainers;
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [activeContainerId, setActiveContainerId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  // isSortingContainer is legacy code, since we are not using sortable containers
+  const isSortingContainer = false;
 
   /**
    * Custom collision detection strategy optimized for multiple containers
@@ -407,7 +402,6 @@ export function Canvas({
 
         return [{ id: overId }];
       }
-
       // When a draggable item moves to a new container, the layout may shift
       // and the `overId` may become `null`. We manually set the cached `lastOverId`
       // to the id of the draggable item that was moved to the new container, otherwise
@@ -460,14 +454,9 @@ export function Canvas({
     }
 
     setActiveId(null);
+    setActiveContainerId(null);
     setClonedItems(null);
   };
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      recentlyMovedToNewContainer.current = false;
-    });
-  }, [items]);
 
   return (
     <>
@@ -482,6 +471,7 @@ export function Canvas({
         onDragStart={({ active }) => {
           console.log('Drag started: ', active.id);
           setActiveId(active.id);
+          setActiveContainerId(findContainer(active.id));
           setClonedItems(items);
         }}
         onDragOver={({ active, over }) => {
@@ -505,24 +495,8 @@ export function Canvas({
             setItems((items) => {
               const activeItems = items[activeContainer];
               const overItems = items[overContainer];
-              const overIndex = overItems.indexOf(overId);
               const activeIndex = activeItems.indexOf(active.id);
-
-              let newIndex: number;
-
-              if (overId in items) {
-                newIndex = overItems.length + 1;
-              } else {
-                const isBelowOverItem =
-                  over &&
-                  active.rect.current.translated &&
-                  active.rect.current.translated.top > over.rect.top + over.rect.height;
-
-                const modifier = isBelowOverItem ? 1 : 0;
-
-                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-              }
-
+              const newIndex: number = overItems.length + 1;
               recentlyMovedToNewContainer.current = true;
 
               return {
@@ -538,22 +512,13 @@ export function Canvas({
           }
         }}
         onDragEnd={async ({ active, over }) => {
+          // Active and over are course draggables.
           console.log('Drag end: ', {
             activeId: active.id,
             overId: over?.id,
           });
-          if (active.id in items && over?.id) {
-            setContainers((containers) => {
-              const activeIndex = containers.indexOf(active.id);
-              const overIndex = containers.indexOf(over.id);
 
-              return arrayMove(containers, activeIndex, overIndex);
-            });
-          }
-
-          const activeContainer = findContainer(active.id);
-
-          if (!activeContainer) {
+          if (!activeContainerId) {
             setActiveId(null);
             return;
           }
@@ -562,69 +527,33 @@ export function Canvas({
 
           if (overId === null || overId === undefined) {
             setActiveId(null);
+            setActiveContainerId(null);
             return;
           }
 
-          if (overId === PLACEHOLDER_ID) {
-            const newContainerId = getNextContainerId();
+          const overContainerId = findContainer(overId);
 
-            unstable_batchedUpdates(() => {
-              setContainers((containers) => [...containers, newContainerId]);
-              setItems((items) => ({
-                ...items,
-                [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-                [newContainerId]: [active.id],
-              }));
-              setActiveId(null);
-            });
-            return;
-          }
-
-          const courseId = active.id;
-          const semesterId = activeContainer;
-          const csrfToken = await fetchCsrfToken();
-          // This also should only be updated if the user drops the course into a new semester
-          fetch(`${process.env.BACKEND}/update_courses/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ courseId: courseId, semesterId: semesterId }),
-          })
-            .then((response) => response.json())
-            .then((data) => console.log('Update success', data))
-            .catch((error) => console.error('Update Error:', error));
-
-          const overContainer = findContainer(overId);
-
-          if (overContainer) {
-            const activeIndex = items[activeContainer].indexOf(active.id);
-            const overIndex = items[overContainer].indexOf(overId);
-
-            if (activeIndex !== overIndex) {
-              setItems((items) => ({
-                ...items,
-                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
-              }));
+          if (overContainerId) {
+            if (activeContainerId !== overContainerId) {
+              const csrfToken = await fetchCsrfToken();
+              fetch(`${process.env.BACKEND}/update_courses/`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ courseId: active.id, semesterId: overContainerId }),
+              })
+                .then((response) => response.json())
+                .then((data) => console.log('Update success', data))
+                .catch((error) => console.error('Update Error:', error));
               checkRequirements();
             }
           }
 
           setActiveId(null);
-
-          // TODO: Clean this up or remove if not needed
-          // fetch(`${process.env.BACKEND}/check_requirements`, {
-          //   method: 'GET',
-          //   credentials: 'include',
-          // })
-          //   .then((response) => response.json())
-          //   .then((data) => {
-          //     console.log('updated data', data);
-          //     setAcademicPlan(data);
-          //   })
-          //   .catch((error) => console.error('Requirements Check Error:', error));
+          setActiveContainerId(null);
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
@@ -700,7 +629,7 @@ export function Canvas({
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
                           onRemove={() => handleRemove(course, containerId)}
-                          renderItem={renderItem} // TODO: This render should be bite-sized (dept + catnum)
+                          renderItem={renderItem}
                           containerId={containerId}
                           getIndex={getIndex}
                         />
@@ -778,13 +707,6 @@ export function Canvas({
         checkRequirements();
       })
       .catch((error) => console.error('Update Error:', error));
-  }
-
-  function getNextContainerId() {
-    const containerIds = Object.keys(items);
-    const lastContainerId = containerIds[containerIds.length - 1];
-
-    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
   }
 }
 
