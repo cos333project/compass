@@ -16,7 +16,7 @@ import {
   MouseSensor,
   TouchSensor,
   Modifiers,
-  useDroppable,
+  // TODO: Should probably delete this: useDroppable,
   UniqueIdentifier,
   useSensors,
   useSensor,
@@ -36,10 +36,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 
-import { Course, Profile, Requirement } from '@/types';
+import { Course, Profile } from '@/types';
 
 import Search from '@/components/Search';
-// import { TabbedMenu } from '@/components/TabbedMenu';
+import { TabbedMenu } from '@/components/TabbedMenu';
 import useSearchStore from '@/store/searchSlice';
 
 import { Item, Container, ContainerProps } from '../../components';
@@ -55,10 +55,21 @@ async function fetchCsrfToken() {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
-    return data.csrfToken;
+    return data.csrfToken ? String(data.csrfToken) : '';
   } catch (error) {
     return 'Error fetching CSRF token!';
   }
+}
+let csrfToken: string;
+
+if (typeof window === 'undefined') {
+  // Server-side or during prerendering/build time
+  csrfToken = '';
+} else {
+  // Client-side
+  (async () => {
+    csrfToken = await fetchCsrfToken();
+  })();
 }
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
@@ -78,15 +89,14 @@ function DroppableContainer({
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
-  const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } =
-    useSortable({
-      id,
-      data: {
-        type: 'container',
-        children: items,
-      },
-      animateLayoutChanges,
-    });
+  const { active, isDragging, over, setNodeRef, transition, transform } = useSortable({
+    id,
+    data: {
+      type: 'container',
+      children: items,
+    },
+    animateLayoutChanges,
+  });
   const isOverContainer = over
     ? (id === over.id && active?.data.current?.type !== 'container') || items.includes(over.id)
     : false;
@@ -101,10 +111,6 @@ function DroppableContainer({
         opacity: isDragging ? 0.5 : undefined,
       }}
       hover={isOverContainer}
-      handleProps={{
-        ...attributes,
-        ...listeners,
-      }}
       columns={columns}
       {...props}
     >
@@ -114,6 +120,7 @@ function DroppableContainer({
 }
 
 const dropAnimation: DropAnimation = {
+  // TODO: Lowkey, this is where we can render the course card differently -> full title to DEPT CATNUM
   sideEffects: defaultDropAnimationSideEffects({
     styles: {
       active: {
@@ -149,18 +156,16 @@ type Props = {
   itemCount?: number;
   items?: Items;
   handle?: boolean;
-
+  onRemove?(courseId: string): void;
   renderItem?(): React.ReactElement;
 
   strategy?: SortingStrategy;
   modifiers?: Modifiers;
   minimal?: boolean;
-  trashable?: boolean;
   scrollable?: boolean;
   vertical?: boolean;
 };
 
-export const TRASH_ID = 'void';
 export const PLACEHOLDER_ID = 'placeholder';
 export const SEARCH_RESULTS_ID = 'Search Results';
 
@@ -170,7 +175,7 @@ export function Canvas({
   // itemCount = 3, // remove this?
   cancelDrop,
   columns = 2,
-  handle = false,
+  handle = true,
   // initialItems, // remove
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
@@ -180,13 +185,10 @@ export function Canvas({
   modifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
-  trashable = false,
   // vertical = false,
   scrollable,
 }: Props) {
-  const classYear = user.classYear ?? 2025;
-  console.log(user.classYear);
-  console.log(user);
+  const classYear = user.classYear;
 
   const generateSemesters = (classYear: number): Items => {
     const semesters: Items = {};
@@ -202,24 +204,24 @@ export function Canvas({
   const updateSemesters = (
     prevItems: Items,
     classYear: number,
-    user_courses: { [key: number]: Course[] }
+    userCourses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
     console.log('updateSemesters called');
 
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
-      prevItems[`Fall ${year}`] = user_courses[semester].map(
+      prevItems[`Fall ${year}`] = userCourses[semester].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
       semester += 1;
-      prevItems[`Spring ${year + 1}`] = user_courses[semester].map(
+      prevItems[`Spring ${year + 1}`] = userCourses[semester].map(
         (course) => `${course.department_code} ${course.catalog_number}`
       );
       semester += 1;
     }
 
-    console.log(user_courses);
+    console.log(userCourses);
     console.log(prevItems);
     return prevItems;
   };
@@ -230,55 +232,84 @@ export function Canvas({
     ...semesters,
   }));
 
-  type RequirementDict = Record<string, Requirement | string>;
-  const [reqDict, setReqDict] = useState<RequirementDict>({});
+  type Dictionary = {
+    [key: string]: any; // TODO: Aim to replace 'any' with more specific types.
+  };
+
+  // Initialize a more structured dictionary if possible
+  const initialRequirements: Dictionary = {};
+
+  // State for academic requirements
+  const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
+  const [refreshAcademicPlan, setRefreshedAcademicPlan] = useState(0);
+
+  // Logs for debugging
+  console.log('Initial academic plan:', academicPlan);
 
   // Assuming 'user' is of type User
-  const majorCode = user.major?.code;
-  const minors = user.minors ?? [];
+  const userMajorCode = user.major?.code;
+  const userMinors = user.minors ?? [];
 
-  const requirements: RequirementDict = {};
+  // Log user's major and minors
+  console.log('User Major:', userMajorCode, 'User Minors:', userMinors);
 
-  // Add major to requirements if it exists
-  if (majorCode && reqDict[majorCode]) {
-    requirements[majorCode] = reqDict[majorCode];
+  // Structure to hold degree requirements
+  const degreeRequirements: Dictionary = { General: '' };
+  console.log('Initial degree requirements:', degreeRequirements);
+
+  // Add major to degree requirements if it's a string
+  if (userMajorCode && typeof userMajorCode === 'string') {
+    degreeRequirements[userMajorCode] = academicPlan[userMajorCode] ?? {};
+    console.log(`Added major ${userMajorCode} to degree requirements:`, degreeRequirements);
   }
 
-  // Iterate over minors and add them to requirements
-  minors.forEach((minor) => {
+  // Iterate over minors and add them to degree requirements if their code is a string
+  userMinors.forEach((minor) => {
     const minorCode = minor.code;
-    if (minorCode && reqDict[minorCode]) {
-      requirements[minorCode] = reqDict[minorCode];
+    if (minorCode && typeof minorCode === 'string') {
+      degreeRequirements[minorCode] = academicPlan[minorCode] ?? {};
+      console.log(`Added minor ${minorCode} to degree requirements:`, degreeRequirements);
     }
   });
 
-  useEffect(() => {
-    let user_courses: Record<number, Course[]> = {};
-
-    fetch(`${process.env.BACKEND}/fetch_courses`, {
+  const fetchCourses = () => {
+    fetch(`${process.env.BACKEND}/fetch_courses/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        user_courses = data;
-
+        console.log('Fetched userCourses:', data);
         setItems((prevItems) => ({
-          ...updateSemesters(prevItems, classYear, user_courses),
+          ...updateSemesters(prevItems, classYear, data),
         }));
       })
-      .catch((error) => console.error('User Courses Error:', error));
+      .catch((error) => {
+        console.error('User Courses Error:', error);
+      });
+  };
 
-    fetch(`${process.env.BACKEND}/check_requirements`, {
+  const checkRequirements = () => {
+    console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
+    fetch(`${process.env.BACKEND}/check_requirements/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        setReqDict(data);
-        console.log(reqDict.reqDict);
+        console.log('Fetched academic requirements data:', data);
+        setAcademicPlan(data);
+        setRefreshedAcademicPlan(Date.now()); // Triggering a re-render by updating the number
       })
-      .catch((error) => console.error('Requirements Check Error:', error));
+      .catch((error) => {
+        console.error('Requirements Check Error:', error);
+      });
+  };
+
+  // Fetch user courses and check requirements on initial render
+  useEffect(() => {
+    fetchCourses();
+    checkRequirements();
   }, []);
 
   const { searchResults } = useSearchStore();
@@ -360,11 +391,6 @@ export function Canvas({
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId !== null) {
-        if (overId === TRASH_ID) {
-          // If the intersecting droppable is the trash, return early
-          return intersections;
-        }
-
         if (overId in items) {
           const containerItems = items[overId];
 
@@ -467,12 +493,7 @@ export function Canvas({
             overId: over?.id,
           });
           const overId = over?.id;
-          if (
-            overId === null ||
-            overId === undefined ||
-            overId === TRASH_ID ||
-            active.id in items
-          ) {
+          if (overId === null || overId === undefined || active.id in items) {
             return;
           }
 
@@ -547,14 +568,6 @@ export function Canvas({
             return;
           }
 
-          if (overId === TRASH_ID) {
-            setItems((items) => ({
-              ...items,
-              [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-            }));
-            setActiveId(null);
-          }
-
           if (overId === PLACEHOLDER_ID) {
             const newContainerId = getNextContainerId();
 
@@ -570,6 +583,23 @@ export function Canvas({
             return;
           }
 
+          const courseId = active.id;
+          const semesterId = activeContainer;
+          const csrfToken = await fetchCsrfToken();
+          // This also should only be updated if the user drops the course into a new semester
+          fetch(`${process.env.BACKEND}/update_courses/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ courseId: courseId, semesterId: semesterId }),
+          })
+            .then((response) => response.json())
+            .then((data) => console.log('Update success', data))
+            .catch((error) => console.error('Update Error:', error));
+
           const overContainer = findContainer(overId);
 
           if (overContainer) {
@@ -581,41 +611,23 @@ export function Canvas({
                 ...items,
                 [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
               }));
+              checkRequirements();
             }
           }
 
           setActiveId(null);
 
-          const courseId = active.id;
-          let semesterId = activeContainer;
-          if (overId === TRASH_ID) {
-            semesterId = TRASH_ID;
-          }
-          const csrfToken = await fetchCsrfToken();
-          fetch(`${process.env.BACKEND}/update_courses`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ courseId, semesterId }),
-          })
-            .then((response) => response.json())
-            .then((data) => console.log('Update success', data))
-            .catch((error) => console.error('Update Error:', error));
-
-          fetch(`${process.env.BACKEND}/check_requirements`, {
-            method: 'GET',
-            credentials: 'include',
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-              setReqDict(reqDict);
-              console.log(reqDict.reqDict);
-            })
-            .catch((error) => console.error('Requirements Check Error:', error));
+          // TODO: Clean this up or remove if not needed
+          // fetch(`${process.env.BACKEND}/check_requirements`, {
+          //   method: 'GET',
+          //   credentials: 'include',
+          // })
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     console.log('updated data', data);
+          //     setAcademicPlan(data);
+          //   })
+          //   .catch((error) => console.error('Requirements Check Error:', error));
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
@@ -627,6 +639,7 @@ export function Canvas({
             {containers.includes('Search Results') && (
               <div style={{ width: '380px' }}>
                 {' '}
+                {/* issue here with resizing + with requirements dropdowns*/}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
                   key='Search Results'
@@ -648,7 +661,7 @@ export function Canvas({
                         handle={handle}
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
-                        renderItem={renderItem}
+                        renderItem={renderItem} // This render function should render with full name
                         containerId='Search Results'
                         getIndex={getIndex}
                       />
@@ -678,20 +691,20 @@ export function Canvas({
                     scrollable={scrollable}
                     style={containerStyle}
                     unstyled={minimal}
-                    onRemove={() => handleRemove(containerId)}
                     height='160px'
                   >
                     <SortableContext items={items[containerId]} strategy={strategy}>
-                      {items[containerId].map((value, index) => (
+                      {items[containerId].map((course, index) => (
                         <SortableItem
                           disabled={isSortingContainer}
                           key={index}
-                          id={value}
+                          id={course}
                           index={index}
                           handle={handle}
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
-                          renderItem={renderItem}
+                          onRemove={() => handleRemove(course, containerId)}
+                          renderItem={renderItem} // TODO: This render should be bite-sized (dept + catnum)
                           containerId={containerId}
                           getIndex={getIndex}
                         />
@@ -702,24 +715,18 @@ export function Canvas({
             </div>
 
             {/* Right section for requirements */}
-            {/* TODO: Put this back in after verifying CAS works. }}>
-            {/* <div style={{ width: '380px' }}>
-              <TabbedMenu tabsData={requirements} />
-            </div> */}
+            <div style={{ width: '380px' }}>
+              <TabbedMenu tabsData={academicPlan} refresh={refreshAcademicPlan} />
+            </div>
           </div>
         </SortableContext>
 
         {createPortal(
           <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-            {activeId
-              ? containers.includes(activeId)
-                ? renderContainerDragOverlay(activeId)
-                : renderSortableItemDragOverlay(activeId)
-              : null}
+            {activeId ? renderSortableItemDragOverlay(activeId) : null}
           </DragOverlay>,
           document.body
         )}
-        {trashable && activeId && !containers.includes(activeId) ? <Trash id={TRASH_ID} /> : null}
       </DndContext>
     </>
   );
@@ -746,42 +753,27 @@ export function Canvas({
     );
   }
 
-  function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    return (
-      <Container
-        label={`${containerId}`}
-        columns={columns}
-        style={{
-          height: '100%',
-        }}
-        shadow
-        unstyled={false}
-      >
-        {items[containerId].map((item, index) => (
-          <Item
-            key={item}
-            value={item}
-            handle={handle}
-            style={getItemStyles({
-              containerId,
-              overIndex: -1,
-              index: getIndex(item),
-              value: item,
-              isDragging: false,
-              isSorting: false,
-              isDragOverlay: false,
-            })}
-            color={getColor(item)}
-            wrapperStyle={wrapperStyle({ index })}
-            renderItem={renderItem}
-          />
-        ))}
-      </Container>
-    );
-  }
+  function handleRemove(value: UniqueIdentifier, containerId: UniqueIdentifier) {
+    setItems((items) => {
+      const updatedCourses = {
+        ...items,
+        [containerId]: items[containerId].filter((course) => course !== value.toString()),
+      };
+      return updatedCourses;
+    });
 
-  function handleRemove(containerID: UniqueIdentifier) {
-    setContainers((containers) => containers.filter((id) => id !== containerID));
+    fetch(`${process.env.BACKEND}/update_courses/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Button clicked!', data))
+      .catch((error) => console.error('Update Error:', error));
   }
 
   function getNextContainerId() {
@@ -807,34 +799,6 @@ function getColor(id: UniqueIdentifier) {
   return undefined;
 }
 
-function Trash({ id }: { id: UniqueIdentifier }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'fixed',
-        left: '50%',
-        marginLeft: -150,
-        bottom: 20,
-        width: 300,
-        height: 60,
-        borderRadius: 5,
-        border: '1px solid',
-        borderColor: isOver ? 'red' : '#DDD',
-      }}
-    >
-      Drop here to delete
-    </div>
-  );
-}
-
 type SortableItemProps = {
   containerId: UniqueIdentifier;
   id: UniqueIdentifier;
@@ -854,6 +818,8 @@ type SortableItemProps = {
 
   getIndex(id: UniqueIdentifier): number;
 
+  onRemove?(): void;
+
   renderItem?(): React.ReactElement;
 
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
@@ -864,6 +830,7 @@ function SortableItem({
   id,
   index,
   handle,
+  onRemove,
   renderItem,
   style,
   containerId,
@@ -910,6 +877,7 @@ function SortableItem({
       fadeIn={mountedWhileDragging}
       listeners={listeners}
       renderItem={renderItem}
+      onRemove={onRemove}
     />
   );
 }

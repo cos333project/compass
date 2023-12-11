@@ -68,9 +68,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 HOMEPAGE = os.getenv('COMPASS')
 DASHBOARD = urljoin(os.getenv('COMPASS'), 'dashboard')
@@ -126,7 +124,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))}
-
+CONN_MAX_AGE = 60
 
 AUTH_USER_MODEL = 'compass.CustomUser'
 

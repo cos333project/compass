@@ -1,8 +1,10 @@
+import { FC } from 'react';
+
 import { createPortal } from 'react-dom';
 
 import { SettingsModalProps } from '../types';
 
-const Modal: React.FC<SettingsModalProps> = ({ children, onClose }) => {
+const Modal: FC<SettingsModalProps> = ({ children, onClose }) => {
   return createPortal(
     <>
       {/* TODO: Need an equivalent fade out animation when 'Close' is pressed */}

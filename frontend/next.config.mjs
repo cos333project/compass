@@ -1,4 +1,3 @@
-import { next } from 'million/compiler';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -15,8 +14,4 @@ const nextConfig = {
   },
 };
 
-const millionConfig = {
-  auto: { rsc: true },
-};
-
-export default next(nextConfig, millionConfig);
+export default nextConfig;

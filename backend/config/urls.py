@@ -26,11 +26,12 @@ urlpatterns = [
     # Profile
     path('profile/', views.profile, name='profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
+    path('course_details/', views.course_details, name='course_details'),
     path('csrf/', views.csrf, name='csrf'),
     # Canvas
     path('search/', views.SearchCourses.as_view(), name='search'),
     path('fetch_courses/', views.GetUserCourses.as_view(), name='fetch_courses'),
     path('update_courses/', views.update_courses, name='update_courses'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
-    path('update_user/', views.update_user, name='update_settings'),
+    path('update_user/', views.update_user, name='update_user'),
 ]

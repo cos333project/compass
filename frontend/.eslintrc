@@ -17,7 +17,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 12,
+    "ecmaVersion": 14,
     "sourceType": "module"
   },
   "extends": [
@@ -71,7 +71,12 @@
         }
       }
     ],
-    "prettier/prettier": ["error"],
+    "prettier/prettier": [
+        "error",
+        {
+          "endOfLine": "auto"
+        }
+      ],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
@@ -87,7 +92,8 @@
     {
       "files": ["**/*.ts", "**/*.tsx"],
       "rules": {
-        "@typescript-eslint/no-unused-vars": ["error"]
+        "@typescript-eslint/no-unused-vars": ["error"],
+        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ]

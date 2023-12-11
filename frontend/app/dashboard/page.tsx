@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FC } from 'react';
 
 import { rectSortingStrategy } from '@dnd-kit/sortable';
 
@@ -11,7 +11,7 @@ import UserState from '../../store/userSlice';
 
 import { Canvas } from './Canvas';
 
-const Dashboard: React.FC = () => {
+const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { checkAuthentication } = useAuthStore((state) => state);
   const userProfile = UserState((state) => state.profile);
@@ -28,11 +28,10 @@ const Dashboard: React.FC = () => {
     <>
       <Navbar />
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
-        <main className='flex flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
-              trashable
               columns={2}
               strategy={rectSortingStrategy}
               wrapperStyle={() => ({

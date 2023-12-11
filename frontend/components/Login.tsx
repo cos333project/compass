@@ -1,6 +1,8 @@
+import { FC } from 'react';
+
 import useAuthStore from '../store/authSlice';
 
-export const Login: React.FC = () => {
+export const Login: FC = () => {
   const login = useAuthStore((state) => state.login);
   return (
     <button

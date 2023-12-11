@@ -1,7 +1,6 @@
 import os
 import sys
-import json
-import yaml
+import ujson as json
 import django
 import logging
 import collections
@@ -13,8 +12,6 @@ logging.basicConfig(level=logging.INFO)
 sys.path.append(str(Path('../').resolve()))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
-import constants
-from config import django_init
 from compass.models import (
     Course,
     Department,
@@ -22,8 +19,6 @@ from compass.models import (
     Major,
     Minor,
     Certificate,
-    Requirement,
-    CustomUser,
     UserCourses,
 )
 
@@ -63,7 +58,7 @@ def cumulative_time(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         total_time += end_time - start_time
-        # print(f"Current total time for {func.__name__}: {total_time} seconds")
+        # print(f'Current total time for {func.__name__}: {total_time} seconds')
         return result
 
     return wrapper
@@ -74,40 +69,22 @@ def check_user(net_id, major, minors):
     output = {}
     user_courses = create_courses(net_id)
 
-    # get rid of this
-    for sem in user_courses:
-        for course in sem:
-            if course['inst'].catalog_number == '217':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '216':
-                course['settled'] = [2514]
-            elif course['inst'].catalog_number == '218':
-                course['settled'] = [2504]
-            elif course['inst'].catalog_number == '219':
-                course['settled'] = [2516]
-            elif course['inst'].catalog_number == '326':
-                course['settled'] = [2515]
-            elif course['inst'].catalog_number == '520':
-                course['settled'] = [2515]
-
     if major is not None:
-        output[major] = {}
+        major_code = major['code']
+        output[major_code] = {}
         formatted_courses, formatted_req = check_requirements(
-            'Major', major, user_courses
+            'Major', major_code, user_courses
         )
-        # output[major['code']]['courses'] = formatted_courses
-        output[major]['requirements'] = formatted_req
+        output[major_code]['requirements'] = formatted_req
 
     output['Minors'] = {}
     for minor in minors:
+        minor = minor['code']
         output['Minors'][minor] = {}
         formatted_courses, formatted_req = check_requirements(
             'Minor', minor, user_courses
         )
-        # output['minors'][minor['code']]['courses'] = formatted_courses
         output['Minors'][minor]['requirements'] = formatted_req
-
-    # print(output['COS-AB'])
 
     return output
 
@@ -120,15 +97,6 @@ def create_courses(net_id):
     )
     for course_inst in course_insts:
         courses[course_inst.semester - 1].append({'inst': course_inst.course})
-    return courses
-
-
-@cumulative_time
-# course_dict is a dictionary containing course id: semester pairs.
-def create_dummy_courses(course_dict):
-    courses = DEFAULT_SCHEDULE
-    for id in course_dict:
-        courses[course_dict[id] - 1].append({'inst': Course.objects.get(id=id)})
     return courses
 
 
@@ -184,7 +152,7 @@ def _init_courses(courses):
             course[
                 'num_settleable'
             ] = 0  # number of reqs to which can be settled. autosettled if 1
-            if 'settled' not in course or course['settled'] == None:
+            if 'settled' not in course or course['settled'] is None:
                 course['settled'] = []
     return courses
 
@@ -224,7 +192,7 @@ def assign_settled_courses_to_reqs(req, courses):
     and updates the appropriate counts.
     """
     old_deficit = req['inst'].min_needed - req['count']
-    if req['inst'].max_counted != None:
+    if req['inst'].max_counted is not None:
         old_available = req['inst'].max_counted - req['count']
 
     was_satisfied = old_deficit <= 0
@@ -247,12 +215,12 @@ def assign_settled_courses_to_reqs(req, courses):
     req['count'] += newly_satisfied
     new_deficit = req['inst'].min_needed - req['count']
     if (not was_satisfied) and (new_deficit <= 0):
-        if req['inst'].max_counted == None:
+        if req['inst'].max_counted is None:
             return req['count']
         else:
             return min(req['inst'].max_counted, req['count'])
     elif was_satisfied and (new_deficit <= 0):
-        if req['inst'].max_counted == None:
+        if req['inst'].max_counted is None:
             return newly_satisfied
         else:
             return min(old_available, newly_satisfied)
@@ -376,7 +344,7 @@ def check_degree_progress(req, courses):
     """
     by_semester = req['inst'].completed_by_semester
     num_courses = 0
-    if by_semester == None or by_semester > len(courses):
+    if by_semester is None or by_semester > len(courses):
         by_semester = len(courses)
     for i in range(by_semester):
         num_courses += len(courses[i])
@@ -471,7 +439,7 @@ def format_req_output(req):
                     # print(subreq)
                     pass
             child = format_req_output(subreq)
-            if child != None:
+            if child is not None:
                 if 'code' in child:
                     code = child.pop('code')
                     req_list[code] = child
@@ -501,13 +469,68 @@ def format_req_output(req):
     return output
 
 
+# ---------------------------- FETCH COURSE DETAILS -----------------------------------#
+
+
+# dept is the department code (string) and num is the catalog number (int)
+# returns dictionary containing relevant info
+def get_course_info(dept, num):
+    dept = str(dept)
+    num = str(num)
+    try:
+        dept_code = Department.objects.filter(code=dept).first().id
+        try:
+            course = Course.objects.filter(
+                department__id=dept_code, catalog_number=num
+            ).first()
+            if course.course_id:
+                co_id = course.course_id
+                print(co_id)
+                # instructor = "None"
+                # try:
+                #    instructor = Section.objects.filter(course_id=13248).first()
+                #
+                #    print(instructor)
+                # except Section.DoesNotExist:
+                #    instructor = "Information Unavailable"
+            # get relevant info and put it in a dictionary
+            course_dict = {}
+            if course.title:
+                course_dict['Title'] = course.title
+            if course.description:
+                course_dict['Description'] = course.description
+            if course.distribution_area_short:
+                course_dict['Distribution Area'] = course.distribution_area_short
+            # if instructor:
+            #    course_dict["Professor"] = instructor
+            if course.reading_list:
+                course_dict['Reading List'] = course.reading_list
+            if course.reading_writing_assignment:
+                course_dict[
+                    'Reading / Writing Assignments'
+                ] = course.reading_writing_assignment
+            if course.grading_basis:
+                course_dict['Grading Basis'] = course.grading_basis
+            if course.web_address:
+                course_dict['Relevant Links'] = course.web_address
+            return course_dict
+
+        except Course.DoesNotExist:
+            return None
+    except Course.DoesNotExist:
+        return None
+
+    # print(dept)
+
+
 def main():
     output = check_user(
-        'gc5512',
+        'mn4560',
         {'code': 'COS-AB', 'name': 'Computer Science - AB'},
-        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'DAN', 'name': 'Dance'}],
+        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
     )
-    print(output['minors'])
+    print(output['Minors'])
+    print(get_course_info('SPA', 366))
 
 
 if __name__ == '__main__':
