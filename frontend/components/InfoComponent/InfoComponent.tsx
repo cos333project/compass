@@ -56,6 +56,9 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
       <div className={styles.modal}>
         {courseDetails ? (
           <div>
+            <div className={styles.detailRow}>
+              <strong className={styles.strong}>{dept + ' ' + coursenum}</strong> 
+            </div>
             {Object.entries(courseDetails).map(([key, value]) => (
               <div key={key} className={styles.detailRow}>
                 <strong className={styles.strong}>{key}:</strong> {value}
