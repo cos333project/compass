@@ -69,7 +69,8 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
       <div
         onClick={handleClick}
         style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
-      >x
+      >
+        x
         {/* <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
