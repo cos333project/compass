@@ -1,9 +1,9 @@
 import logging
-from collections import OrderedDict
 from re import sub, search, split, compile, IGNORECASE
 from urllib.request import urlopen
 from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
+from django.contrib.auth import get_user_model
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse, HttpResponseServerError
 from django.middleware.csrf import get_token
@@ -12,12 +12,8 @@ from django.shortcuts import redirect
 from .models import (
     models,
     Course,
-    Department,
-    Degree,
     Major,
     Minor,
-    Certificate,
-    Requirement,
     CustomUser,
     UserCourses,
 )
@@ -26,9 +22,9 @@ import json
 from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user
+from data.check_reqs import get_course_info
 from datetime import datetime
 from django.conf import settings
-import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +40,6 @@ def fetch_user_info(net_id):
         net_id=net_id,
         defaults={
             'role': 'student',
-            'university_id': '',
             'email': '',
             'first_name': '',
             'last_name': '',
@@ -74,8 +69,7 @@ def fetch_user_info(net_id):
 
     # External API call for additional info only if necessary attributes are missing
     if (
-        not user_inst.university_id
-        or not user_inst.email
+        not user_inst.email
         or not user_inst.first_name
         or not user_inst.last_name
         or not user_inst.class_year
@@ -90,7 +84,6 @@ def fetch_user_info(net_id):
         first_name, last_name = full_name[0], ' '.join(full_name[1:])
 
         # Update user instance with fetched data only if it's missing
-        user_inst.university_id = profile.get('universityid', user_inst.university_id)
         user_inst.email = profile.get('mail', user_inst.email)
         user_inst.first_name = (
             first_name if not user_inst.first_name else user_inst.first_name
@@ -105,12 +98,10 @@ def fetch_user_info(net_id):
 
     return_data = {
         'netId': net_id,
-        'universityId': user_inst.university_id,
         'email': user_inst.email,
         'firstName': user_inst.first_name,
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
-        'department': profile.get('department', None),
         'major': major,
         'minors': minors,
     }
@@ -140,6 +131,7 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
+    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 
@@ -274,8 +266,14 @@ class CAS(View):
                 net_id = self._validate(ticket, service_url)
                 logger.debug(f'Validation returned {username}')
                 if net_id:
+                    User = get_user_model()
+                    user, created = User.objects.get_or_create(
+                        username=net_id, defaults={'net_id': net_id, 'role': 'student'}
+                    )
+                    if created:
+                        user.set_unusable_password()
+                    user.save()
                     request.session['net_id'] = net_id
-                    logger.debug(f'Authentication successful for {username}')
                     return redirect(settings.DASHBOARD)
             login_url = f'{self.cas_url}login?service={service_url}'
             return redirect(login_url)
@@ -295,9 +293,9 @@ class CAS(View):
 
 # ------------------------------- SEARCH COURSES --------------------------------------#
 
-DEPT_NUM_SUFFIX_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
-DEPT_NUM_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}$', IGNORECASE)
-DEPT_ONLY_REGEX = compile(r'^[a-zA-Z]{1,3}$', IGNORECASE)
+DEPT_NUM_SUFFIX_REGEX = compile(r'^[a-zA-Z]{3}\d{3}[a-zA-Z]{1}$', IGNORECASE)
+DEPT_NUM_REGEX = compile(r'^[a-zA-Z]{3}\d{1,3}$', IGNORECASE)
+DEPT_ONLY_REGEX = compile(r'^[a-zA-Z]{3}$', IGNORECASE)
 NUM_SUFFIX_ONLY_REGEX = compile(r'^\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
 NUM_ONLY_REGEX = compile(r'^\d{1,3}$', IGNORECASE)
 
@@ -340,13 +338,13 @@ class SearchCourses(View):
                 # num = ''
 
             try:
-                # exact_match_course = Course.objects.select_related('department').filter(
-                #     Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
-                # )
-                # if exact_match_course:
-                #     # If an exact match is found, return only that course
-                #     serialized_course = CourseSerializer(exact_match_course, many=True)
-                #     return JsonResponse({'courses': serialized_course.data})
+                exact_match_course = Course.objects.select_related('department').filter(
+                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
+                )
+                if exact_match_course:
+                    # If an exact match is found, return only that course
+                    serialized_course = CourseSerializer(exact_match_course, many=True)
+                    return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
                     & Q(catalog_number__icontains=num)
@@ -432,7 +430,6 @@ def get_first_course_inst(course_code):
 def update_courses(request):
     try:
         data = json.loads(request.body)
-        print('AMONGUSSSSSSSSSSSSSSSs', data)
         course_code = data.get('courseId')  # might have to adjust this, print
         container = data.get('semesterId')
         net_id = request.session['net_id']
@@ -440,7 +437,7 @@ def update_courses(request):
         class_year = user_inst.class_year
         course_inst = get_first_course_inst(course_code)
 
-        if container == 'Search Results' or container == 'void':
+        if container == 'Search Results':
             user_course = UserCourses.objects.get(user=user_inst, course=course_inst)
             user_course.delete()
             message = f'User course deleted: {course_inst.course_id}, {net_id}'
@@ -518,21 +515,23 @@ def update_user(request):
 #             settle_cleaning(v)
 #     return d
 
+
 def transform_requirements(requirements):
     # Base case: If there's no 'subrequirements', return the requirements as is
     if 'subrequirements' not in requirements:
         return requirements
-    
+
     # Recursively transform each subrequirement
     transformed = {}
     for key, subreq in requirements['subrequirements'].items():
         transformed[key] = transform_requirements(subreq)
-        
+
     # After transformation, remove 'subrequirements' key
     requirements.pop('subrequirements')
-    
+
     # Merge the 'satisfied' status and the transformed subrequirements
     return {**requirements, **transformed}
+
 
 def transform_data(data):
     transformed_data = {}
@@ -546,14 +545,36 @@ def transform_data(data):
             # Extract 'code' and 'satisfied' from 'requirements'
             code = major_data['requirements'].pop('code')
             satisfied = major_data['requirements'].pop('satisfied')
-            
+
             # Transform the rest of the requirements
             transformed_reqs = transform_requirements(major_data['requirements'])
-            
+
             # Combine 'satisfied' status and transformed requirements
             transformed_data[code] = {'satisfied': satisfied, **transformed_reqs}
 
     return transformed_data
+
+
+# -------------------------------------- GET COURSE DETAILS --------------------------
+
+
+def course_details(request):
+    dept = request.GET.get('dept', '')  # Default to empty string if not provided
+    num = request.GET.get('coursenum', '')
+
+    if dept and num:
+        try:
+            num = str(num)  # Convert to string
+        except ValueError:
+            return JsonResponse({'error': 'Invalid course number'}, status=400)
+
+        course_info = get_course_info(dept, num)
+        return JsonResponse(course_info)
+    else:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+
+# ------------------------------------------------------------------------------------
 
 
 def check_requirements(request):
@@ -562,12 +583,11 @@ def check_requirements(request):
     this_major = user_info['major']['code']
     these_minors = [minor['code'] for minor in user_info['minors']]
 
-    req_dict = check_user(user_info['netId'], user_info['major'],
-                          user_info['minors'])
+    req_dict = check_user(user_info['netId'], user_info['major'], user_info['minors'])
 
     # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
-    formatted_dict[this_major] =  req_dict[this_major]
+    formatted_dict[this_major] = req_dict[this_major]
     formatted_dict = transform_data(formatted_dict)
     for minor in these_minors:
         formatted_dict[minor] = req_dict['Minors'][minor]
@@ -580,7 +600,6 @@ def check_requirements(request):
             else:
                 print('  ' * (indent + 1) + str(value))
 
-    pretty_print(formatted_dict)
+    # pretty_print(formatted_dict)
 
     return JsonResponse(formatted_dict)
-

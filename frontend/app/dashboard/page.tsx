@@ -11,6 +11,8 @@ import UserState from '../../store/userSlice';
 
 import { Canvas } from './Canvas';
 import LoadingComponent from '../../components/LoadingComponent';
+import SkeletonApp from '../../components/SkeletonApp';
+
 
 const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,11 +31,10 @@ const Dashboard: FC = () => {
     <>
       <Navbar />
       <div className='flex flex-col h-screen pt-24 rounded-xl'>
-        <main className='flex flex-grow bg-[#FAFAFA] rounded-xl shadow-xl'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
-              trashable
               columns={2}
               strategy={rectSortingStrategy}
               wrapperStyle={() => ({
@@ -42,7 +43,7 @@ const Dashboard: FC = () => {
               })}
             />
           ) : (
-            <div>< LoadingComponent /></div> // You can replace this with a proper loading component or message
+            <div>< SkeletonApp /></div> // You can replace this with a proper loading component or message
           )}
         </main>
       </div>

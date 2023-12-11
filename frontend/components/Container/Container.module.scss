@@ -1,8 +1,8 @@
 .Container {
   display: flex;
   flex-direction: column;
+  min-width: 150px;
   width: full;
-  grid-auto-rows: max-content;
   overflow: hidden; /* Prevents horizontal scrollbar */
   box-sizing: border-box;
   appearance: none;
@@ -22,9 +22,11 @@
     list-style: none;
     padding: 5px;
     margin: 0px;
+    width: 322px;
+    max-width: 100%;
     max-height: 100%; /* Ensures ul doesn't exceed container's height */
     overflow-y: auto; /* Adds vertical scrollbar to ul */
-    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    overflow-x: auto; /* Adds horizontal scrollbar to ul */
   }
   
   &.scrollable {

@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "lib": ["dom", "dom.iterable", "es2022", "esnext"],
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false, // TODO: Make this true eventually
@@ -9,8 +11,6 @@
     "noEmit": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -25,18 +25,9 @@
       "@/components/*": ["components/*"],
       "@/store/*": ["store/*"],
       "@/app/*": ["app/*"],
-      "@/hooks/*": ["app/hooks/*"], // TODO: Might not need
-      "@/utilities/*": ["app/utilities/*"], // TODO: Might not need
       "@/types": ["types.d.ts"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "postcss.config.mjs",
-    ".next/types/**/*.ts",
-    "app/kaan/page.jsx"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.js,", ".next/types/**/*.ts", "components/InfoComponent"],
   "exclude": ["node_modules"]
 }

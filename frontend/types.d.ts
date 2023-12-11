@@ -1,3 +1,5 @@
+// TODO: Check all of these with Cmd + Shift + F and delete any unused ones
+
 export type AuthState = {
   user?: Profile;
   isAuthenticated: boolean | null;
@@ -20,7 +22,7 @@ export type MajorMinorType = {
 export type Profile = {
   firstName: string;
   lastName: string;
-  classYear: number | undefined;
+  classYear: number;
   major?: MajorMinorType;
   minors?: MajorMinorType[];
   netId: string;
@@ -42,19 +44,6 @@ export type SettingsModalProps = {
   onClose: () => void;
 };
 
-export type SelectFieldProps = {
-  label: string;
-  options: string[];
-  value: string | string[] | undefined;
-  onChange: (value: string | string[] | undefined) => void;
-  multiple?: boolean;
-};
-
-export type ToggleSwitchProps = {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-};
 
 export type Course = {
   id: number;
@@ -117,10 +106,6 @@ export type DragDropContextProps = {
   searchResults: Course[];
 };
 
-// export type DropdownMenuProps = {
-//   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-// };
-
 export type MobileMenuState = {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
@@ -132,12 +117,6 @@ export type MenuItemProps = {
   onClick: () => void;
 };
 
-export type SettingsFormProps = {
-  closeSettings: () => void;
-  onSaveSettings: (newMajor: string, newClassYear: string) => void;
-  initialMajor: string;
-  initialClassYear: string;
-};
 
 export type Planner = {
   classYear: number | null;

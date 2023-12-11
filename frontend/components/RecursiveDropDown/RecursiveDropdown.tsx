@@ -1,4 +1,4 @@
-import { useEffect, FC } from 'react';
+import { FC } from 'react';
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -20,6 +20,7 @@ interface SatisfactionStatusProps {
   satisfied: string;
 }
 
+// Satisfaction status icon with styling
 const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
   <>
     {satisfied === 'True' ? (
@@ -30,11 +31,11 @@ const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
   </>
 );
 
+// Dropdown component with refined styling
 const Dropdown: FC<DropdownProps> = ({ data }) => {
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
       if (key === 'satisfied') {
-        // Skip rendering 'satisfied' as a standalone entry
         return null;
       }
 
@@ -47,18 +48,20 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
       const subItems = isObject ? { ...value, satisfied: undefined } : value;
       const hasNestedItems = isObject && Object.keys(subItems).length > 0;
 
+      // Style adjustments for accordion components
       return (
         <Accordion
           key={key}
-          style={{ margin: '0', boxShadow: 'none', borderBottom: '1px solid #ccc' }}
+          style={{ margin: '0', boxShadow: 'none', borderBottom: '1px solid #e0e0e0' }}
         >
           <AccordionSummary
             expandIcon={hasNestedItems ? <ExpandMoreIcon /> : null}
             aria-controls={`${key}-content`}
             id={`${key}-header`}
+            style={{ backgroundColor: '#f7f7f7' }} // subtle background color
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Typography>{key}</Typography>
+              <Typography style={{ fontWeight: 500 }}>{key}</Typography>
               {satisfactionElement}
             </div>
           </AccordionSummary>
@@ -73,6 +76,7 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
   return <>{renderContent(data)}</>;
 };
 
+// Recursive dropdown component
 interface RecursiveDropdownProps {
   dictionary: Dictionary;
 }
