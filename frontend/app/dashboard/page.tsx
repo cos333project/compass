@@ -27,7 +27,7 @@ const Dashboard: FC = () => {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col h-screen pt-24 rounded-xl'>
+      <div className='flex flex-col min-h-screen pt-24 rounded-xl'>
         <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
@@ -43,9 +43,8 @@ const Dashboard: FC = () => {
             <div>Loading...</div> // You can replace this with a proper loading component or message
           )}
         </main>
+        <Footer />
       </div>
-      <div className='py-12 sm:py-16 lg:pb-20' />
-      <Footer />
     </>
   );
 };

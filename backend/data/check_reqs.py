@@ -191,6 +191,7 @@ def assign_settled_courses_to_reqs(req, courses):
     Assigns only settled courses and those that can only satify one requirement,
     and updates the appropriate counts.
     """
+    
     old_deficit = req['inst'].min_needed - req['count']
     if req['inst'].max_counted is not None:
         old_available = req['inst'].max_counted - req['count']

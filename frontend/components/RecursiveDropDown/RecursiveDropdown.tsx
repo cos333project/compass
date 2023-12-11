@@ -58,7 +58,7 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
             expandIcon={hasNestedItems ? <ExpandMoreIcon /> : null}
             aria-controls={`${key}-content`}
             id={`${key}-header`}
-            style={{ backgroundColor: '#f7f7f7' }} // subtle background color
+            style={{ backgroundColor: '#f6f6f6' }} // subtle background color
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Typography style={{ fontWeight: 500 }}>{key}</Typography>

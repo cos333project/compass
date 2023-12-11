@@ -168,6 +168,7 @@ type Props = {
 
 export const PLACEHOLDER_ID = 'placeholder';
 export const SEARCH_RESULTS_ID = 'Search Results';
+const defaultClassYear = new Date().getFullYear() + 1;
 
 export function Canvas({
   user,
