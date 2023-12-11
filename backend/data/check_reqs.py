@@ -63,22 +63,15 @@ def cumulative_time(func):
 
 
 @cumulative_time
-def check_user(net_id, major, minors, manually_settled):
+def check_user(net_id, major, minors):
     output = {}
     user_courses = create_courses(net_id)
 
-    print("manually_settled in check_user", manually_settled)
-    for sem in user_courses:
-        for course in sem:
-            course_id = str(course['inst'].id)
-            if course_id in manually_settled:
-                course['settled'] = [int(manually_settled[course_id])]
-    print(user_courses)
 
     if major is not None:
         major_code = major['code']
         output[major_code] = {}
-        formatted_courses, formatted_req = check_requirements(
+        formatted_req = check_requirements(
             'Major', major_code, user_courses
         )
         output[major_code]['requirements'] = formatted_req
@@ -87,7 +80,7 @@ def check_user(net_id, major, minors, manually_settled):
     for minor in minors:
         minor = minor['code']
         output['Minors'][minor] = {}
-        formatted_courses, formatted_req = check_requirements(
+        formatted_req = check_requirements(
             'Minor', minor, user_courses
         )
         output['Minors'][minor]['requirements'] = formatted_req
@@ -102,7 +95,12 @@ def create_courses(net_id):
         user__net_id=net_id
     )
     for course_inst in course_insts:
-        courses[course_inst.semester - 1].append({'inst': course_inst.course})
+        course = {'inst': course_inst.course, 'manually_settled': False}
+        if course_inst.requirement_id is not None:
+            course['settled'] = [course_inst.requirement_id]
+            course['manually_settled'] = True
+            print(f"Course {course_inst.id} settled to requirement {course_inst.requirement_id}")
+        courses[course_inst.semester - 1].append(course)
     return courses
 
 
@@ -135,9 +133,9 @@ def check_requirements(table, code, courses):
     mark_possible_reqs(req, courses)
     assign_settled_courses_to_reqs(req, courses)
     add_course_lists_to_req(req, courses)
-    formatted_courses = format_courses_output(courses)
-    formatted_req = format_req_output(req)
-    return formatted_courses, formatted_req
+    # formatted_courses = format_courses_output(courses)
+    formatted_req = format_req_output(req, courses)
+    return formatted_req
 
 
 # These fields could be in the UserCourses table by default
@@ -393,26 +391,26 @@ def add_course_lists_to_req(req, courses):
                         break
 
 
-@cumulative_time
-def format_courses_output(courses):
-    """
-    Enforce the type and order of fields in the courses output
-    """
-    output = []
-    for i, sem in enumerate(courses):
-        output.append([])
-        for j, course in enumerate(sem):
-            output[i].append(collections.OrderedDict())
-            for key in ['possible_reqs', 'reqs_satisfied']:
-                output[i][j][key] = course[key]
-            output[i][j]['name'] = course['inst'].title
-            if len(course['settled']) > 0:  # only show if non-empty
-                output[i][j]['settled'] = course['settled']
-    return output
+# @cumulative_time
+# def format_courses_output(courses):
+#     """
+#     Enforce the type and order of fields in the courses output
+#     """
+#     output = []
+#     for i, sem in enumerate(courses):
+#         output.append([])
+#         for j, course in enumerate(sem):
+#             output[i].append(collections.OrderedDict())
+#             for key in ['possible_reqs', 'reqs_satisfied']:
+#                 output[i][j][key] = course[key]
+#             output[i][j]['name'] = course['inst'].title
+#             if len(course['settled']) > 0:  # only show if non-empty
+#                 output[i][j]['settled'] = course['settled']
+#     return output
 
 
 @cumulative_time
-def format_req_output(req):
+def format_req_output(req, courses):
     """
     Enforce the type and order of fields in the req output
     """
@@ -437,7 +435,7 @@ def format_req_output(req):
     if 'req_list' in req:  # internal node. recursively call on children
         req_list = {}
         for i, subreq in enumerate(req['req_list']):
-            child = format_req_output(subreq)
+            child = format_req_output(subreq, courses)
             if child is not None:
                 if 'code' in child:
                     code = child.pop('code')
@@ -451,17 +449,27 @@ def format_req_output(req):
             output['subrequirements'] = req_list
     if ('settled' in req) and ('req_list' not in req):
         settled = []
-        for course_id in req['settled']:
-            course_inst = Course.objects.get(id=course_id)
-            settled.append({'code': course_inst.department.code + ' ' + course_inst.catalog_number,
-                            'id': course_id})
+        for semester in courses:
+            for course in semester:
+                if course['inst'].id in req['settled']:
+                    course_output = {
+                        'code': course['inst'].department.code + ' ' + course['inst'].catalog_number,
+                        'id': course['inst'].id,
+                        'manually_settled': course['manually_settled']
+                    }
+                    settled.append(course_output)
         output['settled'] = [settled, req['id']]
     if ('unsettled' in req) and ('req_list' not in req):
         unsettled = []
-        for course_id in req['unsettled']:
-            course_inst = Course.objects.get(id=course_id)
-            unsettled.append({'code': course_inst.department.code + ' ' + course_inst.catalog_number,
-                            'id': course_id})
+        for semester in courses:
+            for course in semester:
+                if course['inst'].id in req['unsettled']:
+                    course_output = {
+                        'code': course['inst'].department.code + ' ' + course['inst'].catalog_number,
+                        'id': course['inst'].id,
+                        'manually_settled': course['manually_settled']
+                    }
+                    unsettled.append(course_output)
         output['unsettled'] = [unsettled, req['id']]
     return output
 

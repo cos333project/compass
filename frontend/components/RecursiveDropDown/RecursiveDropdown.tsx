@@ -67,12 +67,13 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
             <Button
               key={index}
               variant='contained'
-              disabled
+              disabled={!item['manually_settled']}
               style={{
                 margin: '5px',
                 backgroundColor: '#f7f7f7',
                 color: '#000',
               }}
+              onClick={() => handleClick(item['id'], value[1])}
             >
               {item['code']}
             </Button>

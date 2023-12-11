@@ -58,10 +58,6 @@ def fetch_user_info(net_id):
         {'code': minor.code, 'name': minor.name} for minor in user_inst.minors.all()
     ]
 
-    manually_settled = {}
-    if user_inst.manually_settled != None:
-        manually_settled = json.loads(user_inst.manually_settled)
-
     # Initialize profile with default values
     profile = {
         'universityid': '',
@@ -107,8 +103,7 @@ def fetch_user_info(net_id):
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
         'major': major,
-        'minors': minors,
-        'manually_settled': manually_settled
+        'minors': minors
     }
     return return_data
 
@@ -559,19 +554,24 @@ def course_details(request):
 
 def manually_settle(request):
     data = json.loads(request.body)
-    print(data)
+    course_id = int(data.get('courseId'))
+    req_id = int(data.get('reqId'))
     net_id = request.session['net_id']
     user_inst = CustomUser.objects.get(net_id=net_id)
 
-    manually_settled = {}
-    if user_inst.manually_settled != None:
-        manually_settled = json.loads(user_inst.manually_settled)
-    manually_settled[data.get('courseId')] = data.get('reqId')
+    user_course_inst = UserCourses.objects.get(user_id=user_inst.id,
+                                               course_id=course_id)
+    if user_course_inst.requirement_id is None:
+        user_course_inst.requirement_id = req_id
+        user_course_inst.save()
 
-    user_inst.manually_settled = json.dumps(manually_settled)
-    user_inst.save()
+        return JsonResponse({'Manually settled': user_course_inst.id})
 
-    return JsonResponse({'manually_settled': manually_settled})
+    else:
+        user_course_inst.requirement_id = None
+        user_course_inst.save()
+        
+        return JsonResponse({'Unsettled': user_course_inst.id})
 
 
 def check_requirements(request):
@@ -580,7 +580,7 @@ def check_requirements(request):
     this_major = user_info['major']['code']
     these_minors = [minor['code'] for minor in user_info['minors']]
 
-    req_dict = check_user(user_info['netId'], user_info['major'], user_info['minors'], user_info['manually_settled'])
+    req_dict = check_user(user_info['netId'], user_info['major'], user_info['minors'])
 
     # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
