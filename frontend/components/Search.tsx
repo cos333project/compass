@@ -35,14 +35,14 @@ const Search: FC = () => {
 
   useEffect(() => {
     setSearchResults(searchResults);
-  }, [searchResults, setSearchResults]);
+  }, [searchResults]);
 
   const search = async (searchQuery: string) => {
-    const cachedResults = searchCache.get(searchQuery);
-    if (cachedResults) {
-      setSearchResults(cachedResults);
-      return;
-    }
+    // const cachedResults = searchCache.get(searchQuery);
+    // if (cachedResults) {
+    //   setSearchResults(cachedResults);
+    //   return;
+    // }
 
     setLoading(true);
     try {
@@ -67,13 +67,17 @@ const Search: FC = () => {
     }
   };
 
-  const debouncedSearch = useCallback(debounce(search, 500), [search]);
+  const debouncedSearch = debounce(search, 500);
+
+  function retrieveCachedSearch(search) {
+    setSearchResults(searchCache.get(search));
+  }
 
   useEffect(() => {
     if (query) {
       debouncedSearch(query);
     }
-  }, [query, debouncedSearch]);
+  }, [query]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -105,7 +109,7 @@ const Search: FC = () => {
             <button
               key={index}
               className='bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-0.5 px-2 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300'
-              onClick={() => debouncedSearch(search)}
+              onClick={() => retrieveCachedSearch(search)}
             >
               {search}
             </button>

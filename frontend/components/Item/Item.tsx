@@ -4,7 +4,7 @@ import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
-import { InfoComponent } from '../InfoComponent.tsx';
+import { InfoComponent } from '../InfoComponent';
 
 import { Handle, Remove } from './components';
 import styles from './Item.module.scss';

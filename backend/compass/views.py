@@ -293,9 +293,9 @@ class CAS(View):
 
 # ------------------------------- SEARCH COURSES --------------------------------------#
 
-DEPT_NUM_SUFFIX_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
-DEPT_NUM_REGEX = compile(r'^[a-zA-Z]{1,3}\d{1,3}$', IGNORECASE)
-DEPT_ONLY_REGEX = compile(r'^[a-zA-Z]{1,3}$', IGNORECASE)
+DEPT_NUM_SUFFIX_REGEX = compile(r'^[a-zA-Z]{3}\d{3}[a-zA-Z]{1}$', IGNORECASE)
+DEPT_NUM_REGEX = compile(r'^[a-zA-Z]{3}\d{1,3}$', IGNORECASE)
+DEPT_ONLY_REGEX = compile(r'^[a-zA-Z]{3}$', IGNORECASE)
 NUM_SUFFIX_ONLY_REGEX = compile(r'^\d{1,3}[a-zA-Z]{1}$', IGNORECASE)
 NUM_ONLY_REGEX = compile(r'^\d{1,3}$', IGNORECASE)
 
@@ -338,13 +338,13 @@ class SearchCourses(View):
                 # num = ''
 
             try:
-                # exact_match_course = Course.objects.select_related('department').filter(
-                #     Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
-                # )
-                # if exact_match_course:
-                #     # If an exact match is found, return only that course
-                #     serialized_course = CourseSerializer(exact_match_course, many=True)
-                #     return JsonResponse({'courses': serialized_course.data})
+                exact_match_course = Course.objects.select_related('department').filter(
+                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
+                )
+                if exact_match_course:
+                    # If an exact match is found, return only that course
+                    serialized_course = CourseSerializer(exact_match_course, many=True)
+                    return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
                     & Q(catalog_number__icontains=num)
