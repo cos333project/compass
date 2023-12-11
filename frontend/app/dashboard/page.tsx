@@ -29,8 +29,8 @@ const Dashboard: FC = () => {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col min-h-screen pt-24 rounded-xl'>
-        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl'>
+      <div className='flex flex-col items-center min-h-screen pt-24'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl pl-8 pr-8 rounded'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
@@ -47,8 +47,8 @@ const Dashboard: FC = () => {
             </div> // FIXME: We can replace this with a proper loading component or message
           )}
         </main>
-        <Footer />
       </div>
+      <Footer />
     </>
   );
 };

@@ -81,7 +81,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
         style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
         className={classNames(styles.Action)}
       >
-        {dept + coursenum}
+        {dept + ' ' + coursenum}
       </div>
       {modalContent && createPortal(modalContent, document.body)}
     </>

@@ -153,10 +153,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Enter') {
+      handleSave();
+    } else if (event.key === 'Escape') {
       onClose();
-    } else if (event.key === 'Enter') {
-      onSave(profile);
     }
   });
 
@@ -164,57 +164,69 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     <div className='fixed inset-0 flex justify-center items-center z-50'>
       <div className='bg-white p-8 rounded-xl max-w-2xl w-2/3 shadow-2xl border border-gray-400'>
         <div className='grid grid-cols-2 gap-6'>
-          <Input
-            placeholder='First name'
-            variant='soft'
-            autoComplete='off'
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <Input
-            placeholder='Last name'
-            variant='soft'
-            autoComplete='off'
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <Autocomplete
-            multiple={false}
-            autoHighlight
-            options={majorOptions}
-            placeholder='Select your major'
-            variant='soft'
-            defaultValue={major}
-            isOptionEqualToValue={(option, value) => option === value}
-            onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
-            getOptionLabel={(option: MajorMinorType) => option.code}
-            renderOption={(props, option) => (
-              <AutocompleteOption {...props} key={option.name}>
-                <ListItemContent>
-                  {option.code}
-                  <Typography level='body-sm'>{option.name}</Typography>
-                </ListItemContent>
-              </AutocompleteOption>
-            )}
-          />
-          <Autocomplete
-            multiple={true}
-            options={minorOptions}
-            placeholder={'Select your minor(s)'}
-            variant='soft'
-            value={minors}
-            isOptionEqualToValue={(option, value) => value === undefined || option === value}
-            onChange={handleMinorsChange}
-            getOptionLabel={(option: MajorMinorType) => option.code}
-            renderOption={(props, option) => (
-              <AutocompleteOption {...props} key={option.name}>
-                <ListItemContent>
-                  {option.code}
-                  <Typography level='body-sm'>{option.name}</Typography>
-                </ListItemContent>
-              </AutocompleteOption>
-            )}
-          />
+          <div>
+            <FormLabel>First name</FormLabel>
+            <Input
+              placeholder='First name'
+              variant='soft'
+              autoComplete='off'
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+          <div>
+            <FormLabel>Last name</FormLabel>
+            <Input
+              placeholder='Last name'
+              variant='soft'
+              autoComplete='off'
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+          <div>
+            <FormLabel>Major</FormLabel>
+            <Autocomplete
+              multiple={false}
+              autoHighlight
+              options={majorOptions}
+              placeholder='Select your major'
+              variant='soft'
+              defaultValue={major}
+              isOptionEqualToValue={(option, value) => option === value}
+              onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
+              getOptionLabel={(option: MajorMinorType) => option.code}
+              renderOption={(props, option) => (
+                <AutocompleteOption {...props} key={option.name}>
+                  <ListItemContent>
+                    {option.code}
+                    <Typography level='body-sm'>{option.name}</Typography>
+                  </ListItemContent>
+                </AutocompleteOption>
+              )}
+            />
+          </div>
+          <div>
+            <FormLabel>Minor(s)</FormLabel>
+            <Autocomplete
+              multiple={true}
+              options={minorOptions}
+              placeholder={'Select your minor(s)'}
+              variant='soft'
+              value={minors}
+              isOptionEqualToValue={(option, value) => value === undefined || option === value}
+              onChange={handleMinorsChange}
+              getOptionLabel={(option: MajorMinorType) => option.code}
+              renderOption={(props, option) => (
+                <AutocompleteOption {...props} key={option.name}>
+                  <ListItemContent>
+                    {option.code}
+                    <Typography level='body-sm'>{option.name}</Typography>
+                  </ListItemContent>
+                </AutocompleteOption>
+              )}
+            />
+          </div>
           <Snackbar
             open={openSnackbar}
             color={'primary'}
@@ -233,25 +245,49 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               You can only minor in two programs and plan up to three.
             </div>
           </Snackbar>
-          <Autocomplete
-            multiple={false}
-            autoHighlight
-            options={generateClassYears()}
-            placeholder='Class year'
-            variant='soft'
-            value={classYear ?? ''} // TODO: Does '' work here or is it redundant? --Windsor
-            isOptionEqualToValue={(option, value) => value === undefined || option === value}
-            onChange={(_, newClassYear: number | undefined) => {
-              setClassYear(newClassYear ?? undefined);
-            }}
-            getOptionLabel={(option) => option.toString()}
-            renderOption={(props, option) => (
-              <AutocompleteOption {...props} key={option}>
-                <ListItemContent>{option}</ListItemContent>
-              </AutocompleteOption>
-            )}
-          />
-          <Box
+          {/* <div>
+            <FormLabel>Certificate(s)</FormLabel>
+            <Autocomplete
+              multiple={true}
+              options={minorOptions}
+              placeholder={'Select your certificate(s)'}
+              variant='soft'
+              value={minors}
+              isOptionEqualToValue={(option, value) => value === undefined || option === value}
+              onChange={handleMinorsChange}
+              getOptionLabel={(option: MajorMinorType) => option.code}
+              renderOption={(props, option) => (
+                <AutocompleteOption {...props} key={option.name}>
+                  <ListItemContent>
+                    {option.code}
+                    <Typography level='body-sm'>{option.name}</Typography>
+                  </ListItemContent>
+                </AutocompleteOption>
+              )}
+            />
+          </div> */}
+          <div>
+            <FormLabel>Class year</FormLabel>
+            <Autocomplete
+              multiple={false}
+              autoHighlight
+              options={generateClassYears()}
+              placeholder='Class year'
+              variant='soft'
+              value={classYear ?? ''} // TODO: Does '' work here or is it redundant? --Windsor
+              isOptionEqualToValue={(option, value) => value === undefined || option === value}
+              onChange={(_, newClassYear: number | undefined) => {
+                setClassYear(newClassYear ?? undefined);
+              }}
+              getOptionLabel={(option) => option.toString()}
+              renderOption={(props, option) => (
+                <AutocompleteOption {...props} key={option}>
+                  <ListItemContent>{option}</ListItemContent>
+                </AutocompleteOption>
+              )}
+            />
+          </div>
+          {/* <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -266,10 +302,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               color={themeDarkMode ? 'success' : 'neutral'}
               variant={themeDarkMode ? 'solid' : 'outlined'}
             />
-          </Box>
+          </Box> */}
 
           {/* Implement this once we have ReCal functionality, perhaps in IW work */}
-          <FormControl
+          {/* <FormControl
             orientation='horizontal'
             sx={{ width: '100%', justifyContent: 'space-between' }}
           >
@@ -283,14 +319,14 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               color={timeFormat24h ? 'success' : 'neutral'}
               variant={timeFormat24h ? 'solid' : 'outlined'}
             />
-          </FormControl>
+          </FormControl> */}
         </div>
         <div className='mt-5 text-right'>
           <Button variant='soft' color='primary' onClick={handleSave} size='md'>
             Save
           </Button>
           <Button variant='soft' color='neutral' onClick={onClose} sx={{ ml: 2 }} size='md'>
-            Close
+            Cancel
           </Button>
         </div>
       </div>

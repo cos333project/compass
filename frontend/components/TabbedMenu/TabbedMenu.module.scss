@@ -2,9 +2,10 @@
 .tabContainer {
   width: full;
   height: 703px;
+  width: 360px;
   margin: 10px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden; /* Ensures child elements do not break the rounded corners */
   display: flex;
   flex-direction: column;
@@ -41,7 +42,7 @@
 .tabContent {
   padding: 20px;
   background: white;
-  border-radius: 0 0 8px 8px; /* Rounded corners for the bottom part of the rectangle */
+  border-radius: 0 0 6px 6px; /* Rounded corners for the bottom part of the rectangle */
   flex-grow: 1;
   overflow-y: auto; /* Makes the content area scrollable */
   height: 650px; /* Fixed height for the content area */
