@@ -220,8 +220,6 @@ export function Canvas({
       );
       semester += 1;
     }
-
-    console.log(userCourses);
     console.log(prevItems);
     return prevItems;
   };
@@ -272,21 +270,19 @@ export function Canvas({
     }
   });
 
-  const fetchCourses = () => {
-    fetch(`${process.env.BACKEND}/fetch_courses/`, {
-      method: 'GET',
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Fetched userCourses:', data);
-        setItems((prevItems) => ({
-          ...updateSemesters(prevItems, classYear, data),
-        }));
-      })
-      .catch((error) => {
-        console.error('User Courses Error:', error);
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch(`${process.env.BACKEND}/fetch_courses/`, {
+        method: 'GET',
+        credentials: 'include',
       });
+      const data = await response.json();
+      console.log('Fetched userCourses:', data);
+      return data;
+    } catch (error) {
+      console.error('User Courses Error:', error);
+      return null; // Handle error appropriately
+    }
   };
 
   const checkRequirements = () => {
@@ -308,22 +304,17 @@ export function Canvas({
 
   // Fetch user courses and check requirements on initial render
   useEffect(() => {
-    fetchCourses();
+    fetchCourses().then((fetchedData) => {
+      if (fetchedData) {
+        setItems((prevItems) => ({
+          ...updateSemesters(prevItems, classYear, fetchedData),
+        }));
+      }
+    });
     checkRequirements();
-  }, []);
+  }, [classYear]);
 
   const { searchResults } = useSearchStore();
-  // TODO: Clean this up or remove if not needed
-  // useEffect(() => {
-  //   setItems((prevItems) => ({
-  //     ...prevItems,
-  //     // for deptcode catalognum in each semesterbin:
-  //     // exclude if shared with search results bin
-  //     [SEARCH_RESULTS_ID]: searchResults.map(
-  //       (course) => `${course.department_code} ${course.catalog_number}`
-  //     )
-  //   }));
-  // }, [searchResults]);
 
   useEffect(() => {
     setItems((prevItems) => {
@@ -772,7 +763,10 @@ export function Canvas({
       body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
     })
       .then((response) => response.json())
-      .then((data) => console.log('Button clicked!', data))
+      .then((data) => {
+        console.log('Course removed!', data);
+        checkRequirements();
+      })
       .catch((error) => console.error('Update Error:', error));
   }
 

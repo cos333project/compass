@@ -6,6 +6,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 interface Dictionary {
@@ -33,12 +34,51 @@ const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
 
 // Dropdown component with refined styling
 const Dropdown: FC<DropdownProps> = ({ data }) => {
+  const handleClick = (id) => {
+    console.log(id);
+  };
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
       if (key === 'satisfied') {
         return null;
       }
-
+      const isArray = Array.isArray(value);
+      if (isArray) {
+        if (key === 'settled') {
+          // Render as disabled buttons
+          return value[0].map((item, index) => (
+            <Button
+              key={index}
+              variant='contained'
+              disabled
+              style={{
+                margin: '5px',
+                backgroundColor: '#f7f7f7',
+                color: '#000',
+              }}
+            >
+              {item['code']}
+            </Button>
+          ));
+        } else if (key === 'unsettled') {
+          // Render as normal buttons
+          return value[0].map((item, index) => (
+            <Button
+              key={index}
+              variant='contained'
+              style={{
+                margin: '5px',
+                backgroundColor: '#f7f7f7',
+                color: '#000',
+                opacity: 0.5,
+              }}
+              onClick={() => handleClick(value[1])}
+            >
+              {item['code']}
+            </Button>
+          ));
+        }
+      }
       const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
       const satisfactionElement =
         isObject && 'satisfied' in value ? (
