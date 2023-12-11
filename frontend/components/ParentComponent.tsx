@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import Navbar from './Navbar';
-import DropdownMenu from './DropdownMenu';
-// Other imports...
+// TODO: Unsure if this component is needed. --Windsor
 
-function ParentComponent() {
-  const [showAccountSettings, setShowAccountSettings] = useState(false);
+// import { useState } from 'react';
 
-  const handleUserSettingsClick = () => {
-    setShowAccountSettings(true);
-  };
+// import DropdownMenu from './DropdownMenu';
+// import Navbar from './Navbar';
+// // Other imports...
 
-  const handleCloseSettings = () => {
-    setShowAccountSettings(false);
-  };
+// function ParentComponent() {
+//   const [showAccountSettings, setShowAccountSettings] = useState(false);
 
-  return (
-    <>
-      <Navbar onUserSettingsClick={handleUserSettingsClick} />
-      <DropdownMenu isOpen={showAccountSettings} onClose={handleCloseSettings} />
-     
-    </>
-  );
-}
+//   const handleUserSettingsClick = () => {
+//     setShowAccountSettings(true);
+//   };
 
-export default ParentComponent;
+//   const handleCloseSettings = () => {
+//     setShowAccountSettings(false);
+//   };
+
+//   return (
+//     <>
+//       <Navbar onUserSettingsClick={handleUserSettingsClick} />
+//       <DropdownMenu isOpen={showAccountSettings} onClose={handleCloseSettings} />
+//     </>
+//   );
+// }
+
+// export default ParentComponent;

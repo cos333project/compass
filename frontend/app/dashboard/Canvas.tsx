@@ -189,7 +189,7 @@ export function Canvas({
   // vertical = false,
   scrollable,
 }: Props) {
-  const classYear = user.classYear;
+  const classYear = user.classYear ?? defaultClassYear;
 
   const generateSemesters = (classYear: number): Items => {
     const semesters: Items = {};
@@ -233,7 +233,7 @@ export function Canvas({
 
   const semesterBinStyle = {
     ...containerStyle,
-    width: '322px'
+    width: '322px',
   };
 
   type Dictionary = {

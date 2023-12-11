@@ -22,7 +22,7 @@ export type MajorMinorType = {
 export type Profile = {
   firstName: string;
   lastName: string;
-  classYear: string | number;
+  classYear: number;
   major?: MajorMinorType;
   minors?: MajorMinorType[];
   netId: string;
@@ -43,7 +43,6 @@ export type SettingsModalProps = {
   children: React.ReactNode;
   onClose: () => void;
 };
-
 
 export type Course = {
   id: number;
@@ -116,7 +115,6 @@ export type MenuItemProps = {
   children: React.ReactNode;
   onClick: () => void;
 };
-
 
 export type Planner = {
   classYear: number | null;

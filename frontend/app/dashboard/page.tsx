@@ -5,14 +5,13 @@ import { useEffect, useState, FC } from 'react';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
 
 import Footer from '../../components/Footer';
+// import LoadingComponent from '../../components/LoadingComponent';
 import Navbar from '../../components/Navbar';
+import SkeletonApp from '../../components/SkeletonApp';
 import useAuthStore from '../../store/authSlice';
 import UserState from '../../store/userSlice';
 
 import { Canvas } from './Canvas';
-import LoadingComponent from '../../components/LoadingComponent';
-import SkeletonApp from '../../components/SkeletonApp';
-
 
 const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +42,9 @@ const Dashboard: FC = () => {
               })}
             />
           ) : (
-            <div>< SkeletonApp /></div> // You can replace this with a proper loading component or message
+            <div>
+              <SkeletonApp />
+            </div> // FIXME: We can replace this with a proper loading component or message
           )}
         </main>
         <Footer />

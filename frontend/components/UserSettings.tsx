@@ -239,7 +239,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             options={generateClassYears()}
             placeholder='Class year'
             variant='soft'
-            value={classYear ?? ''}
+            value={classYear ?? ''} // TODO: Does '' work here or is it redundant? --Windsor
             isOptionEqualToValue={(option, value) => value === undefined || option === value}
             onChange={(_, newClassYear: number | undefined) => {
               setClassYear(newClassYear ?? undefined);

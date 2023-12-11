@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import { createPortal } from 'react-dom';
-
 import { Button } from '@mui/joy';
-
 import classNames from 'classnames';
+import { createPortal } from 'react-dom';
 
 import styles from './InfoComponent.module.scss';
 
@@ -41,7 +39,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     if (modalContent && (event.key === 'Enter' || event.key === 'Escape')) {
       handleClose(event);
-    } 
+    }
   });
 
   const handleClick = () => {
