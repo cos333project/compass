@@ -37,7 +37,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('daisyui'), require('@tailwindcss/forms')],
 };
 
 export default config;
