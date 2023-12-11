@@ -168,6 +168,7 @@ type Props = {
 
 export const PLACEHOLDER_ID = 'placeholder';
 export const SEARCH_RESULTS_ID = 'Search Results';
+const defaultClassYear = new Date().getFullYear() + 1;
 
 export function Canvas({
   user,
@@ -229,6 +230,11 @@ export function Canvas({
     [SEARCH_RESULTS_ID]: [], // Initialize search container with no courses
     ...semesters,
   }));
+
+  const semesterBinStyle = {
+    ...containerStyle,
+    width: '322px'
+  };
 
   type Dictionary = {
     [key: string]: any; // TODO: Aim to replace 'any' with more specific types.
@@ -629,7 +635,6 @@ export function Canvas({
             {/* Left Section for Search Results */}
             {containers.includes('Search Results') && (
               <div style={{ width: '380px' }}>
-                {' '}
                 {/* issue here with resizing + with requirements dropdowns*/}
                 {/* Try to get this to fixed height*/}
                 <DroppableContainer
@@ -680,7 +685,7 @@ export function Canvas({
                     columns={columns}
                     items={items[containerId]}
                     scrollable={scrollable}
-                    style={containerStyle}
+                    style={semesterBinStyle}
                     unstyled={minimal}
                     height='160px'
                   >

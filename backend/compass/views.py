@@ -131,7 +131,6 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
-    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 

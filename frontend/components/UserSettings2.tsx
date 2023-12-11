@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   Autocomplete,
   AutocompleteOption,
-  Box,
   Button,
   ListItemContent,
   FormControl,
@@ -41,10 +40,10 @@ function generateClassYears() {
 }
 
 // Should probably id these corresponding to the ids in the database
-const undeclared = { code: 'Undeclared', name: 'Undeclared' };
+const undeclared = { code: 'UND', name: 'Undeclared' };
 
 // Should probably id these corresponding to the ids in the database
-const majorOptions = [
+const majorsOptions = [
   { code: 'AAS', name: 'African American Studies' },
   { code: 'ANT', name: 'Anthropology' },
   { code: 'ARC', name: 'Architecture' },
@@ -83,10 +82,9 @@ const majorOptions = [
   { code: 'SPO', name: 'Spanish and Portuguese' },
   { code: 'SPI', name: 'Princeton School of Public and International Affairs' },
   { code: 'IND', name: 'Independent' },
-  { code: 'UND', name: 'Undeclared' },
 ];
 
-const minorOptions = [
+const minorsOptions = [
   { code: 'FIN', name: 'Finance' },
   { code: 'DAN', name: 'Dance' },
   { code: 'CLA', name: 'Classics' },
@@ -99,21 +97,24 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const { updateProfile } = useUserSlice((state) => state);
   const [firstName, setFirstName] = useState<string>(profile.firstName);
   const [lastName, setLastName] = useState<string>(profile.lastName);
-  const [classYear, setClassYear] = useState(profile.classYear || undefined);
+  const [classYear, setClassYear] = useState<number | undefined>(profile.classYear);
+  // const [major, setMajor] = useState<MajorMinorType | undefined>(profile.major ?? undeclared);
   const [major, setMajor] = useState<MajorMinorType>(profile.major ?? undeclared);
-  const [minors, setMinors] = useState<MajorMinorType[]>(profile.minors || []);
+  // const [minors, setMinors] = useState<MajorMinorType[] | undefined>(
+  //   profile.minors && profile.minors.length > 0 ? profile.minors : undefined
+  // );
+  const [minors, setMinors] = useState<MajorMinorType[]>(
+    profile.minors.length > 0 ? profile.minors : undefined
+  );
   const [timeFormat24h, setTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
   const [themeDarkMode, setThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleMinorsChange = (_, newMinors: MajorMinorType[]) => {
-    const uniqueMinors = Array.from(new Set(newMinors.map((minor) => minor.code))).map((code) =>
-      newMinors.find((minor) => minor.code === code)
-    );
-    if (uniqueMinors.length > 3) {
-      setOpenSnackbar(true);
+    if (newMinors.length <= 2) {
+      setMinors(newMinors);
     } else {
-      setMinors(uniqueMinors);
+      setOpenSnackbar(true);
     }
   };
 
@@ -122,6 +123,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   };
 
   const handleSave = async () => {
+    // Updates useUserSlice.getState().profile
     updateProfile({
       firstName: firstName,
       lastName: lastName,
@@ -129,7 +131,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
       minors: minors,
       classYear: classYear,
       timeFormat24h: timeFormat24h,
-      themeDarkMode: themeDarkMode, // TODO: This isn't stateful yet --Windsor (people use light mode, trussss... :p)
+      themeDarkMode: themeDarkMode,
     });
 
     profile = useUserSlice.getState().profile;
@@ -151,19 +153,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     onSave(profile);
     onClose();
   };
-
-  document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      onClose();
-    } else if (event.key === 'Enter') {
-      onSave(profile);
-    }
-  });
-
   return (
-    <div className='fixed inset-0 flex justify-center items-center z-50'>
-      <div className='bg-white p-8 rounded-xl max-w-2xl w-2/3 shadow-2xl border border-gray-400'>
-        <div className='grid grid-cols-2 gap-6'>
+    <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50'>
+      <div className='bg-white p-5 rounded-lg max-w-md w-1/2 shadow-lg'>
+        <div className='grid grid-cols-2 gap-4'>
           <Input
             placeholder='First name'
             variant='soft'
@@ -181,25 +174,27 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
           <Autocomplete
             multiple={false}
             autoHighlight
-            options={majorOptions}
+            options={majorsOptions}
             placeholder='Select your major'
             variant='soft'
-            defaultValue={major}
-            isOptionEqualToValue={(option, value) => option === value}
-            onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
+            value={major}
+            isOptionEqualToValue={(option, value) => value === undefined || option === value}
+            onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor)}
             getOptionLabel={(option: MajorMinorType) => option.code}
             renderOption={(props, option) => (
               <AutocompleteOption {...props} key={option.name}>
                 <ListItemContent>
                   {option.code}
-                  <Typography level='body-sm'>{option.name}</Typography>
+                  <Typography level='body-xs'>{option.name}</Typography>
                 </ListItemContent>
               </AutocompleteOption>
             )}
+            disabled={minors.length >= 2}
           />
           <Autocomplete
             multiple={true}
-            options={minorOptions}
+            autoHighlight
+            options={minorsOptions}
             placeholder={'Select your minor(s)'}
             variant='soft'
             value={minors}
@@ -210,28 +205,13 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               <AutocompleteOption {...props} key={option.name}>
                 <ListItemContent>
                   {option.code}
-                  <Typography level='body-sm'>{option.name}</Typography>
+                  <Typography level='body-xs'>{option.name}</Typography>
                 </ListItemContent>
               </AutocompleteOption>
             )}
           />
-          <Snackbar
-            open={openSnackbar}
-            color={'primary'}
-            variant={'soft'}
-            onClose={handleCloseSnackbar}
-            autoHideDuration={6000}
-            sx={{
-              '.MuiSnackbar-root': {
-                borderRadius: '16px', // Roundedness
-              },
-              backgroundColor: '#0F1E2F', // Compass Blue
-              color: '#f6f6f6', // Compass Gray
-            }}
-          >
-            <div className='text-center'>
-              You can only minor in two programs and plan up to three.
-            </div>
+          <Snackbar open={openSnackbar} onClose={handleCloseSnackbar} autoHideDuration={6000}>
+            <div>You can&apos;t choose more than two minors.</div>
           </Snackbar>
           <Autocomplete
             multiple={false}
@@ -239,11 +219,9 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             options={generateClassYears()}
             placeholder='Class year'
             variant='soft'
-            value={classYear ?? ''}
-            isOptionEqualToValue={(option, value) => value === undefined || option === value}
-            onChange={(_, newClassYear: number | undefined) => {
-              setClassYear(newClassYear ?? undefined);
-            }}
+            value={classYear}
+            isOptionEqualToValue={(option, value) => option === value}
+            onChange={(_, newClassYear: number) => setClassYear(newClassYear)}
             getOptionLabel={(option) => option.toString()}
             renderOption={(props, option) => (
               <AutocompleteOption {...props} key={option}>
@@ -251,24 +229,20 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               </AutocompleteOption>
             )}
           />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
+          <FormControl
+            orientation='horizontal'
+            sx={{ width: '100%', justifyContent: 'space-between' }}
           >
-            <FormLabel>Dark Mode</FormLabel>
+            <div>
+              <FormLabel>Dark Mode</FormLabel>
+            </div>
             <Switch
               checked={themeDarkMode}
               onChange={(e) => setThemeDarkMode(e.target.checked)}
               color={themeDarkMode ? 'success' : 'neutral'}
               variant={themeDarkMode ? 'solid' : 'outlined'}
             />
-          </Box>
-
-          {/* Implement this once we have ReCal functionality, perhaps in IW work */}
+          </FormControl>
           <FormControl
             orientation='horizontal'
             sx={{ width: '100%', justifyContent: 'space-between' }}

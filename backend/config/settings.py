@@ -124,7 +124,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))}
-CONN_MAX_AGE = 60
+CONN_MAX_AGE = 0
 
 AUTH_USER_MODEL = 'compass.CustomUser'
 
