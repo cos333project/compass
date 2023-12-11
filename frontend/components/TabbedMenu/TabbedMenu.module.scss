@@ -1,51 +1,49 @@
 // TabbedMenu.module.scss
 .tabContainer {
-    width: full;
-    height: 703px;
-    margin: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden; /* Ensures child elements do not break the rounded corners */
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(246, 246, 246, 1);
+  width: full;
+  height: 703px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden; /* Ensures child elements do not break the rounded corners */
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(246, 246, 246, 1);
+}
+
+.tabMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  background: #f2f2f2;
+  border-bottom: 1px solid #ccc;
+}
+
+.tabMenu li {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-right: 1px solid #ccc;
+  border-top-left-radius: 6px; /* Rounded corners for tabs */
+  border-top-right-radius: 6px; /* Rounded corners for tabs */
+  &:last-child {
+    border-right: none;
   }
-  
-  .tabMenu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    background: #f2f2f2;
-    border-bottom: 1px solid #ccc;
+  &:hover {
+    background-color: #e2e2e2;
   }
-  
-  .tabMenu li {
-    padding: 10px 20px;
-    cursor: pointer;
-    border-right: 1px solid #ccc;
-    border-top-left-radius: 6px; /* Rounded corners for tabs */
-    border-top-right-radius: 6px; /* Rounded corners for tabs */
-    &:last-child {
-      border-right: none;
-    }
-    &:hover {
-      background-color: #e2e2e2;
-    }
-    &.active {
-      background: white;
-      border-bottom: none;
-    }
-  }
-  
-  .tabContent {
-    padding: 20px;
+  &.active {
     background: white;
-    border-radius: 0 0 8px 8px; /* Rounded corners for the bottom part of the rectangle */
-    flex-grow: 1;
-    overflow-y: auto; /* Makes the content area scrollable */
-    height: 650px; /* Fixed height for the content area */
-    background-color: rgba(246, 246, 246, 1);
+    border-bottom: none;
   }
-  
-  
+}
+
+.tabContent {
+  padding: 20px;
+  background: white;
+  border-radius: 0 0 8px 8px; /* Rounded corners for the bottom part of the rectangle */
+  flex-grow: 1;
+  overflow-y: auto; /* Makes the content area scrollable */
+  height: 650px; /* Fixed height for the content area */
+  background-color: rgba(246, 246, 246, 1);
+}
