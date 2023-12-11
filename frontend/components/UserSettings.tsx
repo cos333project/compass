@@ -3,15 +3,12 @@ import { useState } from 'react';
 import {
   Autocomplete,
   AutocompleteOption,
-  Box,
   Button,
   ListItemContent,
-  FormControl,
   Input,
   Typography,
   FormLabel,
   Snackbar,
-  Switch,
 } from '@mui/joy';
 
 import { MajorMinorType, ProfileProps } from '@/types';
@@ -102,8 +99,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   const [classYear, setClassYear] = useState(profile.classYear || undefined);
   const [major, setMajor] = useState<MajorMinorType>(profile.major ?? undeclared);
   const [minors, setMinors] = useState<MajorMinorType[]>(profile.minors || []);
-  const [timeFormat24h, setTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
-  const [themeDarkMode, setThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
+  // const [timeFormat24h, setTimeFormat24h] = useState<boolean>(profile.timeFormat24h);
+  // const [themeDarkMode, setThemeDarkMode] = useState<boolean>(profile.themeDarkMode);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleMinorsChange = (_, newMinors: MajorMinorType[]) => {
@@ -128,8 +125,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
       major: major,
       minors: minors,
       classYear: classYear,
-      timeFormat24h: timeFormat24h,
-      themeDarkMode: themeDarkMode, // TODO: This isn't stateful yet --Windsor (people use light mode, trussss... :p)
+      // timeFormat24h: timeFormat24h,
+      // themeDarkMode: themeDarkMode, // TODO: This isn't stateful yet --Windsor (people use light mode, trussss... :p)
     });
 
     profile = useUserSlice.getState().profile;

@@ -52,7 +52,7 @@ function SkeletonApp() {
           </div>
 
           {/* Right large vertical space */}
-          <div style={{ width: '25%', marginRight: '12px', marginLeft: '22px'}}>
+          <div style={{ width: '25%', marginRight: '12px', marginLeft: '22px' }}>
             <Skeleton
               variant='rectangular'
               height='calc(100vh - 10px)'

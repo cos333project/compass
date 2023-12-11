@@ -758,8 +758,9 @@ export function Canvas({
     setItems((items) => {
       const updatedCourses = {
         ...items,
-        [SEARCH_RESULTS_ID]: searchResults.map((course) => `${course.department_code} ${course.catalog_number}`),
-        [containerId]: items[containerId].filter((course) => course !== value.toString())
+        [SEARCH_RESULTS_ID]: searchResults.map(
+          (course) => `${course.department_code} ${course.catalog_number}`),
+        [containerId]: items[containerId].filter((course) => course !== value.toString()),
       };
       return updatedCourses;
     });
