@@ -16,16 +16,19 @@ import styles from './TabbedMenu.module.scss';
 interface TabbedMenuProps {
   tabsData: { [key: string]: object };
   refresh: number;
+  csrfToken: string;
+  checkRequirements: any;
 }
 
-const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh }) => {
+const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh, csrfToken, checkRequirements }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   useEffect(() => {
-    if (tabsData && Object.keys(tabsData).length > 0) {
+    // Only set the active tab if it's not already set
+    if (!activeTab && tabsData && Object.keys(tabsData).length > 0) {
       setActiveTab(Object.keys(tabsData)[0]);
     }
-  }, [tabsData]);
+  }, [tabsData, activeTab]);
 
   const handleTabClick = (tabKey: string) => {
     setActiveTab(tabKey);
@@ -59,7 +62,14 @@ const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh }) => {
         ))}
       </ul>
       <div className={styles.tabContent}>
-        {activeTab && <RecursiveDropdown key={`${refresh}`} dictionary={tabsData[activeTab]} />}
+        {activeTab && (
+          <RecursiveDropdown
+            key={`${refresh}`}
+            dictionary={tabsData[activeTab]}
+            csrfToken={csrfToken}
+            checkRequirements={checkRequirements}
+          />
+        )}
       </div>
     </div>
   );

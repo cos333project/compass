@@ -21,7 +21,7 @@ from .serializers import CourseSerializer
 import json
 from data.configs import Configs
 from data.req_lib import ReqLib
-from data.check_reqs import check_user
+from data.check_reqs import check_user, create_courses
 from data.check_reqs import get_course_info
 from datetime import datetime
 from django.conf import settings
@@ -103,7 +103,7 @@ def fetch_user_info(net_id):
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
         'major': major,
-        'minors': minors,
+        'minors': minors
     }
     return return_data
 
@@ -131,7 +131,6 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
-    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 
@@ -334,8 +333,6 @@ class SearchCourses(View):
                 num = ''
             else:
                 return JsonResponse({'courses': []})
-                # dept = ''
-                # num = ''
 
             try:
                 exact_match_course = Course.objects.select_related('department').filter(
@@ -496,26 +493,6 @@ def update_user(request):
 # ----------------------------- CHECK REQUIREMENTS -----------------------------------#
 
 
-# def del_duplicates(li):
-#     res = []
-#     for x in li:
-#         if x not in res:
-#             res.append(x)
-#     return res
-
-
-# def settle_cleaning(d):
-#     for k, v in d.items():
-#         if isinstance(v, dict):
-#             if 'settled' in v.keys():
-#                 print(v['settled'])
-#                 print(type(v['settled']))
-#                 print(del_duplicates(v['settled']))
-#                 v['settled'] = del_duplicates(v['settled'])
-#             settle_cleaning(v)
-#     return d
-
-
 def transform_requirements(requirements):
     # Base case: If there's no 'subrequirements', return the requirements as is
     if 'subrequirements' not in requirements:
@@ -537,17 +514,14 @@ def transform_data(data):
     transformed_data = {}
 
     # Go through each major/minor and transform accordingly
-    for major_key, major_data in data.items():
-        if major_key == 'Minors':
-            # Handle minors separately if needed
-            continue
-        if 'requirements' in major_data:
+    for key, value in data.items():
+        if 'requirements' in value:
             # Extract 'code' and 'satisfied' from 'requirements'
-            code = major_data['requirements'].pop('code')
-            satisfied = major_data['requirements'].pop('satisfied')
+            code = value['requirements'].pop('code')
+            satisfied = value['requirements'].pop('satisfied')
 
             # Transform the rest of the requirements
-            transformed_reqs = transform_requirements(major_data['requirements'])
+            transformed_reqs = transform_requirements(value['requirements'])
 
             # Combine 'satisfied' status and transformed requirements
             transformed_data[code] = {'satisfied': satisfied, **transformed_reqs}
@@ -577,6 +551,28 @@ def course_details(request):
 # ------------------------------------------------------------------------------------
 
 
+def manually_settle(request):
+    data = json.loads(request.body)
+    course_id = int(data.get('courseId'))
+    req_id = int(data.get('reqId'))
+    net_id = request.session['net_id']
+    user_inst = CustomUser.objects.get(net_id=net_id)
+
+    user_course_inst = UserCourses.objects.get(user_id=user_inst.id,
+                                               course_id=course_id)
+    if user_course_inst.requirement_id is None:
+        user_course_inst.requirement_id = req_id
+        user_course_inst.save()
+
+        return JsonResponse({'Manually settled': user_course_inst.id})
+
+    else:
+        user_course_inst.requirement_id = None
+        user_course_inst.save()
+
+        return JsonResponse({'Unsettled': user_course_inst.id})
+
+
 def check_requirements(request):
     user_info = fetch_user_info(request.session['net_id'])
 
@@ -588,9 +584,9 @@ def check_requirements(request):
     # Rewrite req_dict so that it is stratified by requirements being met
     formatted_dict = {}
     formatted_dict[this_major] = req_dict[this_major]
-    formatted_dict = transform_data(formatted_dict)
     for minor in these_minors:
         formatted_dict[minor] = req_dict['Minors'][minor]
+    formatted_dict = transform_data(formatted_dict)
 
     def pretty_print(data, indent=0):
         for key, value in data.items():
@@ -599,7 +595,5 @@ def check_requirements(request):
                 pretty_print(value, indent + 1)
             else:
                 print('  ' * (indent + 1) + str(value))
-
-    # pretty_print(formatted_dict)
 
     return JsonResponse(formatted_dict)

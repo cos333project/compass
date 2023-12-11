@@ -27,6 +27,7 @@ const config: Config = {
       },
       textColor: {
         'compass-blue': '#0F1E2F',
+        'compass-gray': '#F6F6F6',
         'compass-black': '#2C2C2C',
         'compass-purple': '#663399',
       },

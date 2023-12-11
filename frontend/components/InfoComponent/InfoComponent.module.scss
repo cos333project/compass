@@ -9,6 +9,7 @@
 }
 
 .modal {
+  display: flex;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -22,7 +23,6 @@
 }
 
 .infoCircle:before {
-  content: 'ballsack';
   font-size: 14px;
   font-weight: bold;
 }
@@ -36,3 +36,16 @@
   margin-bottom: 10px;
 }
 
+.Action {
+  padding-left: 2px;
+  padding-right: 2px;
+  border-radius: 5px;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  .Action:hover {
+    background-color: var(--action-background, rgba(0, 0, 0, 0.05));
+  }
+}
