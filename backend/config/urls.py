@@ -32,6 +32,7 @@ urlpatterns = [
     path('search/', views.SearchCourses.as_view(), name='search'),
     path('fetch_courses/', views.GetUserCourses.as_view(), name='fetch_courses'),
     path('update_courses/', views.update_courses, name='update_courses'),
+    path('manually_settle/', views.manually_settle, name='manually_settle'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
     path('update_user/', views.update_user, name='update_user'),
 ]

@@ -707,7 +707,12 @@ export function Canvas({
 
             {/* Right section for requirements */}
             <div style={{ width: '380px' }}>
-              <TabbedMenu tabsData={academicPlan} refresh={refreshAcademicPlan} />
+              <TabbedMenu
+                tabsData={academicPlan}
+                refresh={refreshAcademicPlan}
+                csrfToken={csrfToken}
+                checkRequirements={checkRequirements}
+              />
             </div>
           </div>
         </SortableContext>

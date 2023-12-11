@@ -63,9 +63,17 @@ def cumulative_time(func):
 
 
 @cumulative_time
-def check_user(net_id, major, minors):
+def check_user(net_id, major, minors, manually_settled):
     output = {}
     user_courses = create_courses(net_id)
+
+    print("manually_settled in check_user", manually_settled)
+    for sem in user_courses:
+        for course in sem:
+            course_id = str(course['inst'].id)
+            if course_id in manually_settled:
+                course['settled'] = [int(manually_settled[course_id])]
+    print(user_courses)
 
     if major is not None:
         major_code = major['code']

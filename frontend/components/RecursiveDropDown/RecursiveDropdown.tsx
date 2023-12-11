@@ -15,6 +15,8 @@ interface Dictionary {
 
 interface DropdownProps {
   data: Dictionary;
+  csrfToken: string;
+  checkRequirements: any;
 }
 
 interface SatisfactionStatusProps {
@@ -33,9 +35,24 @@ const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
 );
 
 // Dropdown component with refined styling
-const Dropdown: FC<DropdownProps> = ({ data }) => {
-  const handleClick = (id) => {
-    console.log(id);
+const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => {
+  const handleClick = (courseId, reqId) => {
+    console.log('courseId', courseId);
+    console.log('reqId', reqId);
+    fetch(`${process.env.BACKEND}/manually_settle/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ courseId: courseId, reqId: reqId }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Manual Settle Success', data))
+      .catch((error) => console.error('Manual Settle Error:', error));
+
+    checkRequirements();
   };
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
@@ -72,7 +89,7 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
                 color: '#000',
                 opacity: 0.5,
               }}
-              onClick={() => handleClick(value[1])}
+              onClick={() => handleClick(item['id'], value[1])}
             >
               {item['code']}
             </Button>
@@ -119,10 +136,16 @@ const Dropdown: FC<DropdownProps> = ({ data }) => {
 // Recursive dropdown component
 interface RecursiveDropdownProps {
   dictionary: Dictionary;
+  csrfToken: string;
+  checkRequirements: any;
 }
 
-const RecursiveDropdown: FC<RecursiveDropdownProps> = ({ dictionary }) => {
-  return <Dropdown data={dictionary} />;
+const RecursiveDropdown: FC<RecursiveDropdownProps> = ({
+  dictionary,
+  csrfToken,
+  checkRequirements,
+}) => {
+  return <Dropdown data={dictionary} csrfToken={csrfToken} checkRequirements={checkRequirements} />;
 };
 
 export default RecursiveDropdown;
