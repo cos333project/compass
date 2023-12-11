@@ -80,7 +80,7 @@ const DropdownMenu: FC = () => {
 
   return (
     <div>
-      <Menu as='div' className='relative inline-block text-left'>
+      <Menu as='div' className='relative text-left'>
         <Menu.Button
           className='inline-flex w-full justify-center items-center rounded-md px-4 py-2 bg-white text-sm font-medium hover:bg-gray-50'
           onClick={() => setIsMenuOpen(!isMenuOpen)}

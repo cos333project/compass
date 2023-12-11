@@ -13,7 +13,7 @@ import { Login } from './Login';
 const navigation = [
   { name: 'About', href: '/' },
   { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
-  { name: 'Contact Us', href: '/' },
+  { name: 'Contact Us', href: '/' }
 ];
 
 const Navbar: FC = () => {
@@ -122,6 +122,7 @@ const Navbar: FC = () => {
                     {item.name}
                   </a>
                 ))}
+                {isAuthenticated ? <DropdownMenu /> : <Login />}
                 {/* TODO: Need to implement this for mobile port */}
                 {/* <a
                   onClick={handleUserSettingsClick}

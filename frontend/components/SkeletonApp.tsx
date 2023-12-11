@@ -40,7 +40,7 @@ function SkeletonApp() {
               gridTemplateColumns: '1fr 1fr',
               gridAutoRows: '1fr',
               gap: '25px',
-              width: '46%',
+              width: '40%',
               height: 'full',
               marginTop: '10px',
               marginLeft: '10px',
@@ -52,7 +52,13 @@ function SkeletonApp() {
           </div>
 
           {/* Right large vertical space */}
-          <div style={{ width: '20%' }}>{/* This space is intentionally left blank */}</div>
+          <div style={{ width: '25%', marginRight: '12px', marginLeft: '22px'}}>
+            <Skeleton
+              variant='rectangular'
+              height='calc(100vh - 10px)'
+              sx={{ mt: '2px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
+            />
+          </div>
         </div>
       </div>
     </CssVarsProvider>
