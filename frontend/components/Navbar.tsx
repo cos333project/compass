@@ -29,6 +29,12 @@ const Navbar: FC = () => {
     e.preventDefault();
     login();
   };
+  const handleUserSettingsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Logic to open User Settings goes here
+    console.log("User Settings Clicked");
+
+    // e.g., navigate to the user settings page or open a settings modal
+  };
 
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
 
@@ -114,6 +120,12 @@ const Navbar: FC = () => {
                     {item.name}
                   </a>
                 ))}
+                <a
+                onClick={handleUserSettingsClick}
+                className='-mx-3 block cursor-pointer rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800'
+                >
+                  User Settings
+                </a>
               </div>
               <div className='hidden lg:flex lg:flex-1 lg:justify-end'>{renderUserMenu()}</div>
             </div>
