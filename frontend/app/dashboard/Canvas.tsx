@@ -759,7 +759,8 @@ export function Canvas({
       const updatedCourses = {
         ...items,
         [SEARCH_RESULTS_ID]: searchResults.map(
-          (course) => `${course.department_code} ${course.catalog_number}`),
+          (course) => `${course.department_code} ${course.catalog_number}`
+        ),
         [containerId]: items[containerId].filter((course) => course !== value.toString()),
       };
       return updatedCourses;
@@ -814,8 +815,6 @@ function getColor(id: UniqueIdentifier) {
       return '#FFC0CB'; // Pink
     case 'COS':
       return '#FFD700'; // Gold
-    case 'COS':
-      return '#9ACD32'; // Yellow Green
     case 'EAS':
       return '#FF4500'; // Orange Red
     case 'ECE':
