@@ -244,7 +244,6 @@ export function Canvas({
 
   // State for academic requirements
   const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
-  const [refreshAcademicPlan, setRefreshedAcademicPlan] = useState(0);
 
   // Logs for debugging
   console.log('Initial academic plan:', academicPlan);
@@ -300,7 +299,6 @@ export function Canvas({
       .then((data) => {
         console.log('Fetched academic requirements data:', data);
         setAcademicPlan(data);
-        setRefreshedAcademicPlan(Date.now()); // Triggering a re-render by updating the number
       })
       .catch((error) => {
         console.error('Requirements Check Error:', error);
@@ -643,7 +641,6 @@ export function Canvas({
             <div style={{ width: '380px' }}>
               <TabbedMenu
                 tabsData={academicPlan}
-                refresh={refreshAcademicPlan}
                 csrfToken={csrfToken}
                 checkRequirements={checkRequirements}
               />
