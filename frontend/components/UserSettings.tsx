@@ -392,6 +392,15 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     onSave(profile);
     onClose();
   };
+
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose();
+    } else if (event.key === 'Enter') {
+      onSave(profile);
+    }
+  });
+
   return (
     <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center z-50'>
       <div className='bg-white p-5 rounded-lg max-w-md w-1/2 shadow-lg'>
