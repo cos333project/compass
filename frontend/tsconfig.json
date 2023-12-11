@@ -28,6 +28,6 @@
       "@/types": ["types.d.ts"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.mjs", ".next/types/**/*.ts", "components/InfoComponent"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.js,", ".next/types/**/*.ts", "components/InfoComponent"],
   "exclude": ["node_modules"]
 }
