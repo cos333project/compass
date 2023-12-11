@@ -9,8 +9,8 @@ const theme = extendTheme({
         root: {
           // Increase specificity here
           '&&': {
-            backgroundColor: '#f6f6f6', 
-            animation: 'none', 
+            backgroundColor: '#f6f6f6', // Correct property for background color
+            animation: 'none', // Disable the wave animation
           },
         },
       },
@@ -26,14 +26,14 @@ function SkeletonApp() {
         <div style={{ display: 'flex', width: '100%', height: '100%' }}>
           {/* Left sidebar with search bar */}
           <div style={{ width: '25%', marginRight: '12px', marginLeft: '12px' }}>
-            <Skeleton variant="rectangular" height="110px" style={{ marginTop: '10px' }} />
-            <Skeleton variant="rectangular" height="calc(100vh - 110px)" style={{ marginTop: '2px' }} />
+            <Skeleton variant="rectangular" height="110px" sx={{ mt: '10px', bgcolor: 'red' }} />
+            <Skeleton variant="rectangular" height="calc(100vh - 110px)" sx={{ mt: '2px', bgcolor: 'red' }} />
           </div>
           
           {/* Middle 2x4 grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridAutoRows: '1fr', gap: '25px', width: '46%', marginTop: '10px', marginLeft: '10px' }}>
             {Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton key={index} variant="rectangular" height="155px" />
+              <Skeleton key={index} variant="rectangular" height="155px" sx={{ bgcolor: 'red' }} />
             ))}
           </div>
 
