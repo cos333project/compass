@@ -480,7 +480,6 @@ class CustomUser(AbstractUser):
     class_year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    manually_settled = models.JSONField(db_index=True, null=True)
 
     class Meta:
         db_table = 'CustomUser'
@@ -512,6 +511,9 @@ class UserCourses(models.Model):
         Course, on_delete=models.CASCADE, db_index=True, null=True
     )
     semester = models.IntegerField(choices=TIMELINE_CHOICES, db_index=True, null=True)
+    requirement = models.ForeignKey(
+        Requirement, on_delete=models.CASCADE, db_index=True, null=True
+    )
 
     class Meta:
         db_table = 'UserCourses'
