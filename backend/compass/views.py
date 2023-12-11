@@ -570,7 +570,7 @@ def manually_settle(request):
     else:
         user_course_inst.requirement_id = None
         user_course_inst.save()
-        
+
         return JsonResponse({'Unsettled': user_course_inst.id})
 
 
