@@ -1,4 +1,5 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -8,6 +9,10 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { Button as JoyButton } from '@mui/joy';
+
+import classNames from 'classnames';
+import styles from '../InfoComponent/InfoComponent.module.scss'
 
 interface Dictionary {
   [key: string]: any;
@@ -28,21 +33,67 @@ interface SatisfactionStatusProps {
 // Satisfaction status icon with styling
 const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied, count, minNeeded }) => (
   <>
-    {satisfied === 'True' ? (
-      <CheckCircleOutlineIcon style={{ color: 'green', marginLeft: '10px' }} />
-    ) : (
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ fontWeight: 450, color: 'red' }}>
-          {count}/{minNeeded}
-        </span>
-        <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
-      </div>
-    )}
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      {satisfied === 'True' ? (
+        <CheckCircleOutlineIcon style={{ color: 'green', marginLeft: '10px' }} />
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontWeight: 450, color: 'red' }}>
+            {count}/{minNeeded}
+          </span>
+          <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
+        </div>
+      )}
+    </div>
   </>
 );
 
 // Dropdown component with refined styling
 const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => {
+  const [showPopup, setShowPopup] = useState(false);
+  const [explanation, setExplanation] = useState<{ [key: string]: any } | null>(null);
+
+  useEffect(() => {
+    if (showPopup) {
+      /* QUERY NEW ENDPOINT */
+    }
+  }, [showPopup]);
+
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (modalContent && (event.key === 'Escape')) {
+      event.stopPropagation();
+      handleClose(event);
+    }
+  });
+
+  const handleExplanationClick = (e) => {
+    e.stopPropagation();
+    setShowPopup(true);
+  };
+
+  const handleClose = (e) => {
+    e.stopPropagation();
+    setShowPopup(false);
+  };
+
+  const modalContent = showPopup ? (
+    <div className={styles.modalBackdrop}>
+      <div className={styles.modal}>
+        {explanation ? (
+          <div>PUT EXPLANATION AND SATISFYING COURSES HERE
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+        <footer className='mt-auto text-right'>
+          <JoyButton variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
+            Close
+          </JoyButton>
+        </footer>
+      </div>
+    </div>
+  ) : null;
+
   const handleClick = (courseId, reqId) => {
     console.log('courseId', courseId);
     console.log('reqId', reqId);
@@ -130,7 +181,9 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
             style={{ backgroundColor: '#f6f6f6' }} // subtle background color
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Typography style={{ fontWeight: 500 }}>{key}</Typography>
+              <div className={classNames(styles.Action)} onClick={handleExplanationClick}>
+                <Typography style={{ fontWeight: 500 }}>{key}</Typography>
+              </div>
               {satisfactionElement}
             </div>
           </AccordionSummary>
@@ -142,7 +195,10 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
     });
   };
 
-  return <>{renderContent(data)}</>;
+  return <>
+          {renderContent(data)}
+          {modalContent && createPortal(modalContent, document.body)}
+        </>;
 };
 
 // Recursive dropdown component

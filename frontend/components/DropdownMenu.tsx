@@ -40,6 +40,13 @@ const DropdownMenu: FC = () => {
   //   // If you need to fetch updated data from the server, do it here.
   // };
 
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (isMenuOpen && (event.key === 'Escape')) {
+      event.stopPropagation();
+      setIsMenuOpen(!isMenuOpen);
+    }
+  });
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
