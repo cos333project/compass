@@ -119,6 +119,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   };
 
   const handleSave = async () => {
+    console.log('UserSettings handleSave called');
     updateProfile({
       firstName: firstName,
       lastName: lastName,
