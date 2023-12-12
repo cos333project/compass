@@ -142,11 +142,12 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     })
       // TODO: Delete the logs eventually
       .then((response) => response.json())
-      .then((data) => console.log('Update success', data))
+      .then((data) => {
+        console.log('Update success', data);
+        onSave(profile);
+        onClose();
+      })
       .catch((error) => console.error('Update Error:', error));
-
-    onSave(profile);
-    onClose();
   };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
