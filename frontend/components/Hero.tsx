@@ -9,7 +9,7 @@ export default function Hero() {
     e.preventDefault();
     login();
   };
-  
+
   return (
     <div>
       <div className='relative isolate pt-14'>

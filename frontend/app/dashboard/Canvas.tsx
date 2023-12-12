@@ -299,7 +299,7 @@ export function Canvas({
     timerRef.current = window.setTimeout(() => {
       checkRequirements();
     }, 500);
-  }
+  };
 
   const checkRequirements = () => {
     console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');

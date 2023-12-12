@@ -30,7 +30,7 @@ const Dashboard: FC = () => {
     <>
       <Navbar />
       <div className='flex flex-col min-h-screen pt-24'>
-        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl pl-8 pr-8 rounded'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl rounded'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}

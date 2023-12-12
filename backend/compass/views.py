@@ -131,6 +131,7 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
+    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 
@@ -336,7 +337,7 @@ class SearchCourses(View):
 
             try:
                 exact_match_course = Course.objects.select_related('department').filter(
-                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num) & Q(guid__iexact='1234')
+                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
                 )
                 if exact_match_course:
                     # If an exact match is found, return only that course
@@ -344,7 +345,7 @@ class SearchCourses(View):
                     return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
-                    & Q(catalog_number__icontains=num) & Q(guid__icontains='1234')
+                    & Q(catalog_number__icontains=num)
                 )
                 if not courses.exists():
                     return JsonResponse({'courses': []})
