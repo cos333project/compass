@@ -273,8 +273,9 @@ class CAS(View):
                         username=net_id, defaults={'net_id': net_id, 'role': 'student'}
                     )
                     if created:
+                        print("USER CREATED!")
                         user.set_unusable_password()
-                    user.major = Major.objects.get(code=UNDECLARED['code'])
+                        user.major = Major.objects.get(code=UNDECLARED['code'])
                     user.save()
                     request.session['net_id'] = net_id
                     return redirect(settings.DASHBOARD)
