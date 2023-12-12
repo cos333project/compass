@@ -269,7 +269,7 @@ class CAS(View):
                 logger.debug(f'Validation returned {username}')
                 if net_id:
                     User = get_user_model()
-                    user, created = User.objects.get_or_create(
+                    user, created = CustomUser.objects.get_or_create(
                         username=net_id, defaults={'net_id': net_id, 'role': 'student'}
                     )
                     if created:
