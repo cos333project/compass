@@ -21,15 +21,22 @@ interface DropdownProps {
 
 interface SatisfactionStatusProps {
   satisfied: string;
+  count: number;
+  minNeeded: number;
 }
 
 // Satisfaction status icon with styling
-const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied }) => (
+const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied, count, minNeeded }) => (
   <>
     {satisfied === 'True' ? (
       <CheckCircleOutlineIcon style={{ color: 'green', marginLeft: '10px' }} />
     ) : (
-      <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ fontWeight: 450, color: 'red' }}>
+          {count}/{minNeeded}
+        </span>
+        <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
+      </div>
     )}
   </>
 );
@@ -56,7 +63,7 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
   };
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
-      if (key === 'satisfied') {
+      if (key === 'satisfied' || key === 'count' || key === 'min_needed') {
         return null;
       }
       const isArray = Array.isArray(value);
@@ -100,7 +107,11 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
       const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
       const satisfactionElement =
         isObject && 'satisfied' in value ? (
-          <SatisfactionStatus satisfied={value.satisfied} />
+          <SatisfactionStatus
+            satisfied={value.satisfied}
+            count={value.count}
+            minNeeded={value.min_needed}
+          />
         ) : null;
 
       const subItems = isObject ? { ...value, satisfied: undefined } : value;
