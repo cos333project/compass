@@ -55,8 +55,8 @@ function SkeletonApp() {
           <div style={{ width: '25%', marginRight: '12px', marginLeft: '22px' }}>
             <Skeleton
               variant='rectangular'
-              height='calc(100vh - 10px)'
-              sx={{ mt: '2px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
+              height='calc(100vh - 20px)'
+              sx={{ mt: '10px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
             />
           </div>
         </div>

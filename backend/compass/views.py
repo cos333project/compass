@@ -336,7 +336,7 @@ class SearchCourses(View):
 
             try:
                 exact_match_course = Course.objects.select_related('department').filter(
-                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num)
+                    Q(department__code__iexact=dept) & Q(catalog_number__iexact=num) & Q(guid__iexact='1234')
                 )
                 if exact_match_course:
                     # If an exact match is found, return only that course
@@ -344,7 +344,7 @@ class SearchCourses(View):
                     return JsonResponse({'courses': serialized_course.data})
                 courses = Course.objects.select_related('department').filter(
                     Q(department__code__icontains=dept)
-                    & Q(catalog_number__icontains=num)
+                    & Q(catalog_number__icontains=num) & Q(guid__icontains='1234')
                 )
                 if not courses.exists():
                     return JsonResponse({'courses': []})
