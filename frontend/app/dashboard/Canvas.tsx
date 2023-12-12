@@ -289,6 +289,17 @@ export function Canvas({
     }
   };
 
+  const timerRef = useRef<number>();
+  const debouncedCheckRequirements = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+      checkRequirements();
+    }, 500);
+  };
+
   const checkRequirements = () => {
     console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
     fetch(`${process.env.BACKEND}/check_requirements/`, {
@@ -314,7 +325,7 @@ export function Canvas({
         }));
       }
     });
-    checkRequirements();
+    debouncedCheckRequirements();
   }, [classYear]);
 
   const { searchResults } = useSearchStore();
@@ -546,7 +557,7 @@ export function Canvas({
                 .then((response) => response.json())
                 .then((data) => console.log('Update success', data))
                 .catch((error) => console.error('Update Error:', error));
-              checkRequirements();
+              debouncedCheckRequirements();
             }
           }
 
@@ -642,7 +653,7 @@ export function Canvas({
               <TabbedMenu
                 tabsData={academicPlan}
                 csrfToken={csrfToken}
-                checkRequirements={checkRequirements}
+                checkRequirements={debouncedCheckRequirements}
               />
             </div>
           </div>
@@ -704,7 +715,7 @@ export function Canvas({
       .then((response) => response.json())
       .then((data) => {
         console.log('Course removed!', data);
-        checkRequirements();
+        debouncedCheckRequirements();
       })
       .catch((error) => console.error('Update Error:', error));
   }

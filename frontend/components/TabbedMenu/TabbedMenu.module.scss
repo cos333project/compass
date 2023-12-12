@@ -3,7 +3,7 @@
   width: full;
   height: 703px;
   margin: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 6px;
   overflow: hidden; /* Ensures child elements do not break the rounded corners */
   display: flex;
@@ -17,7 +17,7 @@
   margin: 0;
   display: flex;
   background: #f2f2f2;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tabMenu li {
