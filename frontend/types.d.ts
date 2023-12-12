@@ -23,7 +23,7 @@ export type Profile = {
   firstName: string;
   lastName: string;
   classYear: number;
-  major?: MajorMinorType;
+  major: MajorMinorType;
   minors?: MajorMinorType[];
   netId: string;
   universityId: string;
@@ -122,13 +122,6 @@ export type Planner = {
   setClassYear: (classYear: number) => void;
   addCourseToSemester: (semesterId: string, course: Course) => void;
   removeCourseFromSemester: (semesterId: string, courseId: string) => void;
-};
-
-export type Requirement = {
-  satisfied: boolean;
-  settled: string;
-  unsettled: string;
-  subrequirements?: Record<string, Requirement>;
 };
 
 export type Dictionary = {

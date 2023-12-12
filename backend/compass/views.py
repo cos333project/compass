@@ -28,6 +28,8 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+UNDECLARED = {'code': 'Undeclared', 'name': 'Undeclared'}
+
 # ------------------------------------ PROFILE ----------------------------------------#
 
 
@@ -51,7 +53,7 @@ def fetch_user_info(net_id):
     major = (
         {'code': user_inst.major.code, 'name': user_inst.major.name}
         if user_inst.major
-        else {}
+        else UNDECLARED
     )
 
     minors = [
@@ -122,7 +124,7 @@ def update_profile(request):
     data = json.loads(request.body)
     updated_first_name = data.get('firstName', '')
     updated_last_name = data.get('lastName', '')
-    updated_major = data.get('major', {}).get('code', '')
+    updated_major = data.get('major', UNDECLARED).get('code', '')
     updated_minors = data.get('minors', [])
     updated_class_year = data.get('classYear', None)
 

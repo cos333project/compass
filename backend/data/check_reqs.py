@@ -71,9 +71,14 @@ def check_user(net_id, major, minors):
     if major is not None:
         major_code = major['code']
         output[major_code] = {}
-        formatted_req = check_requirements(
+
+        if major_code != 'Undeclared':
+            formatted_req = check_requirements(
             'Major', major_code, user_courses
-        )
+            )
+        else:
+            formatted_req = {"code": "Undeclared",
+                             "satisfied": True}
         output[major_code]['requirements'] = formatted_req
 
     output['Minors'] = {}

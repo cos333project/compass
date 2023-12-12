@@ -79,8 +79,8 @@ const majorOptions = [
   { code: 'SOC', name: 'Sociology' },
   { code: 'SPO', name: 'Spanish and Portuguese' },
   { code: 'SPI', name: 'Princeton School of Public and International Affairs' },
-  { code: 'IND', name: 'Independent' },
-  { code: 'UND', name: 'Undeclared' },
+  { code: 'Independent', name: 'Independent' },
+  { code: 'Undeclared', name: 'Undeclared' },
 ];
 
 const minorOptions = [
@@ -122,7 +122,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
     updateProfile({
       firstName: firstName,
       lastName: lastName,
-      major: major,
+      major: major ?? undeclared,
       minors: minors,
       classYear: classYear,
       // timeFormat24h: timeFormat24h,
@@ -189,8 +189,9 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               options={majorOptions}
               placeholder='Select your major'
               variant='soft'
-              defaultValue={major}
-              isOptionEqualToValue={(option, value) => option === value}
+              value={major}
+              inputValue={major.code === undeclared.code ? '' : major.code}
+              isOptionEqualToValue={(option, value) => option.code === value.code}
               onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
@@ -211,7 +212,9 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               placeholder={'Select your minor(s)'}
               variant='soft'
               value={minors}
-              isOptionEqualToValue={(option, value) => value === undefined || option === value}
+              isOptionEqualToValue={(option, value) =>
+                value === undefined || option.code === value.code
+              }
               onChange={handleMinorsChange}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
@@ -271,7 +274,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               options={generateClassYears()}
               placeholder='Class year'
               variant='soft'
-              value={classYear ?? ''} // TODO: Does '' work here or is it redundant? --Windsor
+              value={classYear} // TODO: Does '' work here or is it redundant? --Windsor
               isOptionEqualToValue={(option, value) => value === undefined || option === value}
               onChange={(_, newClassYear: number | undefined) => {
                 setClassYear(newClassYear ?? undefined);

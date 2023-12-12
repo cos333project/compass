@@ -62,7 +62,7 @@ async function fetchCsrfToken() {
 let csrfToken: string;
 
 if (typeof window === 'undefined') {
-  // Server-side or during prerendering/build time
+  // Server-side or during pre-rendering/build time
   csrfToken = '';
 } else {
   // Client-side
