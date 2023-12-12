@@ -140,7 +140,7 @@ def update_profile(request):
     if updated_major:
         user_inst.major = Major.objects.get(code=updated_major)
     else:
-        user_inst.major = None
+        user_inst.major = Major.objects.get(code='Undeclared')
 
     if isinstance(updated_minors, list):
         # Assuming each minor is represented by its 'code' and you have Minor models
