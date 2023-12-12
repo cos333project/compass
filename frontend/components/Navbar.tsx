@@ -10,8 +10,9 @@ import useMobileMenuStore from '../store/mobileMenuSlice';
 import DropdownMenu from './DropdownMenu';
 import { Login } from './Login';
 
+
 const navigation = [
-  { name: 'About', href: '/' },
+  { name: 'About', href: '/about/' },
   { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
   { name: 'Contact Us', href: '/' },
 ];
