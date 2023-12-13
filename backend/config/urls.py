@@ -36,4 +36,5 @@ urlpatterns = [
     path('manually_settle/', views.manually_settle, name='manually_settle'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
     path('update_user/', views.update_user, name='update_user'),
+    path('requirement_info/', views.requirement_info, name='requirement_info'),
 ]
