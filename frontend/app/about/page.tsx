@@ -58,7 +58,7 @@ const About = () => {
               <div className='text-center'>
                 <h2 className='text-3xl font-bold sm:text-4xl'>Meet the Team</h2>
                 <p className='mt-3 max-w-2xl mx-auto text-xl'>
-                  A dedicated group of individuals behind the Compass project.
+                  The dedicated group of individuals behind the Compass project.
                 </p>
               </div>
               <div className='mt-12'>

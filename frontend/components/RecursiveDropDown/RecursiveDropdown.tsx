@@ -1,8 +1,10 @@
 import { FC, useState } from 'react';
 
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Button as JoyButton } from '@mui/joy';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -28,12 +30,42 @@ interface SatisfactionStatusProps {
   satisfied: string;
   count: number;
   minNeeded: number;
+  maxCounted: number;
+  isRestrictions: boolean;
 }
 
 // Satisfaction status icon with styling
-const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied, count, minNeeded }) => (
-  <>
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+const SatisfactionStatus: FC<SatisfactionStatusProps> = ({
+  satisfied,
+  count,
+  minNeeded,
+  maxCounted,
+  isRestrictions,
+}) => {
+  if (isRestrictions) {
+    return <InfoOutlinedIcon style={{ color: 'blue', marginLeft: '10px' }} />;
+  }
+  if (maxCounted !== 1) {
+    return (
+      <>
+        {satisfied === 'True' ? (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontWeight: 450, color: 'green' }}>{Math.floor(count / minNeeded)}</span>
+            <AddCircleOutlineOutlinedIcon style={{ color: 'green', marginLeft: '10px' }} />
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontWeight: 450, color: 'red' }}>
+              {count}/{minNeeded}
+            </span>
+            <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
+          </div>
+        )}
+      </>
+    );
+  }
+  return (
+    <>
       {satisfied === 'True' ? (
         <CheckCircleOutlineIcon style={{ color: 'green', marginLeft: '10px' }} />
       ) : (
@@ -44,9 +76,9 @@ const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied, count, min
           <HighlightOffIcon style={{ color: 'red', marginLeft: '10px' }} />
         </div>
       )}
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 // Dropdown component with refined styling
 const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => {
@@ -162,7 +194,13 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
 
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
-      if (key === 'req_id' || key === 'satisfied' || key === 'count' || key === 'min_needed') {
+      if (
+        key === 'req_id' ||
+        key === 'satisfied' ||
+        key === 'count' ||
+        key === 'min_needed' ||
+        key === 'max_counted'
+      ) {
         return null;
       }
       const isArray = Array.isArray(value);
@@ -204,16 +242,35 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
         }
       }
       const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
+      const isRestrictions = key === 'Restrictions';
       const satisfactionElement =
         isObject && 'satisfied' in value ? (
           <SatisfactionStatus
             satisfied={value.satisfied}
             count={value.count}
             minNeeded={value.min_needed}
+            maxCounted={value.max_counted}
+            isRestrictions={isRestrictions}
           />
         ) : null;
 
       const subItems = isObject ? { ...value, satisfied: undefined } : value;
+      let settledEmpty = false;
+      let unsettledEmpty = false;
+
+      if (Object.prototype.hasOwnProperty.call(value, 'settled')) {
+        if (Array.isArray(value['settled']) && value['settled'].length > 0) {
+          settledEmpty = Array.isArray(value['settled'][0]) && value['settled'][0].length === 0;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(value, 'unsettled')) {
+        if (Array.isArray(value['unsettled']) && value['unsettled'].length > 0) {
+          unsettledEmpty =
+            Array.isArray(value['unsettled'][0]) && value['unsettled'][0].length === 0;
+        }
+      }
+
+      const hasItems = settledEmpty && unsettledEmpty;
       const hasNestedItems = isObject && Object.keys(subItems).length > 0;
 
       // Style adjustments for accordion components
@@ -223,7 +280,7 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
           style={{ margin: '0', boxShadow: 'none', borderBottom: '1px solid #e0e0e0' }}
         >
           <AccordionSummary
-            expandIcon={hasNestedItems ? <ExpandMoreIcon /> : null}
+            expandIcon={hasNestedItems && !hasItems ? <ExpandMoreIcon /> : null}
             aria-controls={`${key}-content`}
             id={`${key}-header`}
             style={{ backgroundColor: '#f6f6f6' }} // subtle background color
@@ -238,9 +295,11 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
               {satisfactionElement}
             </div>
           </AccordionSummary>
-          <AccordionDetails>
-            {hasNestedItems ? renderContent(subItems) : <Typography>{value}</Typography>}
-          </AccordionDetails>
+          {!hasItems && (
+            <AccordionDetails>
+              {hasNestedItems ? renderContent(subItems) : <Typography>{value}</Typography>}
+            </AccordionDetails>
+          )}
         </Accordion>
       );
     });

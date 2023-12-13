@@ -18,7 +18,7 @@ const Contact = () => {
   return (
     <>
       <Navbar />
-      <div>
+      <div className={'min-h-screen'}>
         <div className='relative isolate pt-14'>
           {/* Background Gradient Effect */}
           <div
@@ -55,7 +55,7 @@ const Contact = () => {
                 <div className='mt-8'>
                   <h2 className='text-2xl font-semibold'>Report a Bug</h2>
                   <p className='mt-2'>
-                    Found a bug or give us feedback? Let us know by filling out this
+                    Found a bug or wish to give us feedback? Let us know by filling out this
                     <a
                       href='https://docs.google.com/forms/d/e/1FAIpQLSdvWEVMBK5U5GZjc-zI1VOWtannw8v5eXquPhv8JBHpN7kVSw/viewform?usp=sf_link'
                       target='_blank'

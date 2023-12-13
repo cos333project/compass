@@ -433,7 +433,7 @@ def format_req_output(req, courses):
     output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
     output['count'] = str(req['count'])
     output['min_needed'] = str(req['inst'].min_needed)
-    # output['max_counted'] = str(req['inst'].max_counted)
+    output['max_counted'] = req['inst'].max_counted
     if 'req_list' in req:  # internal node. recursively call on children
         req_list = {}
         for i, subreq in enumerate(req['req_list']):
