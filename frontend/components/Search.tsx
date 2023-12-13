@@ -93,7 +93,7 @@ const Search: FC = () => {
         />
       </div>
       <div className='mt-3'>
-        <div className='text-xs font-semibold text-gray-500'>Recent searches:</div>
+        <div className='text-sm font-medium text-gray-500'>Recent searches:</div>
         <div className='flex overflow-x-auto py-2 space-x-2'>
           {recentSearches.map((search, index) => (
             <button

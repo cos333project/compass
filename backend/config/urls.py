@@ -27,6 +27,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
     path('course_details/', views.course_details, name='course_details'),
+    path('course_comments/', views.course_comments, name='course_cpmments'),
     path('csrf/', views.csrf, name='csrf'),
     # Canvas
     path('search/', views.SearchCourses.as_view(), name='search'),
@@ -35,4 +36,5 @@ urlpatterns = [
     path('manually_settle/', views.manually_settle, name='manually_settle'),
     path('check_requirements/', views.check_requirements, name='check_requirements'),
     path('update_user/', views.update_user, name='update_user'),
+    path('requirement_info/', views.requirement_info, name='requirement_info'),
 ]

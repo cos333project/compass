@@ -3,7 +3,6 @@ from re import sub, search, split, compile, IGNORECASE
 from urllib.request import urlopen
 from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
-from django.contrib.auth import get_user_model
 from django.db.models import Case, Q, Value, When
 from django.http import JsonResponse, HttpResponseServerError
 from django.middleware.csrf import get_token
@@ -21,12 +20,18 @@ from .serializers import CourseSerializer
 import json
 from data.configs import Configs
 from data.req_lib import ReqLib
-from data.check_reqs import check_user, create_courses
-from data.check_reqs import get_course_info
+from data.check_reqs import (
+    get_course_info,
+    fetch_requirement_info,
+    get_course_comments,
+    check_user,
+)
 from datetime import datetime
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+UNDECLARED = {'code': 'Undeclared', 'name': 'Undeclared'}
 
 # ------------------------------------ PROFILE ----------------------------------------#
 
@@ -51,7 +56,7 @@ def fetch_user_info(net_id):
     major = (
         {'code': user_inst.major.code, 'name': user_inst.major.name}
         if user_inst.major
-        else {}
+        else UNDECLARED
     )
 
     minors = [
@@ -103,7 +108,7 @@ def fetch_user_info(net_id):
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
         'major': major,
-        'minors': minors
+        'minors': minors,
     }
     return return_data
 
@@ -122,7 +127,7 @@ def update_profile(request):
     data = json.loads(request.body)
     updated_first_name = data.get('firstName', '')
     updated_last_name = data.get('lastName', '')
-    updated_major = data.get('major', {}).get('code', '')
+    updated_major = data.get('major', UNDECLARED).get('code', '')
     updated_minors = data.get('minors', [])
     updated_class_year = data.get('classYear', None)
 
@@ -131,13 +136,14 @@ def update_profile(request):
     user_inst = CustomUser.objects.get(net_id=net_id)
 
     # Update user's profile
+    user_inst.username = net_id
     user_inst.first_name = updated_first_name
     user_inst.last_name = updated_last_name
 
     if updated_major:
         user_inst.major = Major.objects.get(code=updated_major)
     else:
-        user_inst.major = None
+        user_inst.major = Major.objects.get(code=UNDECLARED['code'])
 
     if isinstance(updated_minors, list):
         # Assuming each minor is represented by its 'code' and you have Minor models
@@ -265,12 +271,13 @@ class CAS(View):
                 net_id = self._validate(ticket, service_url)
                 logger.debug(f'Validation returned {username}')
                 if net_id:
-                    User = get_user_model()
-                    user, created = User.objects.get_or_create(
+                    user, created = CustomUser.objects.get_or_create(
                         username=net_id, defaults={'net_id': net_id, 'role': 'student'}
                     )
                     if created:
+                        print('USER CREATED!')
                         user.set_unusable_password()
+                        user.major = Major.objects.get(code=UNDECLARED['code'])
                     user.save()
                     request.session['net_id'] = net_id
                     return redirect(settings.DASHBOARD)
@@ -547,6 +554,42 @@ def course_details(request):
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+# -------------------------------------- GET COURSE DETAILS --------------------------
+
+
+def course_comments(request):
+    dept = request.GET.get('dept', '')  # Default to empty string if not provided
+    num = request.GET.get('coursenum', '')
+
+    if dept and num:
+        try:
+            num = str(num)  # Convert to string
+        except ValueError:
+            return JsonResponse({'error': 'Invalid course number'}, status=400)
+
+        course_comments = get_course_comments(dept, num)
+        return JsonResponse(course_comments)
+    else:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+# -------------------------------------- GET COURSE DETAILS --------------------------
+
+
+def course_comments(request):
+    dept = request.GET.get('dept', '')  # Default to empty string if not provided
+    num = request.GET.get('coursenum', '')
+
+    if dept and num:
+        try:
+            num = str(num)  # Convert to string
+        except ValueError:
+            return JsonResponse({'error': 'Invalid course number'}, status=400)
+
+        course_comments = get_course_comments(dept, num)
+        return JsonResponse(course_comments)
+    else:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
 
 # ------------------------------------------------------------------------------------
 
@@ -558,8 +601,9 @@ def manually_settle(request):
     net_id = request.session['net_id']
     user_inst = CustomUser.objects.get(net_id=net_id)
 
-    user_course_inst = UserCourses.objects.get(user_id=user_inst.id,
-                                               course_id=course_id)
+    user_course_inst = UserCourses.objects.get(
+        user_id=user_inst.id, course_id=course_id
+    )
     if user_course_inst.requirement_id is None:
         user_course_inst.requirement_id = req_id
         user_course_inst.save()
@@ -596,4 +640,11 @@ def check_requirements(request):
             else:
                 print('  ' * (indent + 1) + str(value))
 
+    pretty_print(formatted_dict, 2)
+
     return JsonResponse(formatted_dict)
+
+
+def requirement_info(request):
+    info = fetch_requirement_info(request.GET.get('reqId', ''))
+    return JsonResponse(info)

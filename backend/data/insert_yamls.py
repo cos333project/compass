@@ -47,6 +47,7 @@ REQUIREMENT_FIELDS = [
     'dist_req',
     'num_courses',
 ]
+UNDECLARED = {'code': 'Undeclared', 'name': 'Undeclared'}
 
 
 def load_data(yaml_file):
@@ -302,9 +303,15 @@ if __name__ == '__main__':
     # push_majors(Path('../majors').resolve())
     # push_minors(Path('../minors').resolve())
     # push_minors(Path('../certificates').resolve())
+
     # push_major(Path('../majors/COS-AB.yaml').resolve())
     # push_major(Path("../majors/COS-BSE.yaml").resolve())
+
     # push_certificate(Path("../certificates/AAS.yaml").resolve())
+
+    # Push Undeclared major into database
+    Major.objects.create(UNDECLARED)
+
     push_minor(Path('../minors/CLA.yaml').resolve())
     push_minor(Path('../minors/DAN.yaml').resolve())
     push_minor(Path('../minors/CHI.yaml').resolve())

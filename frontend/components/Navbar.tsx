@@ -41,6 +41,9 @@ const Navbar: FC = () => {
   // };
 
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
+  // const renderUserMenu = () => (isAuthenticated ? <DropdownMenu onUserSettingsClick={handleUserSettingsClick}/> : <Login />);
+
+
 
   // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
   // const fadeIn = 'transform transition-all duration-700 ease-out opacity-100 translate-y-0';
@@ -50,6 +53,7 @@ const Navbar: FC = () => {
 
   return (
     <header className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform}`}>
+
       <nav className='flex items-center justify-between p-6 lg:px-8' aria-label='Global'>
         <div className='flex lg:flex-1'>
           <a href='.' className='-m-1.5 p-1.5'>
@@ -120,6 +124,7 @@ const Navbar: FC = () => {
                     {item.name}
                   </a>
                 ))}
+                {isAuthenticated ? <DropdownMenu /> : <Login />}
                 {/* TODO: Need to implement this for mobile port */}
                 {/* <a
                   onClick={handleUserSettingsClick}

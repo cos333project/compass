@@ -14,8 +14,8 @@ import UserSettings from './UserSettings';
 const MenuItem: FC<MenuItemProps> = ({ isActive, children, onClick }) => (
   <div
     className={clsx(
-      isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-      'block px-4 py-2 text-sm'
+      isActive ? 'bg-gray-100 text-gray-600' : 'text-black',
+      'block px-4 py-2 text-sm text-center'
     )}
     onClick={onClick}
   >
@@ -39,6 +39,13 @@ const DropdownMenu: FC = () => {
   //   setBlur(false);
   //   // If you need to fetch updated data from the server, do it here.
   // };
+
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (isMenuOpen && (event.key === 'Escape' || event.key === 'Enter')) {
+      event.stopPropagation();
+      setIsMenuOpen(!isMenuOpen);
+    }
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -80,12 +87,13 @@ const DropdownMenu: FC = () => {
 
   return (
     <div>
-      <Menu as='div' className='relative inline-block text-left'>
+      <Menu as='div' className='relative text-left'>
         <Menu.Button
-          className='inline-flex w-full justify-center items-center rounded-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50'
+          className='inline-flex w-full justify-center items-center rounded-md px-4 py-2 bg-white text-sm font-medium hover:bg-gray-50'
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {username}
+          <span className="ml-2 inline-block w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-700"></span>
         </Menu.Button>
         {isMenuOpen && (
           <Transition
@@ -107,7 +115,7 @@ const DropdownMenu: FC = () => {
                     closeMenu();
                   }}
                 >
-                  Account settings
+                  Account Settings
                 </MenuItem>
                 <MenuItem
                   isActive={false}

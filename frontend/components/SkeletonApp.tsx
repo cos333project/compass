@@ -25,10 +25,10 @@ function SkeletonApp() {
         <div style={{ display: 'flex', width: '100%', height: '100%' }}>
           {/* Left sidebar with search bar */}
           <div style={{ width: '25%', marginRight: '12px', marginLeft: '12px' }}>
-            <Skeleton variant='rectangular' height='110px' sx={{ mt: '10px', bgcolor: 'red' }} />
+            <Skeleton variant='rectangular' height='100px' sx={{ mt: '10px', bgcolor: 'red' }} />
             <Skeleton
               variant='rectangular'
-              height='calc(100vh - 110px)'
+              height='calc(100vh - 120px)'
               sx={{ mt: '2px', bgcolor: 'red' }}
             />
           </div>
@@ -40,18 +40,25 @@ function SkeletonApp() {
               gridTemplateColumns: '1fr 1fr',
               gridAutoRows: '1fr',
               gap: '25px',
-              width: '46%',
+              width: '40%',
+              height: 'full',
               marginTop: '10px',
               marginLeft: '10px',
             }}
           >
             {Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton key={index} variant='rectangular' height='155px' sx={{ bgcolor: 'red' }} />
+              <Skeleton key={index} variant='rectangular' sx={{ bgcolor: 'red' }} />
             ))}
           </div>
 
           {/* Right large vertical space */}
-          <div style={{ width: '20%' }}>{/* This space is intentionally left blank */}</div>
+          <div style={{ width: '25%', marginRight: '12px', marginLeft: '22px' }}>
+            <Skeleton
+              variant='rectangular'
+              height='calc(100vh - 20px)'
+              sx={{ mt: '10px', bgcolor: 'red', backgroundColor: '#f6f6f6', animation: 'none' }}
+            />
+          </div>
         </div>
       </div>
     </CssVarsProvider>

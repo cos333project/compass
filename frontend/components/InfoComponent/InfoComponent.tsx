@@ -4,6 +4,8 @@ import { Button } from '@mui/joy';
 import classNames from 'classnames';
 import { createPortal } from 'react-dom';
 
+import ReviewMenu from '../ReviewMenu.tsx';
+
 import styles from './InfoComponent.module.scss';
 
 interface InfoComponentProps {
@@ -37,12 +39,13 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
   }, [showPopup, dept, coursenum]);
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (modalContent && (event.key === 'Enter' || event.key === 'Escape')) {
+    if (modalContent && (event.key === 'Escape' || event.key === 'Enter')) {
       handleClose(event);
     }
   });
 
-  const handleClick = () => {
+  const handleClick = (e) => {
+    e.stopPropagation();
     setShowPopup(true);
   };
 
@@ -53,23 +56,66 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
 
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop} onClick={(e) => e.stopPropagation()}>
-      <div className={styles.modal}>
+      <div className={styles.modal} style={{ width: '85%', height: '75%', padding: '25px' }}>
+        {' '}
+        {/* Ensure full width */}
         {courseDetails ? (
-          <div>
-            {Object.entries(courseDetails).map(([key, value]) => (
-              <div key={key} className={styles.detailRow}>
-                <strong className={styles.strong}>{key}:</strong> {value}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100vw',
+              overflowX: 'auto',
+              overflowY: 'auto',
+            }}
+          >
+            {' '}
+            {/* Full width and row direction */}
+            {/* Details section with explicit width */}
+            <div
+              style={{
+                height: '485px',
+                overflowWrap: 'break-word',
+                flexWrap: 'wrap',
+                overflowY: 'auto',
+                width: '55%',
+                paddingLeft: '10px',
+              }}
+            >
+              <div>
+                <div className={styles.detailRow}>
+                  <strong className={styles.strong}>{`${dept} ${coursenum}`}</strong>
+                </div>
+                {Object.entries(courseDetails).map(([key, value]) => (
+                  <div key={key} className={styles.detailRow}>
+                    <strong className={styles.strong}>{key}:</strong> {value}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            {/* ReviewMenu with explicit width */}
+            <div style={{ paddingLeft: '20px', width: '45%', height: '400px' }}>
+              {' '}
+              {/* Half width */}
+              <ReviewMenu dept={dept} coursenum={coursenum} />
+            </div>
           </div>
         ) : (
           <div>Loading...</div>
         )}
-        <footer className='mt-auto text-right'>
-          <Button variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
-            Close
-          </Button>
-        </footer>
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
+          <footer className='mt-auto text-right'>
+            <Button
+              variant='outlined'
+              color='neutral'
+              onClick={handleClose}
+              sx={{ ml: 2 }}
+              size='sm'
+            >
+              Close
+            </Button>
+          </footer>
+        </div>
       </div>
     </div>
   ) : null;
@@ -81,7 +127,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
         style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
         className={classNames(styles.Action)}
       >
-        {dept + coursenum}
+        {`${dept} ${coursenum}`}
       </div>
       {modalContent && createPortal(modalContent, document.body)}
     </>
