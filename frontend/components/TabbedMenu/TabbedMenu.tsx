@@ -46,7 +46,9 @@ const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, csrfToken, checkRequirement
       <div className={styles.tabContent}>
         {activeTab === 'Undeclared' ? (
           <div className='text-sm font-medium text-gray-500'>
-            To set your major and minors, access Account Settings from the top right corner.
+            To choose your major and minor(s), select
+            <strong> Account Settings </strong>
+            within your profile in the top right-hand corner.
           </div>
         ) : (
           activeTab && (

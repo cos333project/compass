@@ -20,8 +20,9 @@ from compass.models import (
     Minor,
     Certificate,
     UserCourses,
+    Requirement,
     CourseComments,
-    CourseEvaluations
+    CourseEvaluations,
 )
 
 # Have a custom check_requirements recursive function for minors. Can
@@ -69,27 +70,21 @@ def check_user(net_id, major, minors):
     output = {}
     user_courses = create_courses(net_id)
 
-
     if major is not None:
         major_code = major['code']
         output[major_code] = {}
 
         if major_code != 'Undeclared':
-            formatted_req = check_requirements(
-            'Major', major_code, user_courses
-            )
+            formatted_req = check_requirements('Major', major_code, user_courses)
         else:
-            formatted_req = {"code": "Undeclared",
-                             "satisfied": True}
+            formatted_req = {'code': 'Undeclared', 'satisfied': True}
         output[major_code]['requirements'] = formatted_req
 
     output['Minors'] = {}
     for minor in minors:
         minor = minor['code']
         output['Minors'][minor] = {}
-        formatted_req = check_requirements(
-            'Minor', minor, user_courses
-        )
+        formatted_req = check_requirements('Minor', minor, user_courses)
         output['Minors'][minor]['requirements'] = formatted_req
 
     return output
@@ -202,7 +197,7 @@ def assign_settled_courses_to_reqs(req, courses):
     Assigns only settled courses and those that can only satify one requirement,
     and updates the appropriate counts.
     """
-    
+
     old_deficit = req['inst'].min_needed - req['count']
     if req['inst'].max_counted is not None:
         old_available = req['inst'].max_counted - req['count']
@@ -434,7 +429,7 @@ def format_req_output(req, courses):
     #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
     if (req['inst']._meta.db_table == 'Requirement') and req['inst'].name:
         output['name'] = req['inst'].name
-
+    output['req_id'] = req['id']
     output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
     output['count'] = str(req['count'])
     output['min_needed'] = str(req['inst'].min_needed)
@@ -460,9 +455,11 @@ def format_req_output(req, courses):
             for course in semester:
                 if course['inst'].id in req['settled']:
                     course_output = {
-                        'code': course['inst'].department.code + ' ' + course['inst'].catalog_number,
+                        'code': course['inst'].department.code
+                        + ' '
+                        + course['inst'].catalog_number,
                         'id': course['inst'].id,
-                        'manually_settled': course['manually_settled']
+                        'manually_settled': course['manually_settled'],
                     }
                     settled.append(course_output)
         output['settled'] = [settled, req['id']]
@@ -472,13 +469,16 @@ def format_req_output(req, courses):
             for course in semester:
                 if course['inst'].id in req['unsettled']:
                     course_output = {
-                        'code': course['inst'].department.code + ' ' + course['inst'].catalog_number,
+                        'code': course['inst'].department.code
+                        + ' '
+                        + course['inst'].catalog_number,
                         'id': course['inst'].id,
-                        'manually_settled': course['manually_settled']
+                        'manually_settled': course['manually_settled'],
                     }
                     unsettled.append(course_output)
         output['unsettled'] = [unsettled, req['id']]
     return output
+
 
 # ---------------------------- FETCH COURSE COMMENTS ----------------------------------#
 
@@ -491,12 +491,16 @@ def get_course_comments(dept, num):
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
-            this_course_id = Course.objects.filter(
-                department__id=dept_code, catalog_number=num
-            ).first().guid
+            this_course_id = (
+                Course.objects.filter(department__id=dept_code, catalog_number=num)
+                .first()
+                .guid
+            )
             this_course_id = this_course_id[4:]
             try:
-                comments = list(CourseComments.objects.filter(course_guid__endswith = this_course_id))
+                comments = list(
+                    CourseComments.objects.filter(course_guid__endswith=this_course_id)
+                )
                 li = []
                 for commentobj in comments:
                     if 2 <= len(commentobj.comment) <= 2000:
@@ -504,25 +508,31 @@ def get_course_comments(dept, num):
                 cleaned_li = []
                 for element in li:
                     element = element.replace('\\"', '"')
-                    element = element.replace('it?s', 'it\'s')
-                    element = element.replace('?s', '\'s')
-                    element = element.replace('?r', '\'r')
+                    element = element.replace('it?s', "it's")
+                    element = element.replace('?s', "'s")
+                    element = element.replace('?r', "'r")
                     if element[0] == '[' and element[len(element) - 1] == ']':
-                        element = element[1:len(element) - 1]
+                        element = element[1 : len(element) - 1]
 
                     cleaned_li.append(element)
                 dict = {}
                 dict['reviews'] = cleaned_li
 
                 try:
-                    quality_of_course = CourseEvaluations.objects.filter(course_guid__endswith=this_course_id).first().quality_of_course
+                    quality_of_course = (
+                        CourseEvaluations.objects.filter(
+                            course_guid__endswith=this_course_id
+                        )
+                        .first()
+                        .quality_of_course
+                    )
                     dict['rating'] = quality_of_course
-                    
+
                 except CourseEvaluations.DoesNotExist:
                     return dict
-                
+
                 return dict
-            
+
             except CourseComments.DoesNotExist:
                 return None
         except Course.DoesNotExist:
@@ -584,14 +594,36 @@ def get_course_info(dept, num):
         return None
 
 
+# ---------------------------- FETCH REQUIREMENT INFO -----------------------------------#
+
+
+def fetch_requirement_info(req_id):
+    try:
+        explanation = Requirement.objects.get(id=req_id)
+        explanation = explanation.explanation
+    except Course.DoesNotExist:
+        explanation = ''
+
+    try:
+        course_list = Requirement.objects.get(id=req_id)
+        course_list = course_list.course_list.all()
+        satisfying_courses = []
+        for course in course_list:
+            satisfying_courses.append(
+                f'{course.department.code} {course.catalog_number}'
+            )
+        print(satisfying_courses)
+    except Course.DoesNotExist:
+        satisfying_courses = []
+
+    info = {}
+    info[0] = explanation
+    info[1] = satisfying_courses
+
+    return info
+
+
 def main():
-    #output = check_user(
-        #'mn4560',
-        #{'code': 'COS-AB', 'name': 'Computer Science - AB'},
-        #[{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
-    #)
-    #print(output['Minors'])
-    #print(get_course_info('SPA', 366))
     print(get_course_comments('COS', '126'))
 
 

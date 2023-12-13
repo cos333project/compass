@@ -40,6 +40,13 @@ const DropdownMenu: FC = () => {
   //   // If you need to fetch updated data from the server, do it here.
   // };
 
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (isMenuOpen && (event.key === 'Escape' || event.key === 'Enter')) {
+      event.stopPropagation();
+      setIsMenuOpen(!isMenuOpen);
+    }
+  });
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -86,6 +93,7 @@ const DropdownMenu: FC = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {username}
+          <span className='ml-2 inline-block w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-700'></span>
         </Menu.Button>
         {isMenuOpen && (
           <Transition
@@ -98,7 +106,7 @@ const DropdownMenu: FC = () => {
             leaveFrom='transform opacity-100 scale-100'
             leaveTo='transform opacity-0 scale-95'
           >
-            <Menu.Items className='absolute cursor-pointer right-0 mt-2 w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5'>
+            <Menu.Items className='absolute cursor-pointer right-0 mt-2 w-full origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5'>
               <div className='py-1'>
                 <MenuItem
                   isActive={false}

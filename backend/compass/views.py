@@ -20,9 +20,12 @@ from .serializers import CourseSerializer
 import json
 from data.configs import Configs
 from data.req_lib import ReqLib
-from data.check_reqs import check_user, create_courses
-from data.check_reqs import get_course_info
-from data.check_reqs import get_course_comments
+from data.check_reqs import (
+    get_course_info,
+    fetch_requirement_info,
+    get_course_comments,
+    check_user,
+)
 from datetime import datetime
 from django.conf import settings
 
@@ -105,7 +108,7 @@ def fetch_user_info(net_id):
         'lastName': user_inst.last_name,
         'classYear': user_inst.class_year,
         'major': major,
-        'minors': minors
+        'minors': minors,
     }
     return return_data
 
@@ -272,7 +275,7 @@ class CAS(View):
                         username=net_id, defaults={'net_id': net_id, 'role': 'student'}
                     )
                     if created:
-                        print("USER CREATED!")
+                        print('USER CREATED!')
                         user.set_unusable_password()
                         user.major = Major.objects.get(code=UNDECLARED['code'])
                     user.save()
@@ -551,6 +554,7 @@ def course_details(request):
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+
 # -------------------------------------- GET COURSE DETAILS --------------------------
 
 
@@ -569,6 +573,7 @@ def course_comments(request):
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+
 # ------------------------------------------------------------------------------------
 
 
@@ -579,8 +584,9 @@ def manually_settle(request):
     net_id = request.session['net_id']
     user_inst = CustomUser.objects.get(net_id=net_id)
 
-    user_course_inst = UserCourses.objects.get(user_id=user_inst.id,
-                                               course_id=course_id)
+    user_course_inst = UserCourses.objects.get(
+        user_id=user_inst.id, course_id=course_id
+    )
     if user_course_inst.requirement_id is None:
         user_course_inst.requirement_id = req_id
         user_course_inst.save()
@@ -617,4 +623,11 @@ def check_requirements(request):
             else:
                 print('  ' * (indent + 1) + str(value))
 
+    # pretty_print(formatted_dict, 2)
+
     return JsonResponse(formatted_dict)
+
+
+def requirement_info(request):
+    info = fetch_requirement_info(request.GET.get('reqId', ''))
+    return JsonResponse(info)

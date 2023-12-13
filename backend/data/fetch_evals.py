@@ -51,7 +51,7 @@ def authenticate(scraper):
     login_button.click()
 
     # Wait for login to complete
-    login_buffer = 20
+    login_buffer = 30
     for remaining in range(login_buffer, 0, -1):
         sys.stdout.write('\r')
         sys.stdout.write(

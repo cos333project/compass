@@ -600,10 +600,10 @@ def insert_course_data(semester):
             insert_departments(trimmed_rows)
             insert_academic_terms(trimmed_rows)
             insert_courses(trimmed_rows)
-            insert_course_equivalents(trimmed_rows)
-            insert_sections(trimmed_rows)
-            insert_class_meetings(trimmed_rows)
-            insert_class_year_enrollments(trimmed_rows)
+            # insert_course_equivalents(trimmed_rows)
+            # insert_sections(trimmed_rows)
+            # insert_class_meetings(trimmed_rows)
+            # insert_class_year_enrollments(trimmed_rows)
 
     except Exception as e:
         logging.error(f'Transaction failed: {e}')
