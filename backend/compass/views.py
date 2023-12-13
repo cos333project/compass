@@ -554,6 +554,23 @@ def course_details(request):
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+# -------------------------------------- GET COURSE DETAILS --------------------------
+
+
+def course_comments(request):
+    dept = request.GET.get('dept', '')  # Default to empty string if not provided
+    num = request.GET.get('coursenum', '')
+
+    if dept and num:
+        try:
+            num = str(num)  # Convert to string
+        except ValueError:
+            return JsonResponse({'error': 'Invalid course number'}, status=400)
+
+        course_comments = get_course_comments(dept, num)
+        return JsonResponse(course_comments)
+    else:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
 
 # -------------------------------------- GET COURSE DETAILS --------------------------
 

@@ -12,7 +12,7 @@ import { Login } from './Login';
 
 
 const navigation = [
-  { name: 'About', href: '/' },
+  { name: 'About', href: '/about/' },
   { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
   { name: 'Contact Us', href: '/' },
 ];
@@ -40,6 +40,8 @@ const Navbar: FC = () => {
   // };
 
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
+  // const renderUserMenu = () => (isAuthenticated ? <DropdownMenu onUserSettingsClick={handleUserSettingsClick}/> : <Login />);
+
 
 
   // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
