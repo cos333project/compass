@@ -2,6 +2,8 @@
 
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
+import Image from 'next/image';
+
 const teamMembers = [
     { name: 'Windsor Nguyen', gradYear: '2025' },
     { name: 'Ijay Narang', gradYear: '2025' },
@@ -16,7 +18,7 @@ const About = () => {
   return (
     <>
       <Navbar />
-        <div>
+        <div className='flex flex-col min-h-screen pt-10 rounded-xl'>
             <div className='relative isolate pt-14'>
             {/* Background Gradient Effect */}
             <div className='absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80' aria-hidden='true'>
@@ -29,21 +31,10 @@ const About = () => {
                 />
             </div>
     
-            {/* Introduction to the Compass Project */}
-            <div className='py-24 sm:py-32 lg:pb-40'>
-                <div className='mx-auto max-w-7xl px-6 lg:px-8'>
-                <div className='mx-auto max-w-2xl text-center text-[var(--system-text-color)]'>
-                    <h1 className='text-4xl font-bold tracking-tight sm:text-6xl'>Welcome to Compass.</h1>
-                    <p className='mt-6 text-lg leading-8'>
-                    Compass is a platform designed to plan courses and manage schedules, helping you guide through your academic journey at Princeton as a Compass.
-                    </p>
-                    {/* Additional content or call-to-action buttons */}
-                </div>
-                </div>
-            </div>
+        
     
             {/* Team Members Section */}
-            <div className='bg-gray-100 py-24 sm:py-32 lg:pb-40'>
+            <div className='bg-gray-100 py-12 sm:py-16 lg:pb-20'>
             <div className='mx-auto max-w-7xl px-6 lg:px-8'>
                 <div className='text-center'>
                 <h2 className='text-3xl font-bold sm:text-4xl'>Meet the Team</h2>
@@ -58,7 +49,7 @@ const About = () => {
                     <div key={member.name} className="bg-white p-6 rounded-lg shadow-sm w-[300px]">
                         {/* Adjusted image style to be more square */}
                         <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
-                        <img src={`/member${index + 1}.jpg`} alt={member.name} className='object-cover w-full h-full' />
+                            <Image src={`/member${index + 1}.jpg`} alt={member.name} width={240} height={240} />
                         </div>
                         <h3 className='mt-6 text-xl font-semibold'>{member.name}</h3>
                         <p className='text-sm text-gray-600'>{member.gradYear}</p> {/* Graduation year */}
