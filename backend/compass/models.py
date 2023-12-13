@@ -179,7 +179,7 @@ class AcademicTerm(models.Model):
 class Course(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     guid = models.CharField(max_length=50, db_index=True, null=True)
-    course_id = models.CharField(max_length=10, db_index=True, null=True)
+    course_id = models.CharField(max_length=15, db_index=True, null=True)
     catalog_number = models.CharField(max_length=10, db_index=True, null=True)
     title = models.CharField(max_length=150, db_index=True, null=True)
     description = models.TextField(db_index=True, null=True)
@@ -524,36 +524,59 @@ class CourseEvaluations(models.Model):
     Stores student course evaluations, including various quality metrics and recommendations.
 
     Attributes:
-        course (ForeignKey): Indicates which course is being evaluated.
-        term (ForeignKey): Indicates the term during which the course was evaluated.
-        quality_of_classes (FloatField): Numeric rating of the class quality. Nullable.
-        quality_of_course (FloatField): Numeric rating of the overall course quality. Nullable.
-        quality_of_lectures (FloatField): Numeric rating of the lecture quality. Nullable.
-        quality_of_precepts (FloatField): Numeric rating of precepts. Nullable.
-        quality_of_readings (FloatField): Numeric rating of the course readings. Nullable.
-        quality_of_written_assignments (FloatField): Numeric rating of the written assignments. Nullable.
-        recommend_to_other_students (FloatField): Numeric rating of the course. Nullable.
+        - course (ForeignKey): Indicates which course is being evaluated.
+        - term (ForeignKey): Indicates the term during which the course was evaluated.
+        - quality_of_course (FloatField): Numeric rating of the overall course quality. Nullable.
+        - quality_of_lectures (FloatField): Numeric rating of the lecture quality. Nullable.
+        - quality_of_readings (FloatField): Numeric rating of the course readings. Nullable.
+        - quality_of_written_assignments (FloatField): Numeric rating of the written assignments. Nullable.
+        - recommend_to_other_students (FloatField): Numeric rating of the course. Nullable.
+        - quality_of_language (FloatField): Numeric rating of the language quality. Nullable.
+        - quality_of_classes (FloatField): Numeric rating of the class quality. Nullable.
+        - quality_of_seminar (FloatField): Numeric rating of the seminar quality. Nullable.
+        - quality_of_precepts (FloatField): Numeric rating of the precepts quality. Nullable.
+        - quality_of_laboratories (FloatField): Numeric rating of the laboratory quality. Nullable.
+        - quality_of_studios (FloatField): Numeric rating of the studio quality. Nullable.
+        - quality_of_ear_training (FloatField): Numeric rating of the ear training quality. Nullable.
+        - overall_quality_of_the_course (FloatField): Overall numeric rating of the course quality. Nullable.
+        - interest_in_subject_matter (FloatField): Numeric rating of interest in subject matter. Nullable.
+        - overall_quality_of_the_lecture (FloatField): Overall numeric rating of the lecture quality. Nullable.
+        - papers_and_problem_sets (FloatField): Numeric rating of the quality of papers and problem sets. Nullable.
+        - readings (FloatField): Numeric rating of the readings quality. Nullable.
+        - oral_presentation_skills (FloatField): Numeric rating of the oral presentation skills. Nullable.
+        - workshop_structure (FloatField): Numeric rating of the workshop structure quality. Nullable.
+        - written_work (FloatField): Numeric rating of the written work quality. Nullable.
 
     Meta:
-        db_table: Custom 'CourseEvaluations' name for readability.
+        - db_table: Custom 'CourseEvaluations' name for readability.
 
     Methods:
-        __str__: Returns a string representation of the CourseEvaluations instance.
+        - __str__: Returns a string representation of the CourseEvaluations instance.
     """
 
-    course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, db_index=True, null=True
-    )
-    term = models.ForeignKey(
-        AcademicTerm, on_delete=models.CASCADE, db_index=True, null=True
-    )
-    quality_of_classes = models.FloatField(null=True)
+    course_guid = models.CharField(max_length=15, db_index=True, null=True)
     quality_of_course = models.FloatField(null=True)
     quality_of_lectures = models.FloatField(null=True)
-    quality_of_precepts = models.FloatField(null=True)
     quality_of_readings = models.FloatField(null=True)
     quality_of_written_assignments = models.FloatField(null=True)
     recommend_to_other_students = models.FloatField(null=True)
+    quality_of_language = models.FloatField(null=True)
+    quality_of_classes = models.FloatField(null=True)
+    quality_of_the_classes = models.FloatField(null=True)
+    quality_of_seminar = models.FloatField(null=True)
+    quality_of_precepts = models.FloatField(null=True)
+    quality_of_laboratories = models.FloatField(null=True)
+    quality_of_studios = models.FloatField(null=True)
+    quality_of_ear_training = models.FloatField(null=True)
+    overall_course_quality_rating = models.FloatField(null=True)
+    overall_quality_of_the_course = models.FloatField(null=True)
+    interest_in_subject_matter = models.FloatField(null=True)
+    overall_quality_of_the_lecture = models.FloatField(null=True)
+    papers_and_problem_sets = models.FloatField(null=True)
+    readings = models.FloatField(null=True)
+    oral_presentation_skills = models.FloatField(null=True)
+    workshop_structure = models.FloatField(null=True)
+    written_work = models.FloatField(null=True)
 
     class Meta:
         db_table = 'CourseEvaluations'
@@ -577,9 +600,7 @@ class CourseComments(models.Model):
         __str__: Returns a string representation of the CourseComments instance.
     """
 
-    course_evaluation = models.ForeignKey(
-        CourseEvaluations, on_delete=models.CASCADE, related_name='comments'
-    )
+    course_guid = models.CharField(max_length=15, db_index=True, null=True)
     comment = models.TextField(null=True)
 
     class Meta:
@@ -587,7 +608,7 @@ class CourseComments(models.Model):
 
     def __str__(self):
         return (
-            f'Comment for CourseEvaluation {self.course_evaluation_id}: {self.comment}'
+            f'{self.comment}'
         )
 
 
