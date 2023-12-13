@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
-import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import Navbar from '../../components/Navbar';
 
 const Contact = () => {
   return (
@@ -11,7 +10,10 @@ const Contact = () => {
       <div>
         <div className='relative isolate pt-14'>
           {/* Background Gradient Effect */}
-          <div className='absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80' aria-hidden='true'>
+          <div
+            className='absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80'
+            aria-hidden='true'
+          >
             <div
               className='relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]'
               style={{
@@ -34,7 +36,7 @@ const Contact = () => {
                 <div className='mt-8'>
                   <h2 className='text-2xl font-semibold'>Email Us</h2>
                   <a href='mailto:cos-compass@princeton.edu' className='text-blue-600 mt-2 block'>
-                  cos-compass@princeton.edu
+                    cos-compass@princeton.edu
                   </a>
                 </div>
 

@@ -49,9 +49,7 @@ const Navbar: FC = () => {
   // const isAuthInitialized = isAuthenticated !== null;
 
   return (
-    <header
-      className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform}`}
-    >
+    <header className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform}`}>
       <nav className='flex items-center justify-between p-6 lg:px-8' aria-label='Global'>
         <div className='flex lg:flex-1'>
           <a href='.' className='-m-1.5 p-1.5'>
