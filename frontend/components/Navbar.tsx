@@ -26,10 +26,8 @@ const Navbar: FC = () => {
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      login();
-    }
     // Otherwise, navigate to the dashboard
+    login();
   };
 
   // FIXME: Commenting out for now since we need to build successfully.
