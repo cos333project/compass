@@ -554,6 +554,7 @@ def course_details(request):
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+
 # -------------------------------------- GET COURSE DETAILS --------------------------
 
 
@@ -571,6 +572,7 @@ def course_comments(request):
         return JsonResponse(course_comments)
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
+
 
 # -------------------------------------- GET COURSE DETAILS --------------------------
 

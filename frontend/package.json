@@ -1,6 +1,6 @@
 {
   "name": "compass",
-  "version": "0.95",
+  "version": "0.99",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 --turbo",

@@ -1,15 +1,17 @@
 import { FC, useState } from 'react';
-import classNames from 'classnames';
-import { createPortal } from 'react-dom';
-import { Button as JoyButton } from '@mui/joy';
+
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { Button as JoyButton } from '@mui/joy';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import classNames from 'classnames';
+import { createPortal } from 'react-dom';
+
 import styles from '../InfoComponent/InfoComponent.module.scss';
 
 interface Dictionary {
@@ -97,23 +99,27 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
                     <div key={index}>
                       <strong className={styles.strong}>{'Explanation'}:</strong> {value}
                     </div>
-                  )
-                }
-                else {
+                  );
+                } else {
                   return (
                     <div key={index}>
-                      <strong className={styles.strong}>{'Explanation'}:</strong> {'No explanation available'}
+                      <strong className={styles.strong}>{'Explanation'}:</strong>{' '}
+                      {'No explanation available'}
                     </div>
-                  )
+                  );
                 }
-              }
-              else if (value[0]) {
+              } else if (value[0]) {
                 return (
-                  <div>
+                  <div key={index}>
                     <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
-                    {value.map((course) => {return `${course}, `}).join('').slice(0, -2)}
+                    {value
+                      .map((course) => {
+                        return `${course}, `;
+                      })
+                      .join('')
+                      .slice(0, -2)}
                   </div>
-                )
+                );
               }
             })
           ) : (
@@ -121,7 +127,13 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
           )}
         </div>
         <footer className='mt-auto text-right'>
-          <JoyButton variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
+          <JoyButton
+            variant='outlined'
+            color='neutral'
+            onClick={handleClose}
+            sx={{ ml: 2 }}
+            size='sm'
+          >
             Close
           </JoyButton>
         </footer>
@@ -217,7 +229,10 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
             style={{ backgroundColor: '#f6f6f6' }} // subtle background color
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <div className={classNames(styles.Action)} onClick={(e) => handleExplanationClick(e, data[key]['req_id'])}>
+              <div
+                className={classNames(styles.Action)}
+                onClick={(e) => handleExplanationClick(e, data[key]['req_id'])}
+              >
                 <Typography style={{ fontWeight: 500 }}>{key}</Typography>
               </div>
               {satisfactionElement}
@@ -231,10 +246,12 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
     });
   };
 
-  return <>
-          {renderContent(data)}
-          {modalContent && createPortal(modalContent, document.body)}
-        </>;
+  return (
+    <>
+      {renderContent(data)}
+      {modalContent && createPortal(modalContent, document.body)}
+    </>
+  );
 };
 
 // Recursive dropdown component

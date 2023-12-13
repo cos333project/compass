@@ -479,6 +479,7 @@ def format_req_output(req, courses):
         output['unsettled'] = [unsettled, req['id']]
     return output
 
+
 # ---------------------------- FETCH COURSE COMMENTS ----------------------------------#
 
 
@@ -490,12 +491,16 @@ def get_course_comments(dept, num):
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
-            this_course_id = Course.objects.filter(
-                department__id=dept_code, catalog_number=num
-            ).first().guid
+            this_course_id = (
+                Course.objects.filter(department__id=dept_code, catalog_number=num)
+                .first()
+                .guid
+            )
             this_course_id = this_course_id[4:]
             try:
-                comments = list(CourseComments.objects.filter(course_guid__endswith = this_course_id))
+                comments = list(
+                    CourseComments.objects.filter(course_guid__endswith=this_course_id)
+                )
                 li = []
                 for commentobj in comments:
                     if 2 <= len(commentobj.comment) <= 2000:
@@ -503,31 +508,38 @@ def get_course_comments(dept, num):
                 cleaned_li = []
                 for element in li:
                     element = element.replace('\\"', '"')
-                    element = element.replace('it?s', 'it\'s')
-                    element = element.replace('?s', '\'s')
-                    element = element.replace('?r', '\'r')
+                    element = element.replace('it?s', "it's")
+                    element = element.replace('?s', "'s")
+                    element = element.replace('?r', "'r")
                     if element[0] == '[' and element[len(element) - 1] == ']':
-                        element = element[1:len(element) - 1]
+                        element = element[1 : len(element) - 1]
 
                     cleaned_li.append(element)
                 dict = {}
                 dict['reviews'] = cleaned_li
 
                 try:
-                    quality_of_course = CourseEvaluations.objects.filter(course_guid__endswith=this_course_id).first().quality_of_course
+                    quality_of_course = (
+                        CourseEvaluations.objects.filter(
+                            course_guid__endswith=this_course_id
+                        )
+                        .first()
+                        .quality_of_course
+                    )
                     dict['rating'] = quality_of_course
-                    
+
                 except CourseEvaluations.DoesNotExist:
                     return dict
-                
+
                 return dict
-            
+
             except CourseComments.DoesNotExist:
                 return None
         except Course.DoesNotExist:
             return None
     except Department.DoesNotExist:
         return None
+
 
 # ---------------------------- FETCH COURSE COMMENTS ----------------------------------#
 

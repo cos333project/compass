@@ -93,7 +93,7 @@ const DropdownMenu: FC = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {username}
-          <span className="ml-2 inline-block w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-700"></span>
+          <span className='ml-2 inline-block w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-700'></span>
         </Menu.Button>
         {isMenuOpen && (
           <Transition

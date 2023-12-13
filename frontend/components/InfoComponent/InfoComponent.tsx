@@ -4,7 +4,7 @@ import { Button } from '@mui/joy';
 import classNames from 'classnames';
 import { createPortal } from 'react-dom';
 
-import ReviewMenu from '../ReviewMenu.tsx';
+import ReviewMenu from '../ReviewMenu';
 
 import styles from './InfoComponent.module.scss';
 

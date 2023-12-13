@@ -68,7 +68,7 @@ const About = () => {
                     <div key={member.name} className='bg-white p-6 rounded-lg shadow-sm w-[300px]'>
                       {/* Adjusted image style to be more square */}
                       <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
-                        <img
+                        <Image
                           src={`/member${index + 3}.jpg`}
                           alt={member.name}
                           className='object-cover w-full h-full'
