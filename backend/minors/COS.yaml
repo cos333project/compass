@@ -4,7 +4,7 @@ name: Computer Science
 code: COS
 degree:
 urls:
-- https://www.cs.princeton.edu/ugrad
+- https://www.cs.princeton.edu/ugrad/minor
 description: The Computer Science Minor is designed for students who 
   want to combine the study of computing and computers with another 
   academic discipline. The program welcomes students not only from areas 
@@ -13,6 +13,8 @@ description: The Computer Science Minor is designed for students who
   application areas (such as neuroscience, digital humanities, 
   technology policy, music, visual arts, economics, linguistics and 
   philosophy).
+excluded_major: 
+- COS
 contacts:
 - type: Co-Director of Undergraduate Studies
   name: Kevin Wayne
@@ -20,7 +22,7 @@ contacts:
 req_list:
 - name: Core
   max_counted: 1
-  min_needed: ALL
+  min_needed: 2
   explanation:
   req_list:
   - name: Introduction
@@ -34,7 +36,7 @@ req_list:
       explanation:
       double_counting_allowed: false
       max_common_with_major: 1
-      pdfs_allowed: 0
+      pdfs_allowed: 1
       course_list:
       - COS 126
       - ECE 115
@@ -44,7 +46,7 @@ req_list:
       explanation:
       double_counting_allowed: false
       max_common_with_major: 1
-      pdfs_allowed: 0
+      pdfs_allowed: 1
       course_list:
       - ISC 231
       - ISC 232
@@ -56,7 +58,7 @@ req_list:
     explanation:
     double_counting_allowed: false
     max_common_with_major: 0
-    pdfs_allowed: 0
+    pdfs_allowed: 1
     course_list:
     - COS 226
     - COS 217
@@ -70,17 +72,16 @@ req_list:
     institutions. If a student takes both COS 217 and COS 226, then one 
     of them may count as an elective.
   double_counting_allowed: false
-  max_common_with_major: 1
+  max_common_with_major: 2
   pdfs_allowed: 1
   course_list:
   - COS 2*
   - COS 3*
   - COS 4*
-
-# Notes: Students may use at most one course taken on a pass/D/fail
-# basis to satisfy the program requirements.
-# Students may use at most two courses to simultaneously satisfy
-# requirements for this program and their major.
-# Hard to encode, but I encoded it roughly
-# Did not encode the restriction of IW courses, but it's fine because
-# a COS minor would not to IW in COS anyway.
+- name: Restrictions
+  max_counted: 1
+  min_needed: 1
+  explanation: |-
+    Students may use at most one course taken on a pass/D/fail basis to satisfy the program requirements.
+    
+    Students may use at most two courses to simultaneously satisfy requirements for this program and their major. 

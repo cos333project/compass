@@ -227,11 +227,6 @@ req_list:
 - name: Reflection Paper
   max_counted: 1
   min_needed: 1
-  explanation: In addition, a short (ca. 500 words) reflection paper on 
-    how the courses add up to a coherent perspective on the ancient 
-    world and its reception is required in the student’s final semester.
+  explanation: |-
+    A short (ca. 500 words) reflection paper on how the courses add up to a coherent perspective on the ancient world and its reception is required in the student’s final semester.
   completed_by_semester: 8
-
-# Notes: not sure if HUM216-217 should be added to the course list
-# For the fifth course that can be a relevant course offered in another
-# dept approved by DUS: do we count it as a requirement?

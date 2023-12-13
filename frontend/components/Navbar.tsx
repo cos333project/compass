@@ -10,6 +10,7 @@ import useMobileMenuStore from '../store/mobileMenuSlice';
 import DropdownMenu from './DropdownMenu';
 import { Login } from './Login';
 
+
 const navigation = [
   { name: 'About', href: '/' },
   { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
@@ -39,6 +40,7 @@ const Navbar: FC = () => {
   // };
 
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
+
 
   // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
   const fadeIn = 'transform transition-all duration-700 ease-out opacity-100 translate-y-0';

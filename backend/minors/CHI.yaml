@@ -21,9 +21,8 @@ req_list:
   max_counted: 1
   min_needed: 6
   explanation: A student majoring in a department other than East Asian 
-    studies may earn a language minor in Chinese by completing seven 
-    courses, including six language courses (two or more of which must 
-    be beyond the second-year level)
+    studies must take six language courses, two or more of which must 
+    be beyond the second-year level.
   req_list:
   - name: Basic Language
     max_counted: 4
@@ -60,8 +59,7 @@ req_list:
   max_counted: 1
   min_needed: 1
   explanation: A student majoring in a department other than East Asian 
-    studies may earn a language minor in Chinese by completing seven 
-    courses, including at least one EAS or cognate course.
+    studies must take at least one EAS or cognate course.
   double_counting_allowed: false
   max_common_with_major: 1
   pdfs_allowed: 0
@@ -79,8 +77,10 @@ req_list:
     or senior thesis is written for another department, at least half of 
     the work must be on East Asia.
   completed_by_semester: 8
+- name: Restrictions
+  max_counted: 1
+  min_needed: 1
+  explanation: |-
+    An East Asian Studies major specializing in Chinese may not earn a language minor in Chinese. 
 
-# Notes: An East Asian studies major specializing in Japanese or Korean
-# language may earn a language minor in Chinese, but may not also earn
-# an East Asian studies minor offered by the Program in East Asian
-# Studies.
+    An East Asian studies major specializing in Japanese or Korean may earn a language minor in Chinese, but may not also earn an East Asian studies minor offered by the Program in East Asian Studies.
