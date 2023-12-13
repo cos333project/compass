@@ -1,6 +1,7 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
+import classNames from 'classnames';
 import { createPortal } from 'react-dom';
-
+import { Button as JoyButton } from '@mui/joy';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -9,10 +10,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Button as JoyButton } from '@mui/joy';
-
-import classNames from 'classnames';
-import styles from '../InfoComponent/InfoComponent.module.scss'
+import styles from '../InfoComponent/InfoComponent.module.scss';
 
 interface Dictionary {
   [key: string]: any;
@@ -95,21 +93,27 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
             Object.entries(explanation).map(([index, value]) => {
               if (index === '0') {
                 if (value) {
-                  return(<div>
-                    <strong className={styles.strong}>{'Explanation'}:</strong> {value}
-                    </div>)
+                  return (
+                    <div key={index}>
+                      <strong className={styles.strong}>{'Explanation'}:</strong> {value}
+                    </div>
+                  )
                 }
                 else {
-                  return(<div>
-                    <strong className={styles.strong}>{'Explanation'}:</strong> {'No explanation available'}
-                    </div>)
+                  return (
+                    <div key={index}>
+                      <strong className={styles.strong}>{'Explanation'}:</strong> {'No explanation available'}
+                    </div>
+                  )
                 }
               }
               else if (value[0]) {
-                return(<div>
-                  <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
-                  {value.map((course) => {return `${course}, `}).join('').slice(0, -2)}
-                  </div>)
+                return (
+                  <div>
+                    <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
+                    {value.map((course) => {return `${course}, `}).join('').slice(0, -2)}
+                  </div>
+                )
               }
             })
           ) : (
