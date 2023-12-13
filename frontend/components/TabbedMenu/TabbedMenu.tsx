@@ -7,12 +7,11 @@ import styles from './TabbedMenu.module.scss';
 
 interface TabbedMenuProps {
   tabsData: { [key: string]: object };
-  refresh: number;
   csrfToken: string;
   checkRequirements: any;
 }
 
-const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh, csrfToken, checkRequirements }) => {
+const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, csrfToken, checkRequirements }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,13 +44,19 @@ const TabbedMenu: FC<TabbedMenuProps> = ({ tabsData, refresh, csrfToken, checkRe
         ))}
       </ul>
       <div className={styles.tabContent}>
-        {activeTab && (
-          <RecursiveDropdown
-            key={`${refresh}`}
-            dictionary={tabsData[activeTab]}
-            csrfToken={csrfToken}
-            checkRequirements={checkRequirements}
-          />
+        {activeTab === 'Undeclared' ? (
+          <div className='text-sm font-medium text-gray-500'>
+            To set your major and minors, access Account Settings from the top right corner.
+          </div>
+        ) : (
+          activeTab && (
+            <RecursiveDropdown
+              key={activeTab}
+              dictionary={tabsData[activeTab]}
+              csrfToken={csrfToken}
+              checkRequirements={checkRequirements}
+            />
+          )
         )}
       </div>
     </div>

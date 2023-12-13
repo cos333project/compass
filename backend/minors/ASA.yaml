@@ -3,8 +3,6 @@ type: Minor
 name: Asian American Studies
 code: ASA
 degree:
-urls:
-- https://effroncenter.princeton.edu/areas-study/asian-american-studies
 description: The Program in Asian American Studies, administered by the 
   Effron Center for the Study of America, provides students with the 
   opportunity to gain an interdisciplinary perspective on the diversity 
@@ -14,6 +12,8 @@ description: The Program in Asian American Studies, administered by the
   highlights Asian America’s transnational connections and contexts, 
   including the dynamics of globalization, migration, imperialism and 
   postcoloniality.
+urls:
+- https://effroncenter.princeton.edu/areas-study/asian-american-studies
 contacts:
 - type: Program Director
   name: Beth Lew-Williams
@@ -27,11 +27,10 @@ req_list:
     also do so at any time during their studies, including after 
     enrollment in the minor.
   double_counting_allowed: false
-  max_common_with_major: 1
+  max_common_with_major: 0
   pdfs_allowed: 1
   course_list:
   - AMS 101
-  deadline:
 - name: Electives
   max_counted: 1
   min_needed: 3
@@ -42,33 +41,10 @@ req_list:
     may substitute a comparative race and ethnicity course that contains 
     substantial Asian American studies content for one of these courses.
   double_counting_allowed: false
-  max_common_with_major: 1
+  max_common_with_major: 0
   pdfs_allowed: 3
   course_list:
-  - ASA 201
-  - ASA 224
-  - ASA 238
-  - ASA 293
-  - ASA 314
-  - ASA 315
-  - ASA 320
-  - ASA 314
-  - ASA 316
-  - ASA 324
-  - ASA 328
-  - ASA 329
-  - ASA 332
-  - ASA 336
-  - ASA 343
-  - ASA 361
-  - ASA 370
-  - ASA 381
-  - ASA 389
-  - ASA 390
-  - ASA 430
-  - ASA 444
-  - ASA 482
-  deadline:
+  - ASA *
 - name: Advanced Seminar
   max_counted: 1
   min_needed: 1
@@ -76,13 +52,14 @@ req_list:
     may substitute an advanced seminar with additional ASA elective to 
     further their scholarship in this field.
   double_counting_allowed: false
-  max_common_with_major: 1
+  max_common_with_major: 0
   pdfs_allowed: 1
   course_list:
   - AMS 403
   - AMS 404
   - AMS 406
-  deadline:
-
-# Notes: No more than one course taken in fulfillment of the student’s
-# major may be counted toward the minor.
+- name: Restrictions
+  max_counted: 1
+  min_needed: 1
+  explanation: |-
+    No more than one course taken in fulfillment of the student’s major may be counted toward the minor.

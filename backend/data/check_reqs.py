@@ -73,9 +73,14 @@ def check_user(net_id, major, minors):
     if major is not None:
         major_code = major['code']
         output[major_code] = {}
-        formatted_req = check_requirements(
+
+        if major_code != 'Undeclared':
+            formatted_req = check_requirements(
             'Major', major_code, user_courses
-        )
+            )
+        else:
+            formatted_req = {"code": "Undeclared",
+                             "satisfied": True}
         output[major_code]['requirements'] = formatted_req
 
     output['Minors'] = {}
@@ -101,7 +106,6 @@ def create_courses(net_id):
         if course_inst.requirement_id is not None:
             course['settled'] = [course_inst.requirement_id]
             course['manually_settled'] = True
-            print(f"Course {course_inst.id} settled to requirement {course_inst.requirement_id}")
         courses[course_inst.semester - 1].append(course)
     return courses
 
@@ -432,8 +436,8 @@ def format_req_output(req, courses):
         output['name'] = req['inst'].name
 
     output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
-    # output['count'] = str(req['count'])
-    # output['min_needed'] = str(req['inst'].min_needed)
+    output['count'] = str(req['count'])
+    output['min_needed'] = str(req['inst'].min_needed)
     # output['max_counted'] = str(req['inst'].max_counted)
     if 'req_list' in req:  # internal node. recursively call on children
         req_list = {}
@@ -578,8 +582,6 @@ def get_course_info(dept, num):
             return None
     except Course.DoesNotExist:
         return None
-
-    # print(dept)
 
 
 def main():

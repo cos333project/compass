@@ -1,14 +1,15 @@
 .Container {
   display: flex;
   flex-direction: column;
-  min-width: 150px;
-  width: full;
+  // min-width: 150px;
+  // width: auto;
+  // max-width: 100%;
   overflow: hidden; /* Prevents horizontal scrollbar */
   box-sizing: border-box;
   appearance: none;
   outline: none;
   margin: 10px;
-  border-radius: 5px;
+  border-radius: 6px;
   height: full;
   transition: background-color 350ms ease;
   background-color: rgba(246, 246, 246, 1);
@@ -84,9 +85,9 @@
   align-items: center;
   justify-content: space-between;
   background-color: #fff;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
   &:hover {
     .Actions > * {

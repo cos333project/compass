@@ -28,13 +28,12 @@ import {
   AnimateLayoutChanges,
   SortableContext,
   useSortable,
-  arrayMove,
   defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
   SortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createPortal, unstable_batchedUpdates } from 'react-dom';
+import { createPortal } from 'react-dom';
 
 import { Course, Profile } from '@/types';
 
@@ -63,7 +62,7 @@ async function fetchCsrfToken() {
 let csrfToken: string;
 
 if (typeof window === 'undefined') {
-  // Server-side or during prerendering/build time
+  // Server-side or during pre-rendering/build time
   csrfToken = '';
 } else {
   // Client-side
@@ -245,7 +244,6 @@ export function Canvas({
 
   // State for academic requirements
   const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
-  const [refreshAcademicPlan, setRefreshedAcademicPlan] = useState(0);
 
   // Logs for debugging
   console.log('Initial academic plan:', academicPlan);
@@ -291,6 +289,17 @@ export function Canvas({
     }
   };
 
+  const timerRef = useRef<number>();
+  const debouncedCheckRequirements = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+      checkRequirements();
+    }, 500);
+  };
+
   const checkRequirements = () => {
     console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
     fetch(`${process.env.BACKEND}/check_requirements/`, {
@@ -301,7 +310,6 @@ export function Canvas({
       .then((data) => {
         console.log('Fetched academic requirements data:', data);
         setAcademicPlan(data);
-        setRefreshedAcademicPlan(Date.now()); // Triggering a re-render by updating the number
       })
       .catch((error) => {
         console.error('Requirements Check Error:', error);
@@ -317,7 +325,7 @@ export function Canvas({
         }));
       }
     });
-    checkRequirements();
+    debouncedCheckRequirements();
   }, [classYear]);
 
   const { searchResults } = useSearchStore();
@@ -346,18 +354,14 @@ export function Canvas({
     });
   }, [searchResults]);
 
-  // TODO: Clean this up or remove if not needed
-  // useEffect(() => {
-  //   const updatedSemesters = generateSemesters(classYear);
-  //   setContainers([SEARCH_RESULTS_ID, ...Object.keys(updatedSemesters)]);
-  // }, [classYear]);
-
   const initialContainers = [SEARCH_RESULTS_ID, ...Object.keys(semesters)];
-  const [containers, setContainers] = useState<UniqueIdentifier[]>(initialContainers);
+  const containers = initialContainers;
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [activeContainerId, setActiveContainerId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  // isSortingContainer is legacy code, since we are not using sortable containers
+  const isSortingContainer = false;
 
   /**
    * Custom collision detection strategy optimized for multiple containers
@@ -407,7 +411,6 @@ export function Canvas({
 
         return [{ id: overId }];
       }
-
       // When a draggable item moves to a new container, the layout may shift
       // and the `overId` may become `null`. We manually set the cached `lastOverId`
       // to the id of the draggable item that was moved to the new container, otherwise
@@ -460,14 +463,9 @@ export function Canvas({
     }
 
     setActiveId(null);
+    setActiveContainerId(null);
     setClonedItems(null);
   };
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      recentlyMovedToNewContainer.current = false;
-    });
-  }, [items]);
 
   return (
     <>
@@ -482,6 +480,7 @@ export function Canvas({
         onDragStart={({ active }) => {
           console.log('Drag started: ', active.id);
           setActiveId(active.id);
+          setActiveContainerId(findContainer(active.id));
           setClonedItems(items);
         }}
         onDragOver={({ active, over }) => {
@@ -505,24 +504,8 @@ export function Canvas({
             setItems((items) => {
               const activeItems = items[activeContainer];
               const overItems = items[overContainer];
-              const overIndex = overItems.indexOf(overId);
               const activeIndex = activeItems.indexOf(active.id);
-
-              let newIndex: number;
-
-              if (overId in items) {
-                newIndex = overItems.length + 1;
-              } else {
-                const isBelowOverItem =
-                  over &&
-                  active.rect.current.translated &&
-                  active.rect.current.translated.top > over.rect.top + over.rect.height;
-
-                const modifier = isBelowOverItem ? 1 : 0;
-
-                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-              }
-
+              const newIndex: number = overItems.length + 1;
               recentlyMovedToNewContainer.current = true;
 
               return {
@@ -538,22 +521,13 @@ export function Canvas({
           }
         }}
         onDragEnd={async ({ active, over }) => {
+          // Active and over are course draggables.
           console.log('Drag end: ', {
             activeId: active.id,
             overId: over?.id,
           });
-          if (active.id in items && over?.id) {
-            setContainers((containers) => {
-              const activeIndex = containers.indexOf(active.id);
-              const overIndex = containers.indexOf(over.id);
 
-              return arrayMove(containers, activeIndex, overIndex);
-            });
-          }
-
-          const activeContainer = findContainer(active.id);
-
-          if (!activeContainer) {
+          if (!activeContainerId) {
             setActiveId(null);
             return;
           }
@@ -562,69 +536,33 @@ export function Canvas({
 
           if (overId === null || overId === undefined) {
             setActiveId(null);
+            setActiveContainerId(null);
             return;
           }
 
-          if (overId === PLACEHOLDER_ID) {
-            const newContainerId = getNextContainerId();
+          const overContainerId = findContainer(overId);
 
-            unstable_batchedUpdates(() => {
-              setContainers((containers) => [...containers, newContainerId]);
-              setItems((items) => ({
-                ...items,
-                [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-                [newContainerId]: [active.id],
-              }));
-              setActiveId(null);
-            });
-            return;
-          }
-
-          const courseId = active.id;
-          const semesterId = activeContainer;
-          const csrfToken = await fetchCsrfToken();
-          // This also should only be updated if the user drops the course into a new semester
-          fetch(`${process.env.BACKEND}/update_courses/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ courseId: courseId, semesterId: semesterId }),
-          })
-            .then((response) => response.json())
-            .then((data) => console.log('Update success', data))
-            .catch((error) => console.error('Update Error:', error));
-
-          const overContainer = findContainer(overId);
-
-          if (overContainer) {
-            const activeIndex = items[activeContainer].indexOf(active.id);
-            const overIndex = items[overContainer].indexOf(overId);
-
-            if (activeIndex !== overIndex) {
-              setItems((items) => ({
-                ...items,
-                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
-              }));
-              checkRequirements();
+          if (overContainerId) {
+            if (activeContainerId !== overContainerId) {
+              const csrfToken = await fetchCsrfToken();
+              fetch(`${process.env.BACKEND}/update_courses/`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ courseId: active.id, semesterId: overContainerId }),
+              })
+                .then((response) => response.json())
+                .then((data) => console.log('Update success', data))
+                .catch((error) => console.error('Update Error:', error));
+              debouncedCheckRequirements();
             }
           }
 
           setActiveId(null);
-
-          // TODO: Clean this up or remove if not needed
-          // fetch(`${process.env.BACKEND}/check_requirements`, {
-          //   method: 'GET',
-          //   credentials: 'include',
-          // })
-          //   .then((response) => response.json())
-          //   .then((data) => {
-          //     console.log('updated data', data);
-          //     setAcademicPlan(data);
-          //   })
-          //   .catch((error) => console.error('Requirements Check Error:', error));
+          setActiveContainerId(null);
         }}
         cancelDrop={cancelDrop}
         onDragCancel={onDragCancel}
@@ -700,7 +638,7 @@ export function Canvas({
                           style={getItemStyles}
                           wrapperStyle={wrapperStyle}
                           onRemove={() => handleRemove(course, containerId)}
-                          renderItem={renderItem} // TODO: This render should be bite-sized (dept + catnum)
+                          renderItem={renderItem}
                           containerId={containerId}
                           getIndex={getIndex}
                         />
@@ -714,9 +652,8 @@ export function Canvas({
             <div style={{ width: '380px' }}>
               <TabbedMenu
                 tabsData={academicPlan}
-                refresh={refreshAcademicPlan}
                 csrfToken={csrfToken}
-                checkRequirements={checkRequirements}
+                checkRequirements={debouncedCheckRequirements}
               />
             </div>
           </div>
@@ -758,6 +695,9 @@ export function Canvas({
     setItems((items) => {
       const updatedCourses = {
         ...items,
+        [SEARCH_RESULTS_ID]: searchResults.map(
+          (course) => `${course.department_code} ${course.catalog_number}`
+        ),
         [containerId]: items[containerId].filter((course) => course !== value.toString()),
       };
       return updatedCourses;
@@ -775,29 +715,90 @@ export function Canvas({
       .then((response) => response.json())
       .then((data) => {
         console.log('Course removed!', data);
-        checkRequirements();
+        debouncedCheckRequirements();
       })
       .catch((error) => console.error('Update Error:', error));
-  }
-
-  function getNextContainerId() {
-    const containerIds = Object.keys(items);
-    const lastContainerId = containerIds[containerIds.length - 1];
-
-    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
   }
 }
 
 function getColor(id: UniqueIdentifier) {
-  switch (String(id)[0]) {
-    case 'A':
-      return '#7193f1';
-    case 'B':
-      return '#ffda6c';
-    case 'C':
-      return '#00bcd4';
-    case 'D':
-      return '#ef769f';
+  switch (String(id)[0] + String(id)[1] + String(id)[2]) {
+    case 'AAS':
+      return '#FF0000'; // Red
+    case 'ANT':
+      return '#00FF00'; // Green
+    case 'ARC':
+      return '#0000FF'; // Blue
+    case 'ART':
+      return '#FFFF00'; // Yellow
+    case 'AST':
+      return '#FF00FF'; // Magenta
+    case 'CBE':
+      return '#00FFFF'; // Cyan
+    case 'CEE':
+      return '#FFA500'; // Orange
+    case 'CHM':
+      return '#800080'; // Purple
+    case 'CLA':
+      return '#008000'; // Dark Green
+    case 'COM':
+      return '#FFC0CB'; // Pink
+    case 'COS':
+      return '#FFD700'; // Gold
+    case 'EAS':
+      return '#FF4500'; // Orange Red
+    case 'ECE':
+      return '#7FFFD4'; // Aquamarine
+    case 'ECO':
+      return '#2E8B57'; // Sea Green
+    case 'EEB':
+      return '#8A2BE2'; // Blue Violet
+    case 'ENG':
+      return '#008080'; // Teal
+    case 'FIT':
+      return '#800000'; // Maroon
+    case 'GEO':
+      return '#4682B4'; // Steel Blue
+    case 'GER':
+      return '#FF6347'; // Tomato
+    case 'HIS':
+      return '#696969'; // Dim Gray
+    case 'MAE':
+      return '#DC143C'; // Crimson
+    case 'MAT':
+      return '#B0C4DE'; // Light Steel Blue
+    case 'MOL':
+      return '#20B2AA'; // Light Sea Green
+    case 'MUS':
+      return '#8B008B'; // Dark Magenta
+    case 'NES':
+      return '#556B2F'; // Dark Olive Green
+    case 'NEU':
+      return '#9932CC'; // Dark Orchid
+    case 'ORF':
+      return '#FF8C00'; // Dark Orange
+    case 'PHI':
+      return '#A52A2A'; // Brown
+    case 'PHY':
+      return '#F08080'; // Light Coral
+    case 'POL':
+      return '#00CED1'; // Dark Turquoise
+    case 'PSY':
+      return '#FFE4E1'; // Misty Rose
+    case 'REL':
+      return '#FFA07A'; // Light Salmon
+    case 'SLA':
+      return '#9370DB'; // Medium Purple
+    case 'SOC':
+      return '#32CD32'; // Lime Green
+    case 'SPO':
+      return '#FF00FF'; // Magenta
+    case 'SPI':
+      return '#1E90FF'; // Dodger Blue
+    case 'IND':
+      return '#D3D3D3'; // Light Gray
+    default:
+      return '#FFFFFF'; // White for unknown department codes
   }
 
   return undefined;
