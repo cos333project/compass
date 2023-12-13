@@ -20,6 +20,7 @@ from compass.models import (
     Minor,
     Certificate,
     UserCourses,
+    CourseComments
 )
 
 # Have a custom check_requirements recursive function for minors. Can
@@ -474,6 +475,30 @@ def format_req_output(req, courses):
         output['unsettled'] = [unsettled, req['id']]
     return output
 
+# ---------------------------- FETCH COURSE COMMENTS ----------------------------------#
+
+
+# dept is the department code (string) and num is the catalog number (int)
+# returns dictionary containing relevant info
+def get_course_comments(dept, num):
+    return ["comment1", "comment2", "comment2", "comment2", "ballsack", "comment2", "comment2", "comment2", "comment2", "comment2", "comment2", "comment2", "comment2"]
+    #dept = str(dept)
+    #num = str(num)
+    #try:
+    #    dept_code = Department.objects.filter(code=dept).first().id
+    #   try:
+    #        this_course_id = Course.objects.filter(
+    #            department__id=dept_code, catalog_number=num
+    #        ).first().course_id
+    #        try:
+    #            comments = CourseComments.objects.filter(id=this_course_id)
+    #            return comments
+    #        except CourseComments.DoesNotExist:
+    #            return None
+    #    except Course.DoesNotExist:
+    #        return None
+    #except Department.DoesNotExist:
+    #    return None
 
 # ---------------------------- FETCH COURSE DETAILS -----------------------------------#
 
@@ -483,6 +508,7 @@ def format_req_output(req, courses):
 def get_course_info(dept, num):
     dept = str(dept)
     num = str(num)
+
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
@@ -535,8 +561,9 @@ def main():
         {'code': 'COS-AB', 'name': 'Computer Science - AB'},
         [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
     )
-    print(output['Minors'])
-    print(get_course_info('SPA', 366))
+    #print(output['Minors'])
+    #print(get_course_info('SPA', 366))
+    print(course_comments('COS', '126'))
 
 
 if __name__ == '__main__':

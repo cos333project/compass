@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { createPortal } from 'react-dom';
 
 import styles from './InfoComponent.module.scss';
+import ReviewMenu from '../ReviewMenu';
 
 interface InfoComponentProps {
   dept: string;
@@ -53,25 +54,34 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
 
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop} onClick={(e) => e.stopPropagation()}>
-      <div className={styles.modal}>
-        {courseDetails ? (
-          <div>
-            {Object.entries(courseDetails).map(([key, value]) => (
-              <div key={key} className={styles.detailRow}>
-                <strong className={styles.strong}>{key}:</strong> {value}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div>Loading...</div>
-        )}
-        <footer className='mt-auto text-right'>
-          <Button variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
-            Close
-          </Button>
-        </footer>
+  <div className={styles.modal} style={{ display: 'flex', flexDirection: 'row', width: '85%' }}> {/* Ensure full width */}
+    {courseDetails ? (
+      <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}> {/* Full width and row direction */}
+        {/* ReviewMenu with explicit width */}
+        <div style={{ width: '40%' }}> {/* Half width */}
+          <ReviewMenu dept={dept} coursenum={coursenum} />
+        </div>
+
+        {/* Details section with explicit width */}
+        <div style={{ width: '60%', paddingLeft: '20px' }}>
+          {Object.entries(courseDetails).map(([key, value]) => (
+            <div key={key} className={styles.detailRow}>
+              <strong className={styles.strong}>{key}:</strong> {value}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    ) : (
+      <div>Loading...</div>
+    )}
+    <footer className='mt-auto text-right'>
+      <Button variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
+        Close
+      </Button>
+    </footer>
+  </div>
+</div>
+
   ) : null;
 
   return (
