@@ -1,9 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import Image from 'next/image';
 
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
+import useAuthStore from '../../store/authSlice';
 
 const teamMembers = [
   { name: 'Windsor Nguyen', gradYear: '2025' },
@@ -14,6 +17,22 @@ const teamMembers = [
 ];
 
 const About = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const { checkAuthentication } = useAuthStore();
+
+  useEffect(() => {
+    checkAuthentication()
+      .then(() => setIsLoading(false))
+      .catch((error) => {
+        console.error('Auth error:', error);
+        setIsLoading(false);
+      });
+  }, [checkAuthentication]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Navbar />
@@ -68,7 +87,7 @@ const About = () => {
                     <div key={member.name} className='bg-white p-6 rounded-lg shadow-sm w-[300px]'>
                       {/* Adjusted image style to be more square */}
                       <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
-                        <Image
+                        <img
                           src={`/member${index + 3}.jpg`}
                           alt={member.name}
                           className='object-cover w-full h-full'

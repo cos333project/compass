@@ -55,56 +55,18 @@ req_list:
   pdfs_allowed: false
   completed_by_semester: 4
   req_list:
+  
+  # TODO: Cover other viable calculus sequences (not before presentation)
   - name: Calculus
     max_counted: 1
-    min_needed: 1
+    min_needed: ALL
     explanation: |-
-      The standard BSE calculus sequence (or equivalent).
+      Prospective students must complete the standard BSE calculus
+      sequence (or equivalent).
     course_list:
     - MAT 103
     - MAT 104
     - MAT 201
-
-    # TODO: Add EGR math courses and MAT 175? (IW)
-    - name: Standard
-      max_counted: 1
-      min_needed: ALL
-      explanation: |-
-        The standard BSE calculus sequence (or equivalent).
-      course_list:
-      - MAT 103
-      - MAT 104
-      - MAT 201
-
-    - name: Intermediate
-      max_counted: 1
-      min_needed: ALL
-      explanation: |-
-        The calculus sequence for students who did well in
-        high school calculus.
-      course_list:
-      - MAT 104
-      - MAT 201
-
-    - name: Accelerated
-      max_counted: 1
-      min_needed: 1
-      explanation: |-
-        The calculus sequence for students with a robust foundation
-        in calculus and/or have seen multivariable calculus before.
-      course_list:
-      - MAT 201
-
-    - name: Advanced
-      max_counted: 1
-      min_needed: 1
-      explanation: |-
-        For very strong calculus students, most of which have
-        prior experience with proofs or adequate mathematical
-        maturity.
-      course_list:
-      - MAT 203
-      - MAT 215
 
   - name: Linear Algebra
     max_counted: 1
@@ -112,26 +74,10 @@ req_list:
     explanation: |-
       Prospective students must complete the standard BSE linear algebra
       requirement.
-    req_list:
-    - name: Standard
-      max_counted: 1
-      min_needed: 1
-      explanation: |-
-        Prospective students must complete the standard BSE linear algebra
-        requirement.
-      course_list:
-      - MAT 202
-
-    - name: Advancced
-      max_counted: 1
-      min_needed: 1
-      explanation: |-
-        Prospective students must complete the standard BSE linear algebra
-        requirement.
-      course_list:
-      - MAT 204
-      - MAT 217
-    
+    course_list:
+    - MAT 202
+    - MAT 204
+    - MAT 217
 
 - name: Core
   max_counted: 1
@@ -219,8 +165,8 @@ req_list:
       - ORF 335
 
 - name: Departmental Electives
-  max_counted: 10
-  min_needed: 2
+  max_counted: 1
+  min_needed: 1
   explanation: |-
     The departmental electives represent courses that further develop a 
     student’s skills in mathematical modeling either by a more in-depth
@@ -491,7 +437,7 @@ req_list:
     - ORF 405
     - ORF 467
 
-- name: Senior Thesis
+- name: Senior Independent Research
   max_counted: 1
   min_needed: 1
   explanation: |-
@@ -509,38 +455,20 @@ req_list:
     max_counted: 1
     min_needed: 1
     explanation: |-
-      Senior Thesis - ORF 478 - A full year effort that involves a major 
-      application of the techniques in the program applied to a topic 
-      that a student chooses in consultation with a faculty advisor. 
-      
-      Students interested in a full-year senior thesis must be willing
-      to spend the appropriate time during both the fall and the spring
-      semesters. Students who are unable to make adequate progress can
-      switch to ORF 479 and be required to take eleven departmental
-      electives.
-
-      Students will enroll in the spring and will receive credit for
-      two course grades given in the spring.
-
+      Senior Thesis - ORF 478 - A full year effort that involves a major application of the techniques in the program applied to a topic that a student chooses in consultation with a faculty advisor. Students interested in a full-year senior thesis must be willing to spend the appropriate time during both the fall and the spring semesters.
+      Students who are unable to make adequate progress can switch to ORF 479 and be required to take eleven departmental electives. Students will enroll in the spring and will receive credit for two course grades given in the spring.
     course_list:
     - ORF 478
   - name: Senior Independent Project
     max_counted: 1
     min_needed: ALL
-    explanation: |-
-      Senior Independent Project - ORF 479 (Spring semester only) - A short
+    explanation: Senior Independent Project - ORF 479 (Spring semester only) - A short
       progress report will be due in January, (Dean’s Date) to make sure that the
-      students have chosen a suitable topic and matched up with their advisor. 
-
-      The final outcome will be a report due at the end of the spring semester. 
-
-      The report will fully describe the research project and its results. 
-
-      Typically projects will take approximately 30 to 50 pages. 
-      
-      Also, students who take the independent project will need to take an 
-      additional 4XX ORFE departmental elective.
-
+      students have chosen a suitable topic and matched up with their advisor. The
+      final outcome will be a report due at the end of the spring semester. The report
+      will fully describe the research project and its results. Typically projects
+      will take approximately 30 to 50 pages. (Also, students who take the independent
+      project will need to take an additional 4XX ORFE departmental elective.)
     req_list:
     - name: Project
       max_counted: 1

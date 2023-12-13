@@ -1,9 +1,20 @@
 'use client';
 
+import { useEffect } from 'react';
+
+import useAuthStore from '@/store/authSlice';
+
 import Footer from '../../components/Footer';
 import Navbar from '../../components/Navbar';
 
 const Contact = () => {
+  const { checkAuthentication } = useAuthStore();
+
+  useEffect(() => {
+    checkAuthentication().catch((error) => {
+      console.error('Auth error:', error);
+    });
+  }, [checkAuthentication]);
   return (
     <>
       <Navbar />
