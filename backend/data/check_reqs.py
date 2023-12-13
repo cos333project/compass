@@ -20,6 +20,8 @@ from compass.models import (
     Minor,
     Certificate,
     UserCourses,
+    CourseComments,
+    CourseEvaluations
 )
 
 # Have a custom check_requirements recursive function for minors. Can
@@ -478,6 +480,55 @@ def format_req_output(req, courses):
         output['unsettled'] = [unsettled, req['id']]
     return output
 
+# ---------------------------- FETCH COURSE COMMENTS ----------------------------------#
+
+
+# dept is the department code (string) and num is the catalog number (int)
+# returns dictionary containing relevant info
+def get_course_comments(dept, num):
+    dept = str(dept)
+    num = str(num)
+    try:
+        dept_code = Department.objects.filter(code=dept).first().id
+        try:
+            this_course_id = Course.objects.filter(
+                department__id=dept_code, catalog_number=num
+            ).first().guid
+            this_course_id = this_course_id[4:]
+            try:
+                comments = list(CourseComments.objects.filter(course_guid__endswith = this_course_id))
+                li = []
+                for commentobj in comments:
+                    if 2 <= len(commentobj.comment) <= 2000:
+                        li.append(commentobj.comment)
+                cleaned_li = []
+                for element in li:
+                    element = element.replace('\\"', '"')
+                    element = element.replace('it?s', 'it\'s')
+                    element = element.replace('?s', '\'s')
+                    element = element.replace('?r', '\'r')
+                    if element[0] == '[' and element[len(element) - 1] == ']':
+                        element = element[1:len(element) - 1]
+
+                    cleaned_li.append(element)
+                dict = {}
+                dict['reviews'] = cleaned_li
+
+                try:
+                    quality_of_course = CourseEvaluations.objects.filter(course_guid__endswith=this_course_id).first().quality_of_course
+                    dict['rating'] = quality_of_course
+                    
+                except CourseEvaluations.DoesNotExist:
+                    return dict
+                
+                return dict
+            
+            except CourseComments.DoesNotExist:
+                return None
+        except Course.DoesNotExist:
+            return None
+    except Department.DoesNotExist:
+        return None
 
 # ---------------------------- FETCH COURSE DETAILS -----------------------------------#
 
@@ -487,6 +538,7 @@ def format_req_output(req, courses):
 def get_course_info(dept, num):
     dept = str(dept)
     num = str(num)
+
     try:
         dept_code = Department.objects.filter(code=dept).first().id
         try:
@@ -514,17 +566,16 @@ def get_course_info(dept, num):
             # if instructor:
             #    course_dict["Professor"] = instructor
             if course.reading_list:
-                reading_list = course.reading_list.replace('//', ', ').strip()
-                reading_list = reading_list.replace(';', '; ').strip()
-                course_dict['Reading List'] = reading_list
+                clean_reading_list = course.reading_list
+                clean_reading_list = clean_reading_list.replace('//', ', by ')
+                clean_reading_list = clean_reading_list.replace(';', '; ')
+                course_dict['Reading List'] = clean_reading_list
             if course.reading_writing_assignment:
                 course_dict[
                     'Reading / Writing Assignments'
                 ] = course.reading_writing_assignment
             if course.grading_basis:
                 course_dict['Grading Basis'] = course.grading_basis
-            if course.web_address:
-                course_dict['Relevant Links'] = course.web_address
             return course_dict
 
         except Course.DoesNotExist:
@@ -534,13 +585,14 @@ def get_course_info(dept, num):
 
 
 def main():
-    output = check_user(
-        'mn4560',
-        {'code': 'COS-AB', 'name': 'Computer Science - AB'},
-        [{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
-    )
-    print(output['Minors'])
-    print(get_course_info('SPA', 366))
+    #output = check_user(
+        #'mn4560',
+        #{'code': 'COS-AB', 'name': 'Computer Science - AB'},
+        #[{'code': 'CLA', 'name': 'Classics'}, {'code': 'FIN', 'name': 'Finance'}],
+    #)
+    #print(output['Minors'])
+    #print(get_course_info('SPA', 366))
+    print(get_course_comments('COS', '126'))
 
 
 if __name__ == '__main__':

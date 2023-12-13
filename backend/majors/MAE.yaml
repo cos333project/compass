@@ -3,37 +3,51 @@ type: Major
 name: Mechanical and Aerospace Engineering
 code: MAE
 degree: BSE
+description: |-
+  The department offers two programs of study: mechanical engineering and aerospace engineering. 
+  These programs draw on courses in the underlying fundamental sciences and mathematics during 
+  the first year, which lead to broad introductory engineering science courses during the second
+  year, where students are introduced to the creative application of this knowledge to the solution
+  of technical problems. Aspects of engineering design, the process of devising a system to meet 
+  a need, are introduced to the student through laboratories in the second year and continue through
+  the upper-level years. Starting as early as the second semester of the sophomore year students 
+  take a two-semester design sequence as well as engineering science courses dealing with analysis
+  and application in the areas of energy sources and power systems, structures, aerodynamics and 
+  flow systems, and the dynamics of machines and their control. The early introduction of design, 
+  combined with further depth in engineering science, enables students to undertake realistic design
+  projects during their senior year. The programs are designed to prepare the graduate for an 
+  engineering career and give them the ability to continue to grow professionally.
+
 urls:
 - https://ua.princeton.edu/academic-units/department-mechanical-and-aerospace-engineering-0
 - https://mae.princeton.edu/undergraduate/programs
-- https://mae.princeton.edu/sites/default/files/MAE-UG%20HANDBOOK%20AY%202021-2022%20Classes%202022%20-2025%20for%20Web%20April%202021.pdf
+- https://mae.princeton.edu/sites/default/files/2023-11/MAE-UG%20HANDBOOK%20AY%202023-2024%20Class%202026-%20final.pdf
+
 contacts:
-- type: Undergraduate Representative
+- type: Director of Undergraduate Studies
   name: Michael G. Littman
   email: mlittman@princeton.edu
 - type: Undergraduate Administrator
-  name: Jo Ann Love
-  email: jolove@princeton.edu
-- type: Academic Program Assistant
   name: Theresa Russo
   email: tar3@princeton.edu
 - type: Independent Work Advisor
   name: Luigi Martinelli
-  email: gigi@phantom2.princeton.edu
+  email: martinel@princeton.edu
+
 req_list:
 - name: General Requirements
   max_counted: 1
   min_needed: ALL
   explanation: |
-    Requirements for study in the department follow the general requirements for the School of Engineering and Applied Science. In addition, the following four courses and one laboratory are normally completed by departmental students before entry into the junior year.
-    Mechanical and Aerospace Engineering
-    206 Introduction to Engineering Dynamics
-    221 Thermodynamics
-    222 Mechanics of Fluids
-    223 Modern Solid Mechanics
-    224 Integrated Engineering Science Laboratory
-    Some of the above can be satisfied by equivalent courses. For example, students with an interest in structures may take CEE 205 Mechanics of Solids in place of MAE 223; and students with an interest in engineering physics may take PHY 205 Classical Mechanics or PHY 207 Mechanics and Waves in place of MAE 206.
-    Each departmental student will be introduced to instrumentation and computer-based data acquisition in the MAE 224 laboratory.
+    Requirements for study in the department follow the general 
+    requirements for the School of Engineering and Applied Science. 
+    In addition, the following four courses and one laboratory are 
+    normally completed by departmental students before entry into the
+    junior year.
+
+  req_list:
+    name:
+      
   completed_by_semester: 4
   pdfs_allowed: false
   req_list:
