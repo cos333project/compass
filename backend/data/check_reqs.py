@@ -503,6 +503,8 @@ def get_course_comments(dept, num):
                     element = element.replace('it?s', 'it\'s')
                     element = element.replace('?s', '\'s')
                     element = element.replace('?r', '\'r')
+                    if element[0] == '[' and element[len(element) - 1] == ']':
+                        element = element[1:len(element) - 1]
 
                     cleaned_li.append(element)
                 dict = {}
