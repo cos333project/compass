@@ -47,7 +47,7 @@ contacts:
 req_list:
 - name: Prerequisites
   max_counted: 1
-  min_needed: 1
+  min_needed: 2
   explanation: |-
     In preparation for the ORFE core courses, prospective students are
     recommended to take the following (or equivalent): MAT 104, MAT 201
@@ -57,24 +57,81 @@ req_list:
   req_list:
   - name: Calculus
     max_counted: 1
-    min_needed: ALL
+    min_needed: 1
     explanation: |-
-      Prospective students must complete the standard BSE calculus
-      sequence (or equivalent).
+      The standard BSE calculus sequence (or equivalent).
     course_list:
     - MAT 103
     - MAT 104
     - MAT 201
 
+    # TODO: Add EGR math courses and MAT 175? (IW)
+    - name: Standard
+      max_counted: 1
+      min_needed: ALL
+      explanation: |-
+        The standard BSE calculus sequence (or equivalent).
+      course_list:
+      - MAT 103
+      - MAT 104
+      - MAT 201
+
+    - name: Intermediate
+      max_counted: 1
+      min_needed: ALL
+      explanation: |-
+        The calculus sequence for students who did well in
+        high school calculus.
+      course_list:
+      - MAT 104
+      - MAT 201
+
+    - name: Accelerated
+      max_counted: 1
+      min_needed: 1
+      explanation: |-
+        The calculus sequence for students with a robust foundation
+        in calculus and/or have seen multivariable calculus before.
+      course_list:
+      - MAT 201
+
+    - name: Advanced
+      max_counted: 1
+      min_needed: 1
+      explanation: |-
+        For very strong calculus students, most of which have
+        prior experience with proofs or adequate mathematical
+        maturity.
+      course_list:
+      - MAT 203
+      - MAT 215
+
   - name: Linear Algebra
     max_counted: 1
     min_needed: 1
     explanation: |-
-      Prospective students must complete the standard BSE linear algebra sequence.
-    course_list:
-    - MAT 202
-    - MAT 204
-    - MAT 217
+      Prospective students must complete the standard BSE linear algebra
+      requirement.
+    req_list:
+    - name: Standard
+      max_counted: 1
+      min_needed: 1
+      explanation: |-
+        Prospective students must complete the standard BSE linear algebra
+        requirement.
+      course_list:
+      - MAT 202
+
+    - name: Advancced
+      max_counted: 1
+      min_needed: 1
+      explanation: |-
+        Prospective students must complete the standard BSE linear algebra
+        requirement.
+      course_list:
+      - MAT 204
+      - MAT 217
+    
 
 - name: Core
   max_counted: 1
@@ -161,22 +218,27 @@ req_list:
       course_list:
       - ORF 335
 
-req_list:
 - name: Departmental Electives
-  max_counted: 1
-  min_needed: 4
+  max_counted: 10
+  min_needed: 2
   explanation: |-
-    The departmental electives represent courses that further develop a student’s skills in mathematical modeling either by a more in-depth investigation of core methodologies, applying these skills in specific areas of application, or learning about closely related technologies. Students must choose ten courses from the following list, with the following constraints:
-    - There must be at least four courses from ORFE
-    - There can be no more than three courses from any one department (excluding ORFE)
+    The departmental electives represent courses that further develop a 
+    student’s skills in mathematical modeling either by a more in-depth
+    investigation of core methodologies, applying these skills in specific
+    areas of application, or learning about closely related technologies.
+    Students must choose ten courses from the following list, with the
+    following constraints:
 
+    1. There must be at least four courses from ORFE.
+    2. There can be no more than three courses from any one department
+    (excluding ORFE).
 
   pdfs_allowed: false
   completed_by_semester: 8
   req_list:
   - name: ORFE Departmentals
-    max_counted: 1
-    min_needed: 1
+    max_counted: 10
+    min_needed: 4
     explanation: There must be at least four courses from ORFE.
     course_list:
     - ORF 311
@@ -197,9 +259,10 @@ req_list:
     - ORF 467
     - ORF 473
     - ORF 474
+
   - name: Other Departments
-    max_counted: 1
-    min_needed: 1
+    max_counted: 3
+    min_needed:
     explanation: |-
       There can be no more than three courses from any one department (excluding ORFE).
 
@@ -208,24 +271,24 @@ req_list:
     completed_by_semester: 8
     req_list:
     - name: Civil and Environmental Engineering
-      max_counted: 1
-      min_needed: 1
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - CEE 304
       - CEE 460
 
     - name: Chemistry
-      max_counted: 1
-      min_needed: 1
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - CHM 301
       - CHM 302
 
     - name: Computer Science
-      max_counted: 1
-      min_needed: 1
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - COS 217
@@ -235,8 +298,8 @@ req_list:
       - COS 485
 
     - name: Economics
-      max_counted: 1
-      min_needed: 1
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - ECO 310
@@ -256,15 +319,15 @@ req_list:
       - ECO 467
 
     - name: Ecology and Evolutionary Biology
-      max_counted: 1
-      min_needed: 
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - EEB 324
 
     - name: Electrical and Computer Engineering
-      max_counted: 1
-      min_needed: 
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - ECE 301
@@ -273,15 +336,15 @@ req_list:
       - ECE 486
 
     - name: Environmental Studies
-      max_counted: 1
-      min_needed: 
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - ENV 302
 
     - name: Mechanical and Aerospace Engineering
-      max_counted: 1
-      min_needed: 
+      max_counted:
+      min_needed:
       explanation:
       course_list:
       - MAE 206
@@ -290,14 +353,15 @@ req_list:
       - MAE 434
 
     - name: Mathematics
-      max_counted: 1
-      min_needed: 
+      max_counted: 3
+      min_needed:
       explanation:
       req_list:
       - name: Upper-level Mathematics
         max_counted:
         min_needed:
-        explanation:
+        explanation: Students may choose for a variety of upper-level
+          mathematics courses.
         course_list:
         - MAT 320
         - MAT 322
@@ -312,43 +376,46 @@ req_list:
       - name: Differential Equations
         max_counted: 1
         min_needed:
-        explanation: MAT 391/MAE 305 and MAT 427 cannot both be taken because the
-          content is too similar.
+        explanation: MAT 391/MAE 305 and MAT 427 cannot both be taken
+          because the content is too similar.
         course_list:
         - MAT 391
         - MAT 427
 
     - name: Molecular Biology
-      max_counted: 1
+      max_counted:
       min_needed:
-      explanation:
+      explanation: Prospective ORFE majors may elect to take biochemistry
+        as a departmental.
       course_list:
       - MOL 345
 
     - name: Neuroscience
-      max_counted: 1
+      max_counted:
       min_needed:
-      explanation:
+      explanation: Prospective ORFE majors may elect to take the following
+        computational neuroscience classes as departmentals
       course_list:
       - NEU 437
       - NEU 330
 
     - name: Psychology
-      max_counted: 1
+      max_counted:
       min_needed:
-      explanation:
+      explanation: Prospective ORFE majors may elect to take
+        Computational Models of Cognition as a departmental.
       course_list:
       - PSY 360
 
 - name: Tracks
-  max_counted: 1
-  min_needed: 1
+  max_counted:
+  min_needed:
   explanation: Students often wish to follow a theme in their selection of courses.
     These are a few possible themes.
   double_counting_allowed: true
   req_list:
   - name: Applied Mathematics
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -358,7 +425,7 @@ req_list:
 #   - MAE 406 # doesn't seem to exist
     - ORF 405
   - name: Engineering Systems
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -369,7 +436,7 @@ req_list:
     - ECE 301
     - MAE 433
   - name: Financial Engineering
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -390,7 +457,7 @@ req_list:
     - COS 226
 #   - COS 425 # doesn't seem to exist
   - name: Machine Learning
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -401,7 +468,7 @@ req_list:
     - ORF 411
     - ORF 418
   - name: Pre-Med / Health Care
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -413,7 +480,7 @@ req_list:
     - ORF 411
     - ORF 418
   - name: Statistics
-    max_counted: 1
+    max_counted:
     min_needed: ALL
     explanation:
     course_list:
@@ -424,7 +491,7 @@ req_list:
     - ORF 405
     - ORF 467
 
-- name: Senior Independent Research
+- name: Senior Thesis
   max_counted: 1
   min_needed: 1
   explanation: |-
@@ -442,20 +509,38 @@ req_list:
     max_counted: 1
     min_needed: 1
     explanation: |-
-      Senior Thesis - ORF 478 - A full year effort that involves a major application of the techniques in the program applied to a topic that a student chooses in consultation with a faculty advisor. Students interested in a full-year senior thesis must be willing to spend the appropriate time during both the fall and the spring semesters.
-      Students who are unable to make adequate progress can switch to ORF 479 and be required to take eleven departmental electives. Students will enroll in the spring and will receive credit for two course grades given in the spring.
+      Senior Thesis - ORF 478 - A full year effort that involves a major 
+      application of the techniques in the program applied to a topic 
+      that a student chooses in consultation with a faculty advisor. 
+      
+      Students interested in a full-year senior thesis must be willing
+      to spend the appropriate time during both the fall and the spring
+      semesters. Students who are unable to make adequate progress can
+      switch to ORF 479 and be required to take eleven departmental
+      electives.
+
+      Students will enroll in the spring and will receive credit for
+      two course grades given in the spring.
+
     course_list:
     - ORF 478
   - name: Senior Independent Project
     max_counted: 1
     min_needed: ALL
-    explanation: Senior Independent Project - ORF 479 (Spring semester only) - A short
+    explanation: |-
+      Senior Independent Project - ORF 479 (Spring semester only) - A short
       progress report will be due in January, (Dean’s Date) to make sure that the
-      students have chosen a suitable topic and matched up with their advisor. The
-      final outcome will be a report due at the end of the spring semester. The report
-      will fully describe the research project and its results. Typically projects
-      will take approximately 30 to 50 pages. (Also, students who take the independent
-      project will need to take an additional 4XX ORFE departmental elective.)
+      students have chosen a suitable topic and matched up with their advisor. 
+
+      The final outcome will be a report due at the end of the spring semester. 
+
+      The report will fully describe the research project and its results. 
+
+      Typically projects will take approximately 30 to 50 pages. 
+      
+      Also, students who take the independent project will need to take an 
+      additional 4XX ORFE departmental elective.
+
     req_list:
     - name: Project
       max_counted: 1
