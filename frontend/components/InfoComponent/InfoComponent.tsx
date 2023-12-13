@@ -37,7 +37,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
   }, [showPopup, dept, coursenum]);
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (modalContent && (event.key === 'Escape')) {
+    if (modalContent && (event.key === 'Escape' || event.key === 'Enter')) {
       handleClose(event);
     }
   });

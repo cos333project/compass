@@ -41,7 +41,7 @@ const DropdownMenu: FC = () => {
   // };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (isMenuOpen && (event.key === 'Escape')) {
+    if (isMenuOpen && (event.key === 'Escape' || event.key === 'Enter')) {
       event.stopPropagation();
       setIsMenuOpen(!isMenuOpen);
     }

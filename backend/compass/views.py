@@ -21,7 +21,7 @@ import json
 from data.configs import Configs
 from data.req_lib import ReqLib
 from data.check_reqs import check_user, create_courses
-from data.check_reqs import get_course_info
+from data.check_reqs import get_course_info, fetch_requirement_info
 from datetime import datetime
 from django.conf import settings
 
@@ -598,5 +598,10 @@ def check_requirements(request):
                 pretty_print(value, indent + 1)
             else:
                 print('  ' * (indent + 1) + str(value))
+    pretty_print(formatted_dict, 2)
 
     return JsonResponse(formatted_dict)
+
+def requirement_info(request):
+    info = fetch_requirement_info(request.GET.get('reqId', ''))
+    return JsonResponse(info)

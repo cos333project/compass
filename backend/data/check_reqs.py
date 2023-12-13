@@ -20,6 +20,7 @@ from compass.models import (
     Minor,
     Certificate,
     UserCourses,
+    Requirement
 )
 
 # Have a custom check_requirements recursive function for minors. Can
@@ -432,7 +433,7 @@ def format_req_output(req, courses):
     #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
     if (req['inst']._meta.db_table == 'Requirement') and req['inst'].name:
         output['name'] = req['inst'].name
-
+    output['req_id'] = req['id']
     output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
     output['count'] = str(req['count'])
     output['min_needed'] = str(req['inst'].min_needed)
@@ -481,7 +482,6 @@ def format_req_output(req, courses):
 
 # ---------------------------- FETCH COURSE DETAILS -----------------------------------#
 
-
 # dept is the department code (string) and num is the catalog number (int)
 # returns dictionary containing relevant info
 def get_course_info(dept, num):
@@ -529,6 +529,31 @@ def get_course_info(dept, num):
             return None
     except Course.DoesNotExist:
         return None
+
+# ---------------------------- FETCH REQUIREMENT INFO -----------------------------------#
+
+def fetch_requirement_info(req_id):
+    try:
+        explanation = Requirement.objects.get(id=req_id)
+        explanation = explanation.explanation
+    except Course.DoesNotExist:
+        explanation = ''
+
+    try:
+        course_list = Requirement.objects.get(id=req_id)
+        course_list = course_list.course_list.all()
+        satisfying_courses = []
+        for course in course_list:
+            satisfying_courses.append(f'{course.department.code} {course.catalog_number}')
+        print(satisfying_courses)
+    except Course.DoesNotExist:
+        satisfying_courses = []
+    
+    info = {}
+    info[0] = explanation
+    info[1] = satisfying_courses
+    
+    return info
 
 
 def main():

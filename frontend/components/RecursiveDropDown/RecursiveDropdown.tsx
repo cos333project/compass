@@ -51,27 +51,38 @@ const SatisfactionStatus: FC<SatisfactionStatusProps> = ({ satisfied, count, min
 // Dropdown component with refined styling
 const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [explanation, setExplanation] = useState<{ [key: string]: any } | null>(null);
-
-  useEffect(() => {
-    if (showPopup) {
-      /* QUERY NEW ENDPOINT */
-    }
-  }, [showPopup]);
+  const [explanation, setExplanation] = useState<{ [key: number]: any } | null>(null);
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (modalContent && (event.key === 'Escape')) {
+    if (modalContent && (event.key === 'Escape' || event.key === 'Enter')) {
       event.stopPropagation();
       handleClose(event);
     }
   });
 
-  const handleExplanationClick = (e) => {
+  const handleExplanationClick = (e, reqId) => {
+    const url = new URL(`${process.env.BACKEND}/requirement_info/`);
+    url.searchParams.append('reqId', reqId);
+
+    fetch(url.toString(), {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setExplanation(data);
+        console.log(data);
+      })
+      .catch((error) => console.error('Requirement Info Error:', error));
     e.stopPropagation();
     setShowPopup(true);
   };
 
   const handleClose = (e) => {
+    setExplanation('');
     e.stopPropagation();
     setShowPopup(false);
   };
@@ -79,12 +90,32 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop}>
       <div className={styles.modal}>
-        {explanation ? (
-          <div>PUT EXPLANATION AND SATISFYING COURSES HERE
-          </div>
-        ) : (
-          <div>Loading...</div>
-        )}
+        <div className={styles.detailRow}>
+          {explanation ? (
+            Object.entries(explanation).map(([index, value]) => {
+              if (index === '0') {
+                if (value) {
+                  return(<div>
+                    <strong className={styles.strong}>{'Explanation'}:</strong> {value}
+                    </div>)
+                }
+                else {
+                  return(<div>
+                    <strong className={styles.strong}>{'Explanation'}:</strong> {'No explanation available'}
+                    </div>)
+                }
+              }
+              else if (value[0]) {
+                return(<div>
+                  <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
+                  {value.map((course) => {return `${course}, `}).join('').slice(0, -2)}
+                  </div>)
+              }
+            })
+          ) : (
+            <div>Loading...</div>
+          )}
+        </div>
         <footer className='mt-auto text-right'>
           <JoyButton variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
             Close
@@ -112,9 +143,10 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
 
     checkRequirements();
   };
+
   const renderContent = (data: Dictionary) => {
     return Object.entries(data).map(([key, value]) => {
-      if (key === 'satisfied' || key === 'count' || key === 'min_needed') {
+      if (key === 'req_id' || key === 'satisfied' || key === 'count' || key === 'min_needed') {
         return null;
       }
       const isArray = Array.isArray(value);
@@ -181,7 +213,7 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
             style={{ backgroundColor: '#f6f6f6' }} // subtle background color
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <div className={classNames(styles.Action)} onClick={handleExplanationClick}>
+              <div className={classNames(styles.Action)} onClick={(e) => handleExplanationClick(e, data[key]['req_id'])}>
                 <Typography style={{ fontWeight: 500 }}>{key}</Typography>
               </div>
               {satisfactionElement}
