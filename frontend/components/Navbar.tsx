@@ -25,7 +25,7 @@ const Navbar: FC = () => {
   const { mobileMenuOpen, setMobileMenuOpen } = useMobileMenuStore();
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();   
+    e.preventDefault();
     // Otherwise, navigate to the dashboard
     login();
   };
