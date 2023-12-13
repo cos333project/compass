@@ -22,7 +22,7 @@ from compass.models import (
     UserCourses,
     Requirement,
     CourseComments,
-    CourseEvaluations
+    CourseEvaluations,
 )
 
 # Have a custom check_requirements recursive function for minors. Can

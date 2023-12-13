@@ -20,7 +20,12 @@ from .serializers import CourseSerializer
 import json
 from data.configs import Configs
 from data.req_lib import ReqLib
-from data.check_reqs import get_course_info, fetch_requirement_info, get_course_comments, check_user
+from data.check_reqs import (
+    get_course_info,
+    fetch_requirement_info,
+    get_course_comments,
+    check_user,
+)
 from datetime import datetime
 from django.conf import settings
 
