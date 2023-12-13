@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { Rating } from '@mui/material';
 
 interface ReviewMenuProps {
@@ -23,48 +24,68 @@ const ReviewMenu: React.FC<ReviewMenuProps> = ({ dept, coursenum }) => {
           'Content-Type': 'application/json',
         },
       })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.reviews) {
-          setReviews(data.reviews);
-        }
-        if (data && data.rating) {
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.reviews) {
+            setReviews(data.reviews);
+          }
+          if (data && data.rating) {
             setRating(data.rating);
           }
-      })
-      .catch((error) => console.error('Error:', error));
+        })
+        .catch((error) => console.error('Error:', error));
     }
   }, [dept, coursenum]);
 
-
   return (
-<div style={{ width: '450px', margin: '0 auto', border: '1px solid rgba(205,215,225,255)', padding: '20px', borderRadius: '5px'}}>
-  
-    <table>
-      <tr>
-        <td>
-            <strong style={{ color: '#333', display: 'block' }}>
-                Course Reviews
-            </strong>
-        </td>
-        <td width="120px"></td>
-        <td>{rating}</td>
-        <td> <Rating name = "course rating" value = {rating} precision = {0.5} readOnly /> </td>
-      </tr>
-    </table>
-     
-    
-  <div style={{ height: '400px', overflowY: 'auto', border: '1px solid rgba(205,215,225,255)', padding: '10px', marginTop: '10px', borderRadius: '5px' }}>
-    {reviews.map((review, index) => (
-      <div key={index} style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0, 0, 0, 1)', paddingBottom: '10px' }}>
-        <div style={{ color: 'black' }}>{review}</div>
-      </div>
-    ))}
-  </div>
-</div>
+    <div
+      style={{
+        width: '450px',
+        margin: '0 auto',
+        border: '1px solid rgba(205,215,225,255)',
+        padding: '20px',
+        borderRadius: '5px',
+      }}
+    >
+      <table>
+        <tr>
+          <td>
+            <strong style={{ color: '#333', display: 'block' }}>Course Reviews</strong>
+          </td>
+          <td width='120px'></td>
+          <td>{rating}</td>
+          <td>
+            {' '}
+            <Rating name='course rating' value={rating} precision={0.5} readOnly />{' '}
+          </td>
+        </tr>
+      </table>
 
+      <div
+        style={{
+          height: '400px',
+          overflowY: 'auto',
+          border: '1px solid rgba(205,215,225,255)',
+          padding: '10px',
+          marginTop: '10px',
+          borderRadius: '5px',
+        }}
+      >
+        {reviews.map((review, index) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: '10px',
+              borderBottom: '1px solid rgba(0, 0, 0, 1)',
+              paddingBottom: '10px',
+            }}
+          >
+            <div style={{ color: 'black' }}>{review}</div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
 export default ReviewMenu;
-
