@@ -562,7 +562,7 @@ def course_comments(request):
             return JsonResponse({'error': 'Invalid course number'}, status=400)
 
         course_comments = get_course_comments(dept, num)
-        return JsonResponse({'reviews' : course_comments})
+        return JsonResponse(course_comments)
     else:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 

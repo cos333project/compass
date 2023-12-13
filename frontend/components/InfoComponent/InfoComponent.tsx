@@ -54,35 +54,37 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
 
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop} onClick={(e) => e.stopPropagation()}>
-  <div className={styles.modal} style={{ display: 'flex', flexDirection: 'row', width: '85%' }}> {/* Ensure full width */}
-    {courseDetails ? (
-      <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}> {/* Full width and row direction */}
-        {/* ReviewMenu with explicit width */}
-        <div style={{ width: '40%' }}> {/* Half width */}
-          <ReviewMenu dept={dept} coursenum={coursenum} />
-        </div>
-
-        {/* Details section with explicit width */}
-        <div style={{ width: '60%', paddingLeft: '20px' }}>
-          {Object.entries(courseDetails).map(([key, value]) => (
-            <div key={key} className={styles.detailRow}>
-              <strong className={styles.strong}>{key}:</strong> {value}
+      <div className={styles.modal} style={{ width: '85%', height: '75%', padding: '25px'}}> {/* Ensure full width */}
+        {courseDetails ? (
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100vw', overflowX: 'auto', overflowY: 'auto' }}> {/* Full width and row direction */}
+            {/* Details section with explicit width */}
+            <div style={{ height: '485px', overflowWrap: 'break-word', flexWrap: 'wrap', overflowY: 'auto', width: '55%', paddingLeft: '10px' }}>
+              <div>
+                {Object.entries(courseDetails).map(([key, value]) => (
+                  <div key={key} className={styles.detailRow}>
+                    <strong className={styles.strong}>{key}:</strong> {value}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+            {/* ReviewMenu with explicit width */}
+            <div style={{ paddingLeft: '20px', width: '45%', height: '400px' }}> {/* Half width */}
+              <ReviewMenu dept={dept} coursenum={coursenum} />
+            </div>
+          </div>
+          ) : (
+            <div>Loading...</div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
+          <footer className='mt-auto text-right'>
+            <Button variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
+              Close
+            </Button>
+          </footer>
         </div>
       </div>
-    ) : (
-      <div>Loading...</div>
-    )}
-    <footer className='mt-auto text-right'>
-      <Button variant='outlined' color='neutral' onClick={handleClose} sx={{ ml: 2 }} size='sm'>
-        Close
-      </Button>
-    </footer>
-  </div>
-</div>
-
-  ) : null;
+    </div>
+    ) : null;
 
   return (
     <>
