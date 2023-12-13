@@ -13,7 +13,7 @@ import { Login } from './Login';
 const navigation = [
   { name: 'About', href: '/about/' },
   { name: 'Dashboard', href: '/dashboard/' }, // Should be protected path and not auto-redirect
-  { name: 'Contact Us', href: '/' },
+  { name: 'Contact Us', href: '/contact/' },
 ];
 
 const Navbar: FC = () => {
