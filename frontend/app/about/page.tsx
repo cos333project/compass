@@ -36,7 +36,7 @@ const About = () => {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col min-h-screen pt-10 rounded-xl'>
+      <div className='flex flex-col min-h-screen pt-10 rounded-xl '>
         <div className='relative isolate pt-14'>
           {/* Background Gradient Effect */}
           <div
@@ -53,7 +53,7 @@ const About = () => {
           </div>
 
           {/* Team Members Section */}
-          <div className='bg-gray-100 py-12 sm:py-16 lg:pb-20'>
+          <div className='bg-gray-100 py-12 sm:py-16 lg:pb-20 overflow-x-auto'>
             <div className='mx-auto max-w-7xl px-6 lg:px-8'>
               <div className='text-center'>
                 <h2 className='text-3xl font-bold sm:text-4xl'>Meet the Team</h2>

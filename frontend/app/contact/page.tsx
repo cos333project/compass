@@ -18,7 +18,7 @@ const Contact = () => {
   return (
     <>
       <Navbar />
-      <div className={'min-h-screen'}>
+      <div className={'min-h-screen overflow-x-auto'}>
         <div className='relative isolate pt-14'>
           {/* Background Gradient Effect */}
           <div

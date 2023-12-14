@@ -43,7 +43,7 @@ const Dashboard: FC = () => {
             }}
           />
         </div>
-        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl z-10 rounded'>
+        <main className='flex flex-grow bg-[#FAFAFA] shadow-xl z-10 rounded overflow-x-auto'>
           {!isLoading && userProfile && userProfile.netId !== '' ? (
             <Canvas
               user={userProfile}
