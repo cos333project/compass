@@ -623,7 +623,7 @@ def check_requirements(request):
             else:
                 print('  ' * (indent + 1) + str(value))
 
-    pretty_print(formatted_dict, 2)
+    # pretty_print(formatted_dict, 2)
 
     return JsonResponse(formatted_dict)
 
