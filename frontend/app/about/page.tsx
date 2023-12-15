@@ -168,7 +168,7 @@ const About = () => {
                       {/* Adjusted image style to be more square */}
                       <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
                         <Image
-                          src={`/member${index + 1}.jpg`}
+                          src={`/member${index + 3}.jpg`}
                           alt={member.name}
                           width={240}
                           height={240}
