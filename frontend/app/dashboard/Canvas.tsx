@@ -33,6 +33,7 @@ import {
   SortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import ColorHash from 'color-hash';
 import { createPortal } from 'react-dom';
 
 import { Course, Profile } from '@/types';
@@ -40,7 +41,6 @@ import { Course, Profile } from '@/types';
 import Search from '@/components/Search';
 import { TabbedMenu } from '@/components/TabbedMenu';
 import useSearchStore from '@/store/searchSlice';
-import ColorHash from 'color-hash'
 
 import { Item, Container, ContainerProps } from '../../components';
 
@@ -687,7 +687,7 @@ export function Canvas({
 }
 
 function getColor(id: UniqueIdentifier) {
-  var colorHash = new ColorHash();
+  const colorHash = new ColorHash();
   return colorHash.hex(String(id).slice(0, 3));
 }
 
