@@ -504,6 +504,7 @@ def get_course_comments(dept, num):
                 for commentobj in comments:
                     if 2 <= len(commentobj.comment) <= 2000:
                         li.append(commentobj.comment)
+                li = list(dict.fromkeys(li))
                 cleaned_li = []
                 for element in li:
                     element = element.replace('\\"', '"')
@@ -514,8 +515,9 @@ def get_course_comments(dept, num):
                         element = element[1 : len(element) - 1]
 
                     cleaned_li.append(element)
-                dict = {}
-                dict['reviews'] = cleaned_li
+
+                dictresult = {}
+                dictresult['reviews'] = cleaned_li
 
                 try:
                     quality_of_course = (
@@ -525,12 +527,12 @@ def get_course_comments(dept, num):
                         .first()
                         .quality_of_course
                     )
-                    dict['rating'] = quality_of_course
+                    dictresult['rating'] = quality_of_course
 
                 except CourseEvaluations.DoesNotExist:
-                    return dict
+                    return dictresult
 
-                return dict
+                return dictresult
 
             except CourseComments.DoesNotExist:
                 return None
