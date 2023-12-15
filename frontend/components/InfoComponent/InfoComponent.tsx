@@ -33,8 +33,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
         .then((response) => response.json())
         .then((data) => {
           setCourseDetails(data);
-        })
-        .catch((error) => console.error('Error:', error));
+        });
     }
   }, [showPopup, dept, coursenum]);
 

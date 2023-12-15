@@ -47,7 +47,6 @@ const Search: FC = () => {
       }
     } catch (error) {
       setError('There was an error fetching courses.');
-      console.error('There was an error fetching courses:', error);
     } finally {
       setLoading(false);
     }

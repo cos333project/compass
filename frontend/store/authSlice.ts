@@ -17,7 +17,6 @@ const useAuthStore = create<AuthState>((set) => ({
         user: data.authenticated ? data.user : undefined,
       });
     } catch (error) {
-      console.error('Error checking authentication:', error);
       set({ isAuthenticated: false, user: undefined });
     }
   },

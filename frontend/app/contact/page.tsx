@@ -11,10 +11,9 @@ const Contact = () => {
   const { checkAuthentication } = useAuthStore();
 
   useEffect(() => {
-    checkAuthentication().catch((error) => {
-      console.error('Auth error:', error);
-    });
+    checkAuthentication();
   }, [checkAuthentication]);
+
   return (
     <>
       <Navbar />

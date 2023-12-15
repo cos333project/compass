@@ -32,8 +32,7 @@ const ReviewMenu: React.FC<ReviewMenuProps> = ({ dept, coursenum }) => {
           if (data && data.rating) {
             setRating(data.rating);
           }
-        })
-        .catch((error) => console.error('Error:', error));
+        });
     }
   }, [dept, coursenum]);
 
