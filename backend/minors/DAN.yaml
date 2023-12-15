@@ -26,7 +26,7 @@ req_list:
   pdfs_allowed: 2
   course_list:
   - DAN *
-  completed_by_semester: 3
+  completed_by_semester: 4
 - name: Studio Course
   max_counted: 1
   min_needed: 1

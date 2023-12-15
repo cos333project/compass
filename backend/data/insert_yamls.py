@@ -319,7 +319,7 @@ if __name__ == '__main__':
         # push_minor(Path('../minors/CHI.yaml').resolve())
         # push_minor(Path('../minors/CS.yaml').resolve())
         # push_minor(Path('../minors/MQE.yaml').resolve())
-        # push_minor(Path('../minors/FIN.yaml').resolve())        
+        push_minor(Path('../minors/FIN.yaml').resolve())
 
         # Push Undeclared major into database
         # Major.objects.create(UNDECLARED)

@@ -7,6 +7,7 @@ import collections
 import time
 import copy
 from pathlib import Path
+from django.db.models import Prefetch
 
 logging.basicConfig(level=logging.INFO)
 sys.path.append(str(Path('../').resolve()))
@@ -24,6 +25,7 @@ from compass.models import (
     CourseComments,
     CourseEvaluations,
 )
+
 
 # Have a custom check_requirements recursive function for minors. Can
 # return a huge dict that says how close to completion each minor is
@@ -74,7 +76,8 @@ def check_user(net_id, major, minors):
         output[major_code] = {}
 
         if major_code != 'Undeclared':
-            formatted_req = check_requirements('Major', major_code, user_courses)
+            formatted_req = check_requirements('Major', major_code,
+                                               user_courses)
         else:
             formatted_req = {'code': 'Undeclared', 'satisfied': True}
         output[major_code]['requirements'] = formatted_req
@@ -120,13 +123,36 @@ def check_requirements(table, code, courses):
     :rtype: (bool, dict, dict)
     """
     if table == 'Degree':
-        req_inst = Degree.objects.get(code=code)
+        req_inst = Degree.objects.prefetch_related(
+            Prefetch('req_list',
+                     queryset=Requirement.objects.prefetch_related(
+                         Prefetch('req_list',
+                                  queryset=Requirement.objects.all())
+                     ))).get(code=code)
     elif table == 'Major':
-        req_inst = Major.objects.get(code=code)
+        req_inst = Major.objects.prefetch_related(
+            Prefetch('req_list',
+                     queryset=Requirement.objects.prefetch_related(
+                         Prefetch('req_list',
+                                  queryset=Requirement.objects.all()),
+                         'course_list'
+                     ))).get(code=code)
     elif table == 'Minor':
-        req_inst = Minor.objects.get(code=code)
+        req_inst = Minor.objects.prefetch_related(
+            Prefetch('req_list',
+                     queryset=Requirement.objects.prefetch_related(
+                         Prefetch('req_list',
+                                  queryset=Requirement.objects.all()),
+                         'course_list'
+                     ))).get(code=code)
     elif table == 'Certificate':
-        req_inst = Certificate.objects.get(code=code)
+        req_inst = Certificate.objects.prefetch_related(
+            Prefetch('req_list',
+                     queryset=Requirement.objects.prefetch_related(
+                         Prefetch('req_list',
+                                  queryset=Requirement.objects.all()),
+                         'course_list'
+                     ))).get(code=code)
 
     req = _init_req(req_inst)
     courses = _init_courses(courses)
@@ -164,32 +190,42 @@ def _init_courses(courses):
 # cache this: -2.5s. Also, do this at start up.
 @cumulative_time
 def _init_req(req_inst):
-    req = {}
-    req['inst'] = req_inst
-    req['id'] = req_inst.id
-    req['settled'] = []
-    req['unsettled'] = []
-    req['count'] = 0
-    if req_inst.req_list.exists():
-        req['req_list'] = []
-        for sub_req_inst in req_inst.req_list.all():
-            sub_req = _init_req(sub_req_inst)
-            req['req_list'].append(sub_req)
+    req = {
+        'inst': req_inst,
+        'id': req_inst.id,
+        'settled': [],
+        'unsettled': [],
+        'count': 0
+    }
+    if hasattr(req_inst,
+               '_prefetched_objects_cache') and 'req_list' in req_inst._prefetched_objects_cache:
+        sub_reqs = req_inst._prefetched_objects_cache[
+            'req_list']
+    else:
+        sub_reqs = req_inst.req_list.all()
+
+    if sub_reqs:
+        req['req_list'] = [_init_req(sub_req_inst) for sub_req_inst in
+                           sub_reqs]
+
     if req['inst']._meta.db_table == 'Requirement':
-        req['course_list'] = {
-            course_inst.id for course_inst in req['inst'].course_list.all()
-        }
-        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        if hasattr(req_inst,
+                   '_prefetched_objects_cache') and 'course_list' in req_inst._prefetched_objects_cache:
+            courses = req_inst._prefetched_objects_cache['course_list']
+        else:
+            courses = req_inst.course_list.all()
+
+        req['course_list'] = {course_inst.id for course_inst in courses}
+
         if len(req['course_list']) == 0:
             req.pop('course_list')
+        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
         # if len(req['exc_course_list']) == 0:
         #     req.pop('exc_course_list')
+        # req['completed_by_semester'] = req_inst.completed_by_semester
     return req
 
 
-# Note: this function assumes that completed_by_semester only shows up
-# in num_courses leaves. To make it more robust, update mark_all and
-# mark_settled to only mark courses if they are completed in time.
 @cumulative_time
 def assign_settled_courses_to_reqs(req, courses):
     """
@@ -205,7 +241,8 @@ def assign_settled_courses_to_reqs(req, courses):
     newly_satisfied = 0
     if 'req_list' in req:
         for sub_req in req['req_list']:
-            newly_satisfied += assign_settled_courses_to_reqs(sub_req, courses)
+            newly_satisfied += assign_settled_courses_to_reqs(sub_req,
+                                                              courses)
     elif req['inst'].double_counting_allowed:
         newly_satisfied = mark_all(req, courses)
     elif req['inst'].course_list.exists() or req['inst'].dept_list:
@@ -260,7 +297,7 @@ def mark_dist(req, courses):
             if req['id'] in course['possible_reqs']:  # already used
                 continue
             if course['inst'].distribution_area_short in json.loads(
-                req['inst'].dist_req
+                    req['inst'].dist_req
             ):
                 num_marked += 1
                 course['possible_reqs'].append(req['id'])
@@ -274,7 +311,7 @@ def mark_dist(req, courses):
 @cumulative_time
 def mark_courses(req, courses):
     num_marked = 0
-    for sem in courses:
+    for sem_num, sem in enumerate(courses):
         for course in sem:
             if req['id'] in course['possible_reqs']:  # already used
                 continue
@@ -322,19 +359,21 @@ def mark_settled(req, courses):
     num_marked = 0
     for sem in courses:
         for course in sem:
-            if len(course['reqs_satisfied']) > 0:  # already used in some subreq
+            if len(course[
+                       'reqs_satisfied']) > 0:  # already used in some subreq
                 continue
             if len(course['settled']) > 0:
-                for p in course['settled']:  # go through the settled requirement ids
+                for p in course[
+                    'settled']:  # go through the settled requirement ids
                     if (p == req['id']) and (
-                        p in course['possible_reqs']
+                            p in course['possible_reqs']
                     ):  # course was settled into this requirement
                         num_marked += 1
                         course['reqs_satisfied'].append(p)
                         break
             # or course is manually settled to this req...
             elif (course['num_settleable'] == 1) and (
-                req['id'] in course['possible_reqs']
+                    req['id'] in course['possible_reqs']
             ):
                 num_marked += 1
                 course['reqs_satisfied'].append(req['id'])
@@ -348,7 +387,7 @@ def check_degree_progress(req, courses):
     Checks whether the correct number of courses have been completed by the
     end of semester number 'by_semester' (1-8)
     """
-    by_semester = req['inst'].completed_by_semester
+    by_semester = req['completed_by_semester']
     num_courses = 0
     if by_semester is None or by_semester > len(courses):
         by_semester = len(courses)
@@ -418,7 +457,8 @@ def format_req_output(req, courses):
     output = collections.OrderedDict()
     # if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].name:
     #     output['name'] = req["inst"].name
-    if (req['inst']._meta.db_table != 'Requirement') and req['inst'].code:
+    if (req['inst']._meta.db_table != 'Requirement') and req[
+        'inst'].code:
         output['code'] = req['inst'].code
     # if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
     #     output['degree'] = req['inst'].degree.all()[0]
@@ -426,10 +466,12 @@ def format_req_output(req, courses):
     #     output['pdfs_allowed'] = str(req['inst'].pdfs_allowed)
     # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
     #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
-    if (req['inst']._meta.db_table == 'Requirement') and req['inst'].name:
+    if (req['inst']._meta.db_table == 'Requirement') and req[
+        'inst'].name:
         output['name'] = req['inst'].name
     output['req_id'] = req['id']
-    output['satisfied'] = str((req['inst'].min_needed - req['count'] <= 0))
+    output['satisfied'] = str(
+        (req['inst'].min_needed - req['count'] <= 0))
     output['count'] = str(req['count'])
     output['min_needed'] = str(req['inst'].min_needed)
     output['max_counted'] = req['inst'].max_counted
@@ -455,8 +497,8 @@ def format_req_output(req, courses):
                 if course['inst'].id in req['settled']:
                     course_output = {
                         'code': course['inst'].department.code
-                        + ' '
-                        + course['inst'].catalog_number,
+                                + ' '
+                                + course['inst'].catalog_number,
                         'id': course['inst'].id,
                         'manually_settled': course['manually_settled'],
                     }
@@ -469,8 +511,8 @@ def format_req_output(req, courses):
                 if course['inst'].id in req['unsettled']:
                     course_output = {
                         'code': course['inst'].department.code
-                        + ' '
-                        + course['inst'].catalog_number,
+                                + ' '
+                                + course['inst'].catalog_number,
                         'id': course['inst'].id,
                         'manually_settled': course['manually_settled'],
                     }
@@ -491,14 +533,16 @@ def get_course_comments(dept, num):
         dept_code = Department.objects.filter(code=dept).first().id
         try:
             this_course_id = (
-                Course.objects.filter(department__id=dept_code, catalog_number=num)
+                Course.objects.filter(department__id=dept_code,
+                                      catalog_number=num)
                 .first()
                 .guid
             )
             this_course_id = this_course_id[4:]
             try:
                 comments = list(
-                    CourseComments.objects.filter(course_guid__endswith=this_course_id)
+                    CourseComments.objects.filter(
+                        course_guid__endswith=this_course_id)
                 )
                 li = []
                 for commentobj in comments:
@@ -511,8 +555,9 @@ def get_course_comments(dept, num):
                     element = element.replace('it?s', "it's")
                     element = element.replace('?s', "'s")
                     element = element.replace('?r', "'r")
-                    if element[0] == '[' and element[len(element) - 1] == ']':
-                        element = element[1 : len(element) - 1]
+                    if element[0] == '[' and element[
+                        len(element) - 1] == ']':
+                        element = element[1: len(element) - 1]
 
                     cleaned_li.append(element)
 
@@ -540,6 +585,7 @@ def get_course_comments(dept, num):
             return None
     except Department.DoesNotExist:
         return None
+
 
 # ---------------------------- FETCH COURSE DETAILS -----------------------------------#
 
@@ -572,13 +618,16 @@ def get_course_info(dept, num):
             if course.description:
                 course_dict['Description'] = course.description
             if course.distribution_area_short:
-                course_dict['Distribution Area'] = course.distribution_area_short
+                course_dict[
+                    'Distribution Area'] = course.distribution_area_short
             # if instructor:
             #    course_dict["Professor"] = instructor
             if course.reading_list:
                 clean_reading_list = course.reading_list
-                clean_reading_list = clean_reading_list.replace('//', ', by ')
-                clean_reading_list = clean_reading_list.replace(';', '; ')
+                clean_reading_list = clean_reading_list.replace('//',
+                                                                ', by ')
+                clean_reading_list = clean_reading_list.replace(';',
+                                                                '; ')
                 course_dict['Reading List'] = clean_reading_list
             if course.reading_writing_assignment:
                 course_dict[
