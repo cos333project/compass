@@ -284,7 +284,7 @@ export function Canvas({
 
     timerRef.current = window.setTimeout(() => {
       checkRequirements();
-    }, 10);
+    }, 1);
   };
 
   const checkRequirements = () => {
