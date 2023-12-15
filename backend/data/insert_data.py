@@ -597,7 +597,7 @@ def insert_course_data(semester):
 
     try:
         with transaction.atomic():
-            insert_departments(trimmed_rows)
+            # insert_departments(trimmed_rows)
             insert_academic_terms(trimmed_rows)
             insert_courses(trimmed_rows)
             # insert_course_equivalents(trimmed_rows)

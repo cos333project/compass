@@ -14,6 +14,8 @@ import Typography from '@mui/material/Typography';
 import classNames from 'classnames';
 import { createPortal } from 'react-dom';
 
+import LoadingComponent from '../LoadingComponent';
+
 import styles from '../InfoComponent/InfoComponent.module.scss';
 
 interface Dictionary {
@@ -161,7 +163,8 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
                 }
               })
             ) : (
-              <div>Loading...</div>
+              <LoadingComponent />
+              // <div>Loading...</div>
             )}
           </div>
         </div>
