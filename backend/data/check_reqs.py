@@ -59,7 +59,6 @@ def cumulative_time(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         total_time += end_time - start_time
-        # print(f'Current total time for {func.__name__}: {total_time} seconds')
         return result
 
     return wrapper
@@ -505,6 +504,7 @@ def get_course_comments(dept, num):
                 for commentobj in comments:
                     if 2 <= len(commentobj.comment) <= 2000:
                         li.append(commentobj.comment)
+                li = list(dict.fromkeys(li))
                 cleaned_li = []
                 for element in li:
                     element = element.replace('\\"', '"')
@@ -515,8 +515,9 @@ def get_course_comments(dept, num):
                         element = element[1 : len(element) - 1]
 
                     cleaned_li.append(element)
-                dict = {}
-                dict['reviews'] = cleaned_li
+
+                dictresult = {}
+                dictresult['reviews'] = cleaned_li
 
                 try:
                     quality_of_course = (
@@ -526,12 +527,12 @@ def get_course_comments(dept, num):
                         .first()
                         .quality_of_course
                     )
-                    dict['rating'] = quality_of_course
+                    dictresult['rating'] = quality_of_course
 
                 except CourseEvaluations.DoesNotExist:
-                    return dict
+                    return dictresult
 
-                return dict
+                return dictresult
 
             except CourseComments.DoesNotExist:
                 return None
@@ -557,7 +558,6 @@ def get_course_info(dept, num):
             ).first()
             if course.course_id:
                 co_id = course.course_id
-                print(co_id)
                 # instructor = "None"
                 # try:
                 #    instructor = Section.objects.filter(course_id=13248).first()
@@ -612,7 +612,6 @@ def fetch_requirement_info(req_id):
             satisfying_courses.append(
                 f'{course.department.code} {course.catalog_number}'
             )
-        print(satisfying_courses)
     except Course.DoesNotExist:
         satisfying_courses = []
 
@@ -624,7 +623,7 @@ def fetch_requirement_info(req_id):
 
 
 def main():
-    print(get_course_comments('COS', '126'))
+    pass
 
 
 if __name__ == '__main__':

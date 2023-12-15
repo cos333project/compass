@@ -207,8 +207,6 @@ export function Canvas({
     userCourses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
-    console.log('updateSemesters called');
-
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
       prevItems[`Fall ${year}`] = userCourses[semester].map(
@@ -220,7 +218,6 @@ export function Canvas({
       );
       semester += 1;
     }
-    console.log(prevItems);
     return prevItems;
   };
 
@@ -245,24 +242,16 @@ export function Canvas({
   // State for academic requirements
   const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
 
-  // Logs for debugging
-  console.log('Initial academic plan:', academicPlan);
-
   // Assuming 'user' is of type User
   const userMajorCode = user.major?.code;
   const userMinors = user.minors ?? [];
 
-  // Log user's major and minors
-  console.log('User Major:', userMajorCode, 'User Minors:', userMinors);
-
   // Structure to hold degree requirements
   const degreeRequirements: Dictionary = { General: '' };
-  console.log('Initial degree requirements:', degreeRequirements);
 
   // Add major to degree requirements if it's a string
   if (userMajorCode && typeof userMajorCode === 'string') {
     degreeRequirements[userMajorCode] = academicPlan[userMajorCode] ?? {};
-    console.log(`Added major ${userMajorCode} to degree requirements:`, degreeRequirements);
   }
 
   // Iterate over minors and add them to degree requirements if their code is a string
@@ -270,7 +259,6 @@ export function Canvas({
     const minorCode = minor.code;
     if (minorCode && typeof minorCode === 'string') {
       degreeRequirements[minorCode] = academicPlan[minorCode] ?? {};
-      console.log(`Added minor ${minorCode} to degree requirements:`, degreeRequirements);
     }
   });
 
@@ -281,10 +269,8 @@ export function Canvas({
         credentials: 'include',
       });
       const data = await response.json();
-      console.log('Fetched userCourses:', data);
       return data;
     } catch (error) {
-      console.error('User Courses Error:', error);
       return null; // Handle error appropriately
     }
   };
@@ -301,18 +287,13 @@ export function Canvas({
   };
 
   const checkRequirements = () => {
-    console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
     fetch(`${process.env.BACKEND}/check_requirements/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Fetched academic requirements data:', data);
         setAcademicPlan(data);
-      })
-      .catch((error) => {
-        console.error('Requirements Check Error:', error);
       });
   };
 
@@ -455,7 +436,6 @@ export function Canvas({
   };
 
   const onDragCancel = () => {
-    console.log('Drag canceled');
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -478,16 +458,11 @@ export function Canvas({
           },
         }}
         onDragStart={({ active }) => {
-          console.log('Drag started: ', active.id);
           setActiveId(active.id);
           setActiveContainerId(findContainer(active.id));
           setClonedItems(items);
         }}
         onDragOver={({ active, over }) => {
-          console.log('Drag over: ', {
-            activeId: active.id,
-            overId: over?.id,
-          });
           const overId = over?.id;
           if (overId === null || overId === undefined || active.id in items) {
             return;
@@ -522,11 +497,6 @@ export function Canvas({
         }}
         onDragEnd={async ({ active, over }) => {
           // Active and over are course draggables.
-          console.log('Drag end: ', {
-            activeId: active.id,
-            overId: over?.id,
-          });
-
           if (!activeContainerId) {
             setActiveId(null);
             return;
@@ -553,10 +523,7 @@ export function Canvas({
                   'X-CSRFToken': csrfToken,
                 },
                 body: JSON.stringify({ courseId: active.id, semesterId: overContainerId }),
-              })
-                .then((response) => response.json())
-                .then((data) => console.log('Update success', data))
-                .catch((error) => console.error('Update Error:', error));
+              }).then((response) => response.json());
               debouncedCheckRequirements();
             }
           }
@@ -711,13 +678,10 @@ export function Canvas({
         'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Course removed!', data);
-        debouncedCheckRequirements();
-      })
-      .catch((error) => console.error('Update Error:', error));
+    }).then((response) => {
+      response.json();
+      debouncedCheckRequirements();
+    });
   }
 }
 

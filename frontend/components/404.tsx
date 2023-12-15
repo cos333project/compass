@@ -71,11 +71,6 @@ export default function Example() {
   return (
     <div className='bg-white'>
       <main className='mx-auto w-full max-w-7xl px-6 pb-16 pt-10 sm:pb-24 lg:px-8'>
-        <img
-          className='mx-auto h-10 w-auto sm:h-12'
-          src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
-          alt='Your Company'
-        />
         <div className='mx-auto mt-20 max-w-2xl text-center sm:mt-24'>
           <p className='text-base font-semibold leading-8 text-indigo-600'>404</p>
           <h1 className='mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl'>

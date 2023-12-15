@@ -29,7 +29,6 @@ class ReqLib:
             req.raise_for_status()
             return req.json()
         except requests.HTTPError as e:
-            print(f'HTTP Error: {e}')
+            pass
         except json.JSONDecodeError:
-            print('Received non-JSON response')
-            print('Response content:', req.text)
+            pass

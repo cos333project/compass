@@ -21,31 +21,14 @@ const Navbar: FC = () => {
     isAuthenticated: state.isAuthenticated,
     login: state.login,
   }));
-  console.log('Navbar component rendering, isAuthenticated:', isAuthenticated);
   const { mobileMenuOpen, setMobileMenuOpen } = useMobileMenuStore();
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // Otherwise, navigate to the dashboard
     login();
   };
 
-  // FIXME: Commenting out for now since we need to build successfully.
-  // const handleUserSettingsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  //   // Logic to open User Settings goes here
-  //   console.log('User Settings Clicked');
-
-  //   // e.g., navigate to the user settings page or open a settings modal
-  // };
-
   const renderUserMenu = () => (isAuthenticated ? <DropdownMenu /> : <Login />);
-  // const renderUserMenu = () => (isAuthenticated ? <DropdownMenu onUserSettingsClick={handleUserSettingsClick}/> : <Login />);
-
-  // TODO: Get rid of this eventually. Just a bandaid since auth status not updating fast enough for Navbar.
-  // const fadeIn = 'transform transition-all duration-700 ease-out opacity-100 translate-y-0';
-  // const fadeOut = 'transform transition-all duration-700 ease-in opacity-0 translate-y-(-100%)';
-  // const hidden = 'opacity-0';
-  // const isAuthInitialized = isAuthenticated !== null;
 
   return (
     <header className={`absolute bg --system-text-color absolute inset-x-0 top-0 z-50 transform}`}>

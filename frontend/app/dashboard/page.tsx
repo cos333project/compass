@@ -18,13 +18,8 @@ const Dashboard: FC = () => {
   const { checkAuthentication } = useAuthStore((state) => state);
   const userProfile = UserState((state) => state.profile);
   useEffect(() => {
-    checkAuthentication()
-      .then(() => setIsLoading(false))
-      .catch((error) => {
-        console.error('Auth error:', error);
-        setIsLoading(false);
-      });
-  }, []);
+    checkAuthentication().then(() => setIsLoading(false));
+  }, [checkAuthentication]);
 
   return (
     <>
