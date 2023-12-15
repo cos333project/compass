@@ -161,24 +161,12 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
                     </div>
                   );
                 }
-              } else if (value[0]) {
-                return (
-                  <div key={index}>
-                    <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
-                    {value
-                      .map((course) => {
-                        return `${course}, `;
-                      })
-                      .join('')
-                      .slice(0, -2)}
-                  </div>
-                );
-              }
-            })
-          ) : (
-            <LoadingComponent />
-            // <div>Loading...</div>
-          )}
+              })
+            ) : (
+              <LoadingComponent />
+              // <div>Loading...</div>
+            )}
+          </div>
         </div>
         <footer className='mt-auto text-right'>
           <JoyButton
