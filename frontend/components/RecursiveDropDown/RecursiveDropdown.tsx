@@ -108,9 +108,7 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
       .then((response) => response.json())
       .then((data) => {
         setExplanation(data);
-        console.log(data);
-      })
-      .catch((error) => console.error('Requirement Info Error:', error));
+      });
     e.stopPropagation();
     setShowPopup(true);
   };
@@ -124,21 +122,42 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
   const modalContent = showPopup ? (
     <div className={styles.modalBackdrop}>
       <div className={styles.modal}>
-        <div className={styles.detailRow}>
-          {explanation ? (
-            Object.entries(explanation).map(([index, value]) => {
-              if (index === '0') {
-                if (value) {
+        <div
+          style={{
+            overflowWrap: 'break-word',
+            flexWrap: 'wrap',
+            overflowY: 'auto',
+            maxHeight: '75vh',
+          }}
+        >
+          <div className={styles.detailRow}>
+            {explanation ? (
+              Object.entries(explanation).map(([index, value]) => {
+                if (index === '0') {
+                  if (value) {
+                    return (
+                      <div key={index}>
+                        <strong className={styles.strong}>{'Explanation'}:</strong> {value}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={index}>
+                        <strong className={styles.strong}>{'Explanation'}:</strong>{' '}
+                        {'No explanation available'}
+                      </div>
+                    );
+                  }
+                } else if (value[0]) {
                   return (
                     <div key={index}>
-                      <strong className={styles.strong}>{'Explanation'}:</strong> {value}
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div key={index}>
-                      <strong className={styles.strong}>{'Explanation'}:</strong>{' '}
-                      {'No explanation available'}
+                      <strong className={styles.strong}>{'Satisfying Courses'}: </strong>
+                      {value
+                        .map((course) => {
+                          return `${course}, `;
+                        })
+                        .join('')
+                        .slice(0, -2)}
                     </div>
                   );
                 }
@@ -177,8 +196,6 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
   ) : null;
 
   const handleClick = (courseId, reqId) => {
-    console.log('courseId', courseId);
-    console.log('reqId', reqId);
     fetch(`${process.env.BACKEND}/manually_settle/`, {
       method: 'POST',
       credentials: 'include',
@@ -187,10 +204,7 @@ const Dropdown: FC<DropdownProps> = ({ data, csrfToken, checkRequirements }) => 
         'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify({ courseId: courseId, reqId: reqId }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log('Manual Settle Success', data))
-      .catch((error) => console.error('Manual Settle Error:', error));
+    }).then((response) => response.json());
 
     checkRequirements();
   };

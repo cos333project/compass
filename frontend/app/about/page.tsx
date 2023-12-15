@@ -100,7 +100,7 @@ const About = () => {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col min-h-screen pt-10 rounded-xl '>
+      <div className='flex flex-col min-h-screen pt-10 rounded-xl overflow-x-hidden'>
         <div className='relative isolate pt-14'>
           {/* Background Gradient Effect */}
           <div
@@ -117,32 +117,32 @@ const About = () => {
           </div>
 
           {/* Team Members Section */}
-          <div className='py-12 sm:py-16 lg:pb-20 overflow-x-auto'>
-            <div className='mx-auto max-w-7xl px-6 lg:px-8'>
-              <div className='text-center text-[var(--system-text-color)]'>
+          <div className='py-12 sm:py-16 lg:pb-20'>
+            <div className='mx-auto max-w-7xl'>
+              <div className='text-center justify-center text-[var(--system-text-color)]'>
                 <h2 className='text-3xl font-bold sm:text-4xl'>Meet the Team</h2>
                 <p className='mt-3 max-w-2xl mx-auto text-xl'>
                   The dedicated group of individuals behind the Compass project.
                 </p>
               </div>
-              <div className='mt-12 text-black'>
-                {/* First Row - 2 members */}
-                <div className='flex justify-center gap-8'>
-                  {teamMembers.slice(0, 2).map((member, index) => (
-                    <div key={member.name} className='bg-white p-6 rounded-lg shadow-sm w-[300px]'>
+              <div className='mt-12 text-black overflow-x-auto'>
+                {/* First Row - 5 members */}
+                <div className='flex xl:justify-center justify-start gap-6'>
+                  {teamMembers.map((member, index) => (
+                    <div key={member.name} className='bg-white p-6 rounded-lg shadow-sm'>
                       {/* Adjusted image style to be more square */}
-                      <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
+                      <div className='h-[180px] w-[180px] overflow-hidden rounded-lg'>
                         <Image
                           src={`/member${index + 1}.jpg`}
                           alt={member.name}
-                          width={240}
-                          height={240}
+                          width={180}
+                          height={180}
                         />
                       </div>
-                      <h3 className='mt-6 text-2xl font-semibold'>{member.name}</h3>
+                      <h3 className='mt-6 text-xl font-semibold'>{member.name}</h3>
                       <div className='flow-root'>
                         {/* Graduation year */}
-                        <p className='float-left text-2xl'>{member.gradYear}</p>{' '}
+                        <p className='float-left text-xl'>{member.gradYear}</p>{' '}
                         <p className='float-right'>
                           {navigation.map((item) => (
                             <a
@@ -162,10 +162,9 @@ const About = () => {
                   ))}
                 </div>
                 {/* Second Row - 3 members */}
-                <div className='mt-8 flex justify-center gap-8'>
+                {/* <div className='mt-8 flex gap-8'>
                   {teamMembers.slice(2).map((member, index) => (
-                    <div key={member.name} className='bg-white p-6 rounded-lg shadow-sm w-[300px]'>
-                      {/* Adjusted image style to be more square */}
+                    <div key={member.name} className='mx-auto bg-white p-6 rounded-lg shadow-sm w-[300px]'>
                       <div className='h-[240px] w-[240px] mx-auto overflow-hidden rounded-lg'>
                         <Image
                           src={`/member${index + 3}.jpg`}
@@ -176,7 +175,6 @@ const About = () => {
                       </div>
                       <h3 className='mt-6 text-2xl font-semibold'>{member.name}</h3>
                       <div className='flow-root'>
-                        {/* Graduation year */}
                         <p className='float-left text-2xl'>{member.gradYear}</p>{' '}
                         <p className='float-right'>
                           {navigation.map((item) => (
@@ -194,8 +192,8 @@ const About = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  ))} */}
+                {/* </div> */}
               </div>
             </div>
           </div>

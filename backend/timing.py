@@ -33,10 +33,6 @@ def fetch_and_serialize_courses():
     # Measure the total time taken
     elapsed_time = django.utils.timezone.now() - start_time
 
-    # Printing for debugging
-    print(f'Serialized Data: {serialized_courses[:10]}')
-    print(f'Time Taken: {elapsed_time.total_seconds()} seconds')
-
     # Return the serialized data and the time taken
     # The JsonResponse should be used in a Django view, but since this is a script, we'll just print the output
     response_data = {
@@ -48,5 +44,4 @@ def fetch_and_serialize_courses():
 
 # Call the function and print the result
 if __name__ == '__main__':
-    print('Fetching and serializing courses...')
     fetch_and_serialize_courses()

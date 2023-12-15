@@ -41,54 +41,86 @@ const undeclared = { code: 'Undeclared', name: 'Undeclared' };
 
 // Should probably id these corresponding to the ids in the database
 const majorOptions = [
-  { code: 'AAS', name: 'African American Studies' },
-  { code: 'ANT', name: 'Anthropology' },
-  { code: 'ARC', name: 'Architecture' },
-  { code: 'ART', name: 'Art and Archaeology' },
-  { code: 'AST', name: 'Astrophysical Sciences' },
+  // { code: 'AAS', name: 'African American Studies' },
+  // { code: 'ANT', name: 'Anthropology' },
+  // { code: 'ARC', name: 'Architecture' },
+  // { code: 'ART', name: 'Art and Archaeology' },
+  // { code: 'AST', name: 'Astrophysical Sciences' },
   { code: 'CBE', name: 'Chemical and Biological Engineering' },
   { code: 'CEE', name: 'Civil and Environmental Engineering' },
-  { code: 'CHM', name: 'Chemistry' },
-  { code: 'CLA', name: 'Classics' },
-  { code: 'COM', name: 'Comparative Literature' },
+  // { code: 'CHM', name: 'Chemistry' },
+  // { code: 'CLA', name: 'Classics' },
+  // { code: 'COM', name: 'Comparative Literature' },
   { code: 'COS-AB', name: 'Computer Science - A.B.' },
   { code: 'COS-BSE', name: 'Computer Science - B.S.E.' },
-  { code: 'EAS', name: 'East Asian Studies' },
+  // { code: 'EAS', name: 'East Asian Studies' },
   { code: 'ECE', name: 'Electrical and Computer Engineering' },
-  { code: 'ECO', name: 'Economics' },
-  { code: 'EEB', name: 'Ecology and Evolutionary Biology' },
-  { code: 'ENG', name: 'English' },
-  { code: 'FIT', name: 'French and Italian' },
-  { code: 'GEO', name: 'Geosciences' },
-  { code: 'GER', name: 'German' },
-  { code: 'HIS', name: 'History' },
+  // { code: 'ECO', name: 'Economics' },
+  // { code: 'EEB', name: 'Ecology and Evolutionary Biology' },
+  // { code: 'ENG', name: 'English' },
+  // { code: 'FIT', name: 'French and Italian' },
+  // { code: 'GEO', name: 'Geosciences' },
+  // { code: 'GER', name: 'German' },
+  // { code: 'HIS', name: 'History' },
   { code: 'MAE', name: 'Mechanical and Aerospace Engineering' },
-  { code: 'MAT', name: 'Mathematics' },
-  { code: 'MOL', name: 'Molecular Biology' },
-  { code: 'MUS', name: 'Music' },
-  { code: 'NES', name: 'Near Eastern Studies' },
-  { code: 'NEU', name: 'Neuroscience' },
+  // { code: 'MAT', name: 'Mathematics' },
+  // { code: 'MOL', name: 'Molecular Biology' },
+  // { code: 'MUS', name: 'Music' },
+  // { code: 'NES', name: 'Near Eastern Studies' },
+  // { code: 'NEU', name: 'Neuroscience' },
   { code: 'ORF', name: 'Operations Research and Financial Engineering' },
-  { code: 'PHI', name: 'Philosophy' },
-  { code: 'PHY', name: 'Physics' },
-  { code: 'POL', name: 'Politics' },
-  { code: 'PSY', name: 'Psychology' },
-  { code: 'REL', name: 'Religion' },
-  { code: 'SLA', name: 'Slavic Languages and Literatures' },
-  { code: 'SOC', name: 'Sociology' },
-  { code: 'SPO', name: 'Spanish and Portuguese' },
-  { code: 'SPI', name: 'Princeton School of Public and International Affairs' },
-  { code: 'Independent', name: 'Independent' },
+  // { code: 'PHI', name: 'Philosophy' },
+  // { code: 'PHY', name: 'Physics' },
+  // { code: 'POL', name: 'Politics' },
+  // { code: 'PSY', name: 'Psychology' },
+  // { code: 'REL', name: 'Religion' },
+  // { code: 'SLA', name: 'Slavic Languages and Literatures' },
+  // { code: 'SOC', name: 'Sociology' },
+  // { code: 'SPO', name: 'Spanish and Portuguese' },
+  // { code: 'SPI', name: 'Princeton School of Public and International Affairs' },
+  // { code: 'Independent', name: 'Independent' },
   { code: 'Undeclared', name: 'Undeclared' },
 ];
 
 const minorOptions = [
-  { code: 'FIN', name: 'Finance' },
-  { code: 'DAN', name: 'Dance' },
-  { code: 'CLA', name: 'Classics' },
+  { code: 'AFS', name: 'African Studies' },
+  { code: 'ASA', name: 'Asian American Studies' },
   { code: 'CHI', name: 'Chinese Language' },
+  { code: 'CLA', name: 'Classics' },
+  { code: 'COS', name: 'Computer Science' },
   { code: 'CS', name: 'Climate Science' },
+  { code: 'CWR', name: 'Creative Writing' },
+  { code: 'DAN', name: 'Dance' },
+  { code: 'EAS', name: 'East Asian Studies Program' },
+  { code: 'ENG', name: 'English' },
+  { code: 'ENV', name: 'Environmental Studies' },
+  { code: 'FIN', name: 'Finance' },
+  { code: 'GHP', name: 'Global Health and Health Policy' },
+  { code: 'GSS', name: 'Gender and Sexuality Studies' },
+  { code: 'HIS', name: 'History' },
+  { code: 'HLS', name: 'Hellenic Studies' },
+  { code: 'HSTM', name: 'History of Science, Technology, and Medicine' },
+  { code: 'HUM', name: 'Humanistic Studies' },
+  { code: 'JPN', name: 'Japanese Language' },
+  { code: 'JRN', name: 'Journalism' },
+  { code: 'KOR', name: 'Korean Language' },
+  { code: 'LAO', name: 'Latino Studies' },
+  { code: 'LIN', name: 'Linguistics' },
+  { code: 'MED', name: 'Medieval Studies' },
+  { code: 'MPP', name: 'Music Performance' },
   { code: 'MQE', name: 'Quantitative Economics' },
+  { code: 'MSE', name: 'Materials Science and Engineering' },
+  { code: 'MUS', name: 'Music' },
+  { code: 'NEU', name: 'Neuroscience' },
+  { code: 'PHI', name: 'Philosophy' },
+  { code: 'RES', name: 'Russian, East European and Eurasian Studies' },
+  { code: 'SAS', name: 'South Asian Studies' },
+  { code: 'SLA', name: 'Slavic Languages and Literatures' },
+  { code: 'SML', name: 'Statistics and Machine Learning' },
+  { code: 'TMT', name: 'Theater and Music Theater' },
+  { code: 'TRA', name: 'Translation and Intercultural Communication' },
+  { code: 'VIS', name: 'Visual Arts' },
+  { code: 'VPL', name: 'Values and Public Life' },
 ];
 
 const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
@@ -118,7 +150,6 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
   };
 
   const handleSave = async () => {
-    console.log('UserSettings handleSave called');
     updateProfile({
       firstName: firstName,
       lastName: lastName,
@@ -139,15 +170,11 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
         'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify(profile),
-    })
-      // TODO: Delete the logs eventually
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Update success', data);
-        onSave(profile);
-        onClose();
-      })
-      .catch((error) => console.error('Update Error:', error));
+    }).then((response) => {
+      response.json();
+      onSave(profile);
+      onClose();
+    });
   };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -169,7 +196,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               autoComplete='off'
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                setFirstName(e.target.value);
+              }}
             />
           </div>
           <div>
@@ -179,7 +209,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               autoComplete='off'
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                setLastName(e.target.value);
+              }}
             />
           </div>
           <div>
@@ -191,9 +224,12 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               placeholder='Select your major'
               variant='soft'
               value={major}
-              inputValue={major.code === undeclared.code ? '' : major.code}
+              // inputValue={major.code === undeclared.code ? '' : major.code}
               isOptionEqualToValue={(option, value) => option.code === value.code}
-              onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
+              onChange={(e, newMajor: MajorMinorType) => {
+                e.stopPropagation();
+                setMajor(newMajor ?? undeclared);
+              }}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
                 <AutocompleteOption {...props} key={option.name}>
@@ -210,6 +246,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <Autocomplete
               multiple={true}
               autoComplete={true}
+              autoHighlight
               options={minorOptions}
               placeholder={'Select your minor(s)'}
               variant='soft'
@@ -217,7 +254,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               isOptionEqualToValue={(option, value) =>
                 value === undefined || option.code === value.code
               }
-              onChange={handleMinorsChange}
+              onChange={(e, newMinors: MajorMinorType[]) => {
+                e.stopPropagation();
+                handleMinorsChange(e, newMinors);
+              }}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
                 <AutocompleteOption {...props} key={option.name}>
@@ -278,7 +318,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               value={classYear} // TODO: Does '' work here or is it redundant? --Windsor
               isOptionEqualToValue={(option, value) => value === undefined || option === value}
-              onChange={(_, newClassYear: number | undefined) => {
+              onChange={(e, newClassYear: number | undefined) => {
+                e.stopPropagation();
                 setClassYear(newClassYear ?? undefined);
               }}
               getOptionLabel={(option) => option.toString()}

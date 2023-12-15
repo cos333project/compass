@@ -33,6 +33,7 @@ import {
   SortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import ColorHash from 'color-hash';
 import { createPortal } from 'react-dom';
 
 import { Course, Profile } from '@/types';
@@ -207,8 +208,6 @@ export function Canvas({
     userCourses: { [key: number]: Course[] }
   ): Items => {
     const startYear = classYear - 4;
-    console.log('updateSemesters called');
-
     let semester = 1;
     for (let year = startYear; year < classYear; ++year) {
       prevItems[`Fall ${year}`] = userCourses[semester].map(
@@ -220,7 +219,6 @@ export function Canvas({
       );
       semester += 1;
     }
-    console.log(prevItems);
     return prevItems;
   };
 
@@ -245,24 +243,16 @@ export function Canvas({
   // State for academic requirements
   const [academicPlan, setAcademicPlan] = useState<Dictionary>(initialRequirements);
 
-  // Logs for debugging
-  console.log('Initial academic plan:', academicPlan);
-
   // Assuming 'user' is of type User
   const userMajorCode = user.major?.code;
   const userMinors = user.minors ?? [];
 
-  // Log user's major and minors
-  console.log('User Major:', userMajorCode, 'User Minors:', userMinors);
-
   // Structure to hold degree requirements
   const degreeRequirements: Dictionary = { General: '' };
-  console.log('Initial degree requirements:', degreeRequirements);
 
   // Add major to degree requirements if it's a string
   if (userMajorCode && typeof userMajorCode === 'string') {
     degreeRequirements[userMajorCode] = academicPlan[userMajorCode] ?? {};
-    console.log(`Added major ${userMajorCode} to degree requirements:`, degreeRequirements);
   }
 
   // Iterate over minors and add them to degree requirements if their code is a string
@@ -270,7 +260,6 @@ export function Canvas({
     const minorCode = minor.code;
     if (minorCode && typeof minorCode === 'string') {
       degreeRequirements[minorCode] = academicPlan[minorCode] ?? {};
-      console.log(`Added minor ${minorCode} to degree requirements:`, degreeRequirements);
     }
   });
 
@@ -281,10 +270,8 @@ export function Canvas({
         credentials: 'include',
       });
       const data = await response.json();
-      console.log('Fetched userCourses:', data);
       return data;
     } catch (error) {
-      console.error('User Courses Error:', error);
       return null; // Handle error appropriately
     }
   };
@@ -301,18 +288,13 @@ export function Canvas({
   };
 
   const checkRequirements = () => {
-    console.log('ALERT!!! RECHECKING REQUIREMENTS!!!');
     fetch(`${process.env.BACKEND}/check_requirements/`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Fetched academic requirements data:', data);
         setAcademicPlan(data);
-      })
-      .catch((error) => {
-        console.error('Requirements Check Error:', error);
       });
   };
 
@@ -455,7 +437,6 @@ export function Canvas({
   };
 
   const onDragCancel = () => {
-    console.log('Drag canceled');
     if (clonedItems) {
       // Reset items to their original state in case items have been
       // Dragged across containers
@@ -478,16 +459,11 @@ export function Canvas({
           },
         }}
         onDragStart={({ active }) => {
-          console.log('Drag started: ', active.id);
           setActiveId(active.id);
           setActiveContainerId(findContainer(active.id));
           setClonedItems(items);
         }}
         onDragOver={({ active, over }) => {
-          console.log('Drag over: ', {
-            activeId: active.id,
-            overId: over?.id,
-          });
           const overId = over?.id;
           if (overId === null || overId === undefined || active.id in items) {
             return;
@@ -522,11 +498,6 @@ export function Canvas({
         }}
         onDragEnd={async ({ active, over }) => {
           // Active and over are course draggables.
-          console.log('Drag end: ', {
-            activeId: active.id,
-            overId: over?.id,
-          });
-
           if (!activeContainerId) {
             setActiveId(null);
             return;
@@ -553,10 +524,7 @@ export function Canvas({
                   'X-CSRFToken': csrfToken,
                 },
                 body: JSON.stringify({ courseId: active.id, semesterId: overContainerId }),
-              })
-                .then((response) => response.json())
-                .then((data) => console.log('Update success', data))
-                .catch((error) => console.error('Update Error:', error));
+              }).then((response) => response.json());
               debouncedCheckRequirements();
             }
           }
@@ -711,97 +679,16 @@ export function Canvas({
         'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify({ courseId: value.toString(), semesterId: 'Search Results' }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Course removed!', data);
-        debouncedCheckRequirements();
-      })
-      .catch((error) => console.error('Update Error:', error));
+    }).then((response) => {
+      response.json();
+      debouncedCheckRequirements();
+    });
   }
 }
 
 function getColor(id: UniqueIdentifier) {
-  switch (String(id)[0] + String(id)[1] + String(id)[2]) {
-    case 'AAS':
-      return '#FF0000'; // Red
-    case 'ANT':
-      return '#00FF00'; // Green
-    case 'ARC':
-      return '#0000FF'; // Blue
-    case 'ART':
-      return '#FFFF00'; // Yellow
-    case 'AST':
-      return '#FF00FF'; // Magenta
-    case 'CBE':
-      return '#00FFFF'; // Cyan
-    case 'CEE':
-      return '#FFA500'; // Orange
-    case 'CHM':
-      return '#800080'; // Purple
-    case 'CLA':
-      return '#008000'; // Dark Green
-    case 'COM':
-      return '#FFC0CB'; // Pink
-    case 'COS':
-      return '#FFD700'; // Gold
-    case 'EAS':
-      return '#FF4500'; // Orange Red
-    case 'ECE':
-      return '#7FFFD4'; // Aquamarine
-    case 'ECO':
-      return '#2E8B57'; // Sea Green
-    case 'EEB':
-      return '#8A2BE2'; // Blue Violet
-    case 'ENG':
-      return '#008080'; // Teal
-    case 'FIT':
-      return '#800000'; // Maroon
-    case 'GEO':
-      return '#4682B4'; // Steel Blue
-    case 'GER':
-      return '#FF6347'; // Tomato
-    case 'HIS':
-      return '#696969'; // Dim Gray
-    case 'MAE':
-      return '#DC143C'; // Crimson
-    case 'MAT':
-      return '#B0C4DE'; // Light Steel Blue
-    case 'MOL':
-      return '#20B2AA'; // Light Sea Green
-    case 'MUS':
-      return '#8B008B'; // Dark Magenta
-    case 'NES':
-      return '#556B2F'; // Dark Olive Green
-    case 'NEU':
-      return '#9932CC'; // Dark Orchid
-    case 'ORF':
-      return '#FF8C00'; // Dark Orange
-    case 'PHI':
-      return '#A52A2A'; // Brown
-    case 'PHY':
-      return '#F08080'; // Light Coral
-    case 'POL':
-      return '#00CED1'; // Dark Turquoise
-    case 'PSY':
-      return '#FFE4E1'; // Misty Rose
-    case 'REL':
-      return '#FFA07A'; // Light Salmon
-    case 'SLA':
-      return '#9370DB'; // Medium Purple
-    case 'SOC':
-      return '#32CD32'; // Lime Green
-    case 'SPO':
-      return '#FF00FF'; // Magenta
-    case 'SPI':
-      return '#1E90FF'; // Dodger Blue
-    case 'IND':
-      return '#D3D3D3'; // Light Gray
-    default:
-      return '#FFFFFF'; // White for unknown department codes
-  }
-
-  return undefined;
+  const colorHash = new ColorHash();
+  return colorHash.hex(String(id).slice(0, 3));
 }
 
 type SortableItemProps = {

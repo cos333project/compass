@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 import { UserState } from '../types';
 
-export const useUserSlice = create<UserState>((set) => ({
+const useUserSlice = create<UserState>((set) => ({
   profile: {
     firstName: '',
     lastName: '',
@@ -28,32 +28,22 @@ export const useFetchUserProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${process.env.BACKEND}/profile`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log(data);
-        updateStore({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          netId: data.netId,
-          major: data.major,
-          minors: data.minors,
-          classYear: data.classYear,
-          timeFormat24h: data.timeFormat24h,
-          themeDarkMode: data.themeDarkMode,
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
+      const response = await fetch(`${process.env.BACKEND}/profile`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      updateStore({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        netId: data.netId,
+        major: data.major,
+        minors: data.minors,
+        classYear: data.classYear,
+        timeFormat24h: data.timeFormat24h,
+        themeDarkMode: data.themeDarkMode,
+      });
     };
 
     fetchProfile();
