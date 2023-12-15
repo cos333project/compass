@@ -4,6 +4,7 @@ import { Button } from '@mui/joy';
 import classNames from 'classnames';
 import { createPortal } from 'react-dom';
 
+import LoadingComponent from '../LoadingComponent';
 import ReviewMenu from '../ReviewMenu';
 
 import styles from './InfoComponent.module.scss';
@@ -101,7 +102,8 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ dept, coursenum }) => {
             </div>
           </div>
         ) : (
-          <div>Loading...</div>
+          <LoadingComponent />
+          // <div>Loading...</div>
         )}
         <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
           <footer className='mt-auto text-right'>

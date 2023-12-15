@@ -186,7 +186,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <FormLabel>Major</FormLabel>
             <Autocomplete
               multiple={false}
-              autoHighlight
+              autoComplete={true}
               options={majorOptions}
               placeholder='Select your major'
               variant='soft'
@@ -209,6 +209,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <FormLabel>Minor(s)</FormLabel>
             <Autocomplete
               multiple={true}
+              autoComplete={true}
               options={minorOptions}
               placeholder={'Select your minor(s)'}
               variant='soft'
@@ -271,7 +272,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <FormLabel>Class year</FormLabel>
             <Autocomplete
               multiple={false}
-              autoHighlight
+              autoComplete={true}
               options={generateClassYears()}
               placeholder='Class year'
               variant='soft'

@@ -1,5 +1,4 @@
-// This is to make a PWA version of Compass
-// import withPWA from 'next-pwa';
+import withPWA from 'next-pwa';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,12 +13,11 @@ const nextConfig = {
     COMPASS: process.env.COMPASS,
     BACKEND: process.env.BACKEND,
   },
-  //   pwa: {
-  //     dest: 'public',
-  //     register: true,
-  //     skipWaiting: true,
-  //   },
+  ...withPWA({
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+  }),
 };
 
-// export default withPWA(nextConfig);
 export default nextConfig;
