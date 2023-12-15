@@ -196,7 +196,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               autoComplete='off'
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                setFirstName(e.target.value);
+              }}
             />
           </div>
           <div>
@@ -206,7 +209,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               autoComplete='off'
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                setLastName(e.target.value);
+              }}
             />
           </div>
           <div>
@@ -218,9 +224,12 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               placeholder='Select your major'
               variant='soft'
               value={major}
-              inputValue={major.code === undeclared.code ? '' : major.code}
+              // inputValue={major.code === undeclared.code ? '' : major.code}
               isOptionEqualToValue={(option, value) => option.code === value.code}
-              onChange={(_, newMajor: MajorMinorType) => setMajor(newMajor ?? undeclared)}
+              onChange={(e, newMajor: MajorMinorType) => {
+                e.stopPropagation();
+                setMajor(newMajor ?? undeclared);
+              }}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
                 <AutocompleteOption {...props} key={option.name}>
@@ -236,6 +245,7 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
             <FormLabel>Minor(s)</FormLabel>
             <Autocomplete
               multiple={true}
+              autoHighlight
               options={minorOptions}
               placeholder={'Select your minor(s)'}
               variant='soft'
@@ -243,7 +253,10 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               isOptionEqualToValue={(option, value) =>
                 value === undefined || option.code === value.code
               }
-              onChange={handleMinorsChange}
+              onChange={(e, newMinors: MajorMinorType[]) => {
+                e.stopPropagation();
+                handleMinorsChange(e, newMinors);
+              }}
               getOptionLabel={(option: MajorMinorType) => option.code}
               renderOption={(props, option) => (
                 <AutocompleteOption {...props} key={option.name}>
@@ -304,7 +317,8 @@ const UserSettings: React.FC<ProfileProps> = ({ profile, onClose, onSave }) => {
               variant='soft'
               value={classYear} // TODO: Does '' work here or is it redundant? --Windsor
               isOptionEqualToValue={(option, value) => value === undefined || option === value}
-              onChange={(_, newClassYear: number | undefined) => {
+              onChange={(e, newClassYear: number | undefined) => {
+                e.stopPropagation();
                 setClassYear(newClassYear ?? undefined);
               }}
               getOptionLabel={(option) => option.toString()}
