@@ -99,7 +99,7 @@ def create_courses(net_id):
         user__net_id=net_id
     )
     for course_inst in course_insts:
-        course = {'inst': course_inst.course, 'manually_settled': False}
+        course = {'inst': course_inst.course, 'id': course_inst.course.id, 'manually_settled': False}
         if course_inst.requirement_id is not None:
             course['settled'] = [course_inst.requirement_id]
             course['manually_settled'] = True
@@ -199,8 +199,7 @@ def _init_req(req_inst):
     }
     if hasattr(req_inst,
                '_prefetched_objects_cache') and 'req_list' in req_inst._prefetched_objects_cache:
-        sub_reqs = req_inst._prefetched_objects_cache[
-            'req_list']
+        sub_reqs = req_inst._prefetched_objects_cache['req_list']
     else:
         sub_reqs = req_inst.req_list.all()
 
@@ -311,13 +310,13 @@ def mark_dist(req, courses):
 @cumulative_time
 def mark_courses(req, courses):
     num_marked = 0
-    for sem_num, sem in enumerate(courses):
+    for sem in courses:
         for course in sem:
             if req['id'] in course['possible_reqs']:  # already used
                 continue
-            if 'exc_course_list' in req:
-                if course['inst'].id in req['exc_course_list']:
-                    continue
+            # if 'exc_course_list' in req:
+            #     if course['inst'].id in req['exc_course_list']:
+            #         continue
             if req['inst'].dept_list:
                 for code in json.loads(req['inst'].dept_list):
                     if code == course['inst'].department.code:
@@ -327,7 +326,7 @@ def mark_courses(req, courses):
                             course['num_settleable'] += 1
                         break
             if 'course_list' in req:
-                if course['inst'].id in req['course_list']:
+                if course['id'] in req['course_list']:
                     num_marked += 1
                     course['possible_reqs'].append(req['id'])
                     if not req['inst'].double_counting_allowed:
@@ -410,24 +409,23 @@ def add_course_lists_to_req(req, courses):
     req['unsettled'] = []
     for sem in courses:
         for course in sem:
-            course_id = course['inst'].id
             if (req['inst']._meta.db_table == 'Requirement') and req[
                 'inst'
             ].double_counting_allowed:
                 if len(course['reqs_double_counted']) > 0:
                     for req_id in course['reqs_double_counted']:
                         if req_id == req['id']:
-                            req['settled'].append(course_id)
+                            req['settled'].append(course['id'])
                             ## add to reqs_satisfied because couldn't be added in _assign_settled_courses_to_reqs()
                             course['reqs_satisfied'].append(req['id'])
             elif len(course['settled']) > 0:
                 for req_id in course['settled']:
                     if req_id == req['id']:
-                        req['settled'].append(course['inst'].id)
+                        req['settled'].append(course['id'])
             else:
                 for req_id in course['possible_reqs']:
                     if req_id == req['id']:
-                        req['unsettled'].append(course['inst'].id)
+                        req['unsettled'].append(course['id'])
                         break
 
 
@@ -494,12 +492,12 @@ def format_req_output(req, courses):
         settled = []
         for semester in courses:
             for course in semester:
-                if course['inst'].id in req['settled']:
+                if course['id'] in req['settled']:
                     course_output = {
                         'code': course['inst'].department.code
                                 + ' '
                                 + course['inst'].catalog_number,
-                        'id': course['inst'].id,
+                        'id': course['id'],
                         'manually_settled': course['manually_settled'],
                     }
                     settled.append(course_output)
@@ -508,12 +506,12 @@ def format_req_output(req, courses):
         unsettled = []
         for semester in courses:
             for course in semester:
-                if course['inst'].id in req['unsettled']:
+                if course['id'] in req['unsettled']:
                     course_output = {
                         'code': course['inst'].department.code
                                 + ' '
                                 + course['inst'].catalog_number,
-                        'id': course['inst'].id,
+                        'id': course['id'],
                         'manually_settled': course['manually_settled'],
                     }
                     unsettled.append(course_output)
