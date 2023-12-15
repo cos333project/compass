@@ -13,7 +13,6 @@ const Contact = () => {
   useEffect(() => {
     checkAuthentication();
   }, [checkAuthentication]);
-
   return (
     <>
       <Navbar />
@@ -37,7 +36,7 @@ const Contact = () => {
           <div className='py-24 sm:py-32 lg:pb-40'>
             <div className='mx-auto max-w-7xl px-6 lg:px-8'>
               <div className='mx-auto max-w-2xl text-center text-[var(--system-text-color)]'>
-                <h1 className='text-4xl font-bold tracking-tight sm:text-6xl'>Contact Us</h1>
+                <h1 className='text-3xl font-bold tracking-tight sm:text-4xl'>Contact Us</h1>
                 <p className='mt-6 text-lg leading-8'>
                   Have questions or need to report an issue? Get in touch with us.
                 </p>
