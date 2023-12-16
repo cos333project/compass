@@ -10,10 +10,7 @@
 - [👥 Developers](#developers)
 - [📜 License](#license)
 
-## 🌟 Features (to be rewritten in detail)
-
-#### 🔍 Certificate Suggestions
-- Dynamically recommends certificates requiring minimal additional courses based on your course history.
+## 🌟 Features
 
 #### 🛡 CAS Authentication
 - Secure Princeton CAS-based user authentication.
@@ -22,10 +19,10 @@
 - A centralized hub displaying your academic standing, upcoming courses, and progress metrics.
 
 #### 💾 Data Persistence
-- Course and semester data saved across sessions.
+- Course and user data saved across sessions.
 
 #### 🕵️‍♀️ Search Functionality
-- Clean, organized course list with essential info like course name, number, and instructor.
+- Clean, organized drag-and-drop course list with essential info.
 
 #### 🗑 Semester Bins
 - Unique binning functionality distinct from competitors.
@@ -33,86 +30,21 @@
 #### 📲 Mobile Responsiveness
 - Optimized for mobile use.
 
-#### 🔒 Data Security
-- Clear data security policies for peace of mind.
-
-### 🎯 Stretch Goals
-
-- Transcript parser
-- Search filters
-- Shareable plans
-- Course Dependencies
-- Semester difficulty rating
-
-### 🌈 Nice-to-haves
-
-- Dark mode
-- Undo/Redo functionality
-- Wishlist system
-- Course ratings/reviews
-- Recommendation system
-
-## Getting Started (for TigerApps team or open source contributors)
-
-First, copy the `.env.example` file in the `backend` directory and rename it to `.env`. Fill in the required environment variables.
-
-\`\`\`
-# .env.example
-ALLOWED_HOSTS=
-DJANGO_SECRET_KEY=
-DATABASE_URL=
-DEBUG=
-CAS_URL=
-\`\`\`
-
-Next, clone the repository and navigate to the `frontend` directory.
-
-\`\`\`bash
-git clone [repository_url]
-cd frontend
-\`\`\`
-
-Run the development server:
-
-\`\`\`bash
-npm run dev
-\`\`\`
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
-
 ## Tech Stack
 
 Frontend
 * UI Library: Next.js (React-based)
 * Programming Language: TypeScript
-* CSS Framework: Tailwind CSS
-* State Management: Redux
+* CSS Framework: Tailwind CSS, SCSS
+* State Management: Zustand
 
 Backend
 * Web Framework: Django
-* API Paradigm: GraphQL, Apollo Client
 * Database: PostgreSQL
-* ORM: Django’s ORM
+* Management: DataGrip
 
 Auth
 * Authentication: CAS Authentication
-
-Testing
-* Frontend Testing: Jest
-* Backend Testing: pytest, Django’s tests.py
-
-DevOps
-* Hosting/Cloud: Heroku
-* CI/CD: Github Actions for Next.js and for Django
-
-Database: 
-* PostgresSQL
-* Management: DataGrip
-
-## Setup Instructions
-
-1. **Backend**: Navigate to the `backend` directory and run `source backend.sh`.
-2. **Frontend**: After cloning, run `npm install` to install dependencies.
 
 ## Contributing
 
