@@ -2,15 +2,13 @@
 
 **Compass** aims to be the ultimate academic planner for Princeton students, offering not just major tracking but also minor and certificate guidance tailored to your course history. Backed by robust algorithms and clean UI, consider this your academic GPS.
 
-## 📚 Table of Contents
+## Table of Contents
 - [🌟 Features](#features)
-- [🚀 Getting Started](#getting-started)
 - [🛠 Tech Stack](#tech-stack)
-- [🤝 Contributing](#contributing)
 - [👥 Developers](#developers)
 - [📜 License](#license)
 
-## 🌟 Features
+## Features
 
 #### 🛡 CAS Authentication
 - Secure Princeton CAS-based user authentication.
@@ -46,12 +44,9 @@ Backend
 Auth
 * Authentication: CAS Authentication
 
-## Contributing
+## Developers 
 
-If you're interested in contributing, please fork the repository and submit a pull request. For major changes, open an issue first.
-
-## Developers (alphabetical by last name)
-
+(alphabetical by last name)
 - George Chiriac '25
 - Julia Kashimura '25
 - Ijay Narang '25
