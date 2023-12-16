@@ -297,7 +297,8 @@ def push_certificates(certificates_path):
     for file in certificates_path.glob('*.yaml'):
         push_certificate(str(file))
     logging.info('Certificate requirements pushed!')
-    
+
+
 # TODO: This should create or update so we don't have duplicates in the database, also with atomicity too
 if __name__ == '__main__':
     with transaction.atomic():
@@ -305,6 +306,7 @@ if __name__ == '__main__':
         # push_majors(Path('../majors').resolve())
         # push_major(Path('../majors/COS-AB.yaml').resolve())
         # push_major(Path('../majors/COS-BSE.yaml').resolve())
+        push_major(Path('../majors/MAE.yaml').resolve())
         # push_major(Path('../majors/ECO.yaml').resolve())
         # push_major(Path('../majors/ORF.yaml').resolve())
         # push_major(Path('../majors/COS-BSE.yaml').resolve())

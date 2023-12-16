@@ -165,7 +165,7 @@ req_list:
     Graduate courses in other departments may not be used as electives. 
   req_list:
   - name:
-    max_counted: 1
+    max_counted: 3
     min_needed: 1
     explanation:
     course_list:
@@ -177,12 +177,10 @@ req_list:
     - COS 497
     - COS 498
   - name:
-    max_counted: 1
-    min_needed: 2
+    max_counted: 2
+    min_needed: 1
     explanation:
     course_list:
-    - COS 3**
-    - COS 4**
     - MAT 3**
     - MAT 4**
     - ECE 3**

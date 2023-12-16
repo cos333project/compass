@@ -275,6 +275,7 @@ class CAS(View):
                         username=net_id, defaults={'net_id': net_id, 'role': 'student'}
                     )
                     if created:
+                        user.username = net_id
                         user.set_unusable_password()
                         user.major = Major.objects.get(code=UNDECLARED['code'])
                     user.save()
