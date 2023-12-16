@@ -44,8 +44,9 @@ Backend
 Auth
 * Authentication: CAS Authentication
 
-## Developers (alphabetical by last name)
+## Developers 
 
+(alphabetical by last name)
 - George Chiriac '25
 - Julia Kashimura '25
 - Ijay Narang '25
