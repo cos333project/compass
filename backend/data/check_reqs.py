@@ -215,7 +215,6 @@ def _init_req(req_inst):
             courses = req_inst.course_list.all()
 
         req['course_list'] = {course_inst.id for course_inst in courses}
-
         if len(req['course_list']) == 0:
             req.pop('course_list')
         # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
