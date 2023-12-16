@@ -755,7 +755,7 @@ req_list:
       - ECE 351
     - name: Two Courses
       max_counted: 1
-      min_needed: 1
+      min_needed: 2
       course_list:
       - ECE 342
       - ECE 431
