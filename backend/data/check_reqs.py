@@ -182,9 +182,9 @@ def _init_req(req_inst):
 
         if len(req['course_list']) == 0:
             req.pop('course_list')
-        req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
-        if len(req['exc_course_list']) == 0:
-            req.pop('exc_course_list')
+        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        # if len(req['exc_course_list']) == 0:
+        #     req.pop('exc_course_list')
         # req['completed_by_semester'] = req_inst.completed_by_semester
     return req
 
@@ -278,9 +278,9 @@ def mark_courses(req, courses):
         for course in sem:
             if req['id'] in course['possible_reqs']:  # already used
                 continue
-            if 'exc_course_list' in req:
-                if course['inst'].id in req['exc_course_list']:
-                    continue
+            # if 'exc_course_list' in req:
+            #     if course['inst'].id in req['exc_course_list']:
+            #         continue
             if req['inst'].dept_list:
                 for code in json.loads(req['inst'].dept_list):
                     if code == course['inst'].department.code:
