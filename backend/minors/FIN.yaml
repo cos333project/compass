@@ -54,7 +54,7 @@ req_list:
         linear algebra part of the curriculum on their own.
       course_list:
       - MAT 175
-    - name: BSE Math Sequence
+    - name: BSE Mathematics
       max_counted: 1
       min_needed: 2
       explanation: |-
@@ -63,7 +63,7 @@ req_list:
       course_list:
       - MAT 201
       - MAT 202
-    - name: EGR Math Sequence
+    - name: EGR Mathematics
       max_counted: 1
       min_needed: 2
       explanation: |-
@@ -72,7 +72,7 @@ req_list:
       course_list:
       - EGR 154
       - EGR 156
-    - name: Advanced Math Track
+    - name: Advanced Mathematics
       max_counted: 1
       min_needed: 2
       explanation: |-

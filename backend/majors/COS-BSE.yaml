@@ -67,24 +67,36 @@ req_list:
       them is a required prerequisite for all computer science 
       departmentals. 
     req_list:
-    - name:
+    - name: Introduction
       max_counted: 1
       min_needed: 1
       explanation:
       req_list:
-      - name:
+      - name: Interdisciplinary Computer Science
         max_counted: 1
         min_needed: 1
-        explanation:
         course_list:
         - COS 126
-    - name:
+      - name: Integrated Science Curriculum
+        max_counted: 1
+        min_needed: 4
+        course_list:
+        - ISC 231
+        - ISC 232
+        - ISC 233
+        - ISC 234
+      - name: Autonomous Vehicles
+        max_counted: 1
+        min_needed: 1
+        course_list:
+        - ECE 115
+    - name: Systems
       max_counted: 1
       min_needed: 1
       explanation:
       course_list:
       - COS 217
-    - name:
+    - name: Algorithms and Data Structures
       max_counted: 1
       min_needed: 1
       explanation:
@@ -165,7 +177,7 @@ req_list:
     MAE 345, MOL 437/NEU 437, NEU 330, and ECO 326 count as electives. 
     Graduate courses in other departments may not be used as electives. 
   req_list:
-  - name: Upperlevel Departmentals
+  - name: Upper-level Departmentals
     max_counted: 1
     min_needed: 1
     explanation:

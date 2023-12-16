@@ -100,7 +100,7 @@ req_list:
         - CEE 365
     - name: Track-Specific
       max_counted: 1
-      min_needed: ALL
+      min_needed: 4
       explanation:
       req_list:
       - name:
@@ -109,12 +109,13 @@ req_list:
         explanation:
         course_list:
         - ARC 203
+        - ARC 204
+        - ARC 205
       - name:
         max_counted: 1
         min_needed: 1
         course_list:
-        - ARC 204
-        - ARC 205
+        - ARC *
     - name: Engineering Design
       max_counted: 1
       min_needed: ALL
@@ -228,7 +229,7 @@ req_list:
       - CEE 478
     - name: Program Elective
       max_counted: 1
-      min_needed: 3
+      min_needed: 2
       explanation: |-
         No more than one program elective can be at the 200 level. For 
         the environmental engineering track, at least one of the program 
@@ -236,7 +237,7 @@ req_list:
       req_list:
       - name:
         max_counted: 1
-        min_needed: 1
+        min_needed: 2
         explanation:
         course_list:
         - CEE 334
@@ -250,7 +251,7 @@ req_list:
         - ECE 428
       - name:
         max_counted: 1
-        min_needed: 2
+        min_needed: 1
         explanation:
         course_list:
         - GEO 363
@@ -349,7 +350,7 @@ req_list:
       - CEE 478
     - name: Program Electives
       max_counted: 1
-      min_needed: 3
+      min_needed: 2
       explanation: |-
         No more than one program elective can be at the 200 level. For 
         the geological engineering track, two of the three required 
@@ -475,22 +476,17 @@ req_list:
       explanation: |-
         For the structural engineering track, three program electives 
         are required and at least one must be an engineering course.
-      req_list:
-      - name:
-        max_counted: 1
-        min_needed: 3
-        explanation:
-        course_list:
-        - CEE 376
-        - CEE 439
-        - CEE 460
-        - CEE 463
-        - CEE 467
-        - CEE 477
-        - CEE 540
-        - CEE 566
-        - ORF 307
-        - ORF 309
+      course_list:
+      - CEE 376
+      - CEE 439
+      - CEE 460
+      - CEE 463
+      - CEE 467
+      - CEE 477
+      - CEE 540
+      - CEE 566
+      - ORF 307
+      - ORF 309
   - name: Engineering and the Liberal Arts
     max_counted: 1
     min_needed: ALL
@@ -523,8 +519,8 @@ req_list:
         courses has to have a laboratory component.
       req_list:
       - name:
-        max_counted: 1
-        min_needed: 3
+        max_counted: 6
+        min_needed: 1
         explanation:
         course_list:
         - CEE 3**
@@ -532,7 +528,7 @@ req_list:
         - CEE 5**
       - name:
         max_counted: 3
-        min_needed: 0
+        min_needed: 1
         explanation:
         course_list:
         - CEE 1**
@@ -548,10 +544,12 @@ req_list:
         science requirements and electives should form a coherent 
         program of study, which needs to be approved by the adviser. 
         At least eight of these courses must be the 300 level or above.
+        <Editor's Note> This section is copied directly from the 
+        Undergraduate Announcement.
       req_list:
       - name:
-        max_counted: 1
-        min_needed: 3
+        max_counted: 7
+        min_needed: 1
         explanation:
         course_list:
         - CEE 3**
@@ -559,7 +557,7 @@ req_list:
         - CEE 5**
       - name:
         max_counted: 4
-        min_needed: 0
+        min_needed: 1
         explanation:
         course_list:
         - CEE 1**

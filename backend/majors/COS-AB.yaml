@@ -63,28 +63,40 @@ req_list:
     explanation: |-
       The prerequisites are any one of MAT 202/204/217 or EGR 154; 
       COS 126; COS 217 and 226. Students should plan to take both 
-      COS 217 and COS 226 before their junior year since at least one 
-      of them is a required prerequisite for all computer science 
-      departmentals. 
+      COS 217 and COS 226 before their junior year since at least one of
+      them is a required prerequisite for all computer science 
+      departmentals.
     req_list:
-    - name:
+    - name: Introduction
       max_counted: 1
       min_needed: 1
       explanation:
       req_list:
-      - name:
+      - name: Interdisciplinary Computer Science
         max_counted: 1
         min_needed: 1
-        explanation:
         course_list:
         - COS 126
-    - name:
+      - name: Integrated Science Curriculum
+        max_counted: 1
+        min_needed: 4
+        course_list:
+        - ISC 231
+        - ISC 232
+        - ISC 233
+        - ISC 234
+      - name: Autonomous Vehicles
+        max_counted: 1
+        min_needed: 1
+        course_list:
+        - ECE 115
+    - name: Systems
       max_counted: 1
       min_needed: 1
       explanation:
       course_list:
       - COS 217
-    - name:
+    - name: Algorithms and Data Structures
       max_counted: 1
       min_needed: 1
       explanation:

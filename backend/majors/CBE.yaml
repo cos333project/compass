@@ -39,8 +39,8 @@ req_list:
   pdfs_allowed: false
   req_list:
   - name: CBE Core
-    max_counted:
-    min_needed: ALL
+    max_counted: 1
+    min_needed: 7
     explanation: These courses are required of all chemical and biological engineering
       majors.
     double_counting_allowed: false
@@ -55,19 +55,11 @@ req_list:
     - CBE 442
   - name: Senior Independent Work
     max_counted: 1
-    min_needed: 1
+    min_needed: 2
     explanation: Students must carry out a two-term senior thesis.
-    pdfs_allowed: false
-    req_list:
-    - name:
-      max_counted: 1
-      min_needed: ALL
-      explanation:
-      double_counting_allowed: false
-      pdfs_allowed: false
-      course_list:
-      - CBE 451: Senior Independent Work (Fall)
-      - CBE 452: Senior Independent Work (Spring)
+    course_list:
+    - CBE 451
+    - CBE 452
 - name: Advanced Science and Math Requirements
   max_counted: 1
   min_needed: ALL
@@ -75,19 +67,17 @@ req_list:
   double_counting_allowed: false
   pdfs_allowed: false
   req_list:
-  - name: Chemistry Course
+  - name: Chemistry
     max_counted: 1
     min_needed: 1
-    explanation:
     double_counting_allowed: false
     pdfs_allowed: false
     course_list:
     - CHM 202
     - CHM 215
-  - name:
+  - name: Advanced Chemistry
     max_counted: 1
     min_needed: 1
-    explanation: Advanced Chemistry Courses
     double_counting_allowed: false
     pdfs_allowed: false
     course_list:
@@ -125,10 +115,10 @@ req_list:
 - name: Advanced Science Requirement
   max_counted: 1
   min_needed: 2
-  explanation:
+  explanation: Excluding CHM 303 or other courses used for organic 
+    chemistry requirement.
   double_counting_allowed: false
   pdfs_allowed: false
-  note: excluding CHM 303 or other course used for organic chemistry requirement
   req_list:
   - name: Advanced Chemistry or Advanced Biology
     max_counted: 1
@@ -177,7 +167,6 @@ req_list:
       used to fulfill this requirement.
     double_counting_allowed: false
     pdfs_allowed: false
-    note: excluding IW, ie. CBE 451, 452, and 454
     course_list:
     - CBE 3**
     - CBE 4**
@@ -450,7 +439,7 @@ req_list:
   req_list:
   - name: Bioengineering and Biotechnology
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
@@ -508,7 +497,7 @@ req_list:
     - QCB 511
   - name: Entrepreneurship and Management
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
@@ -538,7 +527,7 @@ req_list:
     - ECO 362
   - name: Energy and Environmental Technology
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
@@ -592,7 +581,7 @@ req_list:
     - SPI 306
   - name: Materials and Product Engineering
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
@@ -621,7 +610,7 @@ req_list:
     - MSE 531
   - name: Optimization, Dynamics, and Information Technology
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
@@ -657,7 +646,7 @@ req_list:
     - SML 305
   - name: Science and Engineering for New Technologies
     max_counted: 1
-    min_needed: 0
+    min_needed: 1
     explanation:
     double_counting_allowed: true
     pdfs_allowed: false
