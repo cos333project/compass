@@ -30,7 +30,7 @@ export default function Hero() {
             <div className='mx-auto max-w-2xl text-center text-[var(--system-text-color)]'>
               <h1 className='text-4xl font-bold tracking-tight sm:text-6xl'>Welcome to Compass.</h1>
               <p className='mt-6 text-lg leading-8'>
-                Plan your courses, manage your schedule, and collaborate with your peers.
+                Explore courses, read reviews, and manage your four-year course schedule.
               </p>
               <div className='mt-10 flex items-center justify-center gap-x-6'>
                 <a

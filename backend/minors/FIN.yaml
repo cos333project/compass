@@ -12,14 +12,24 @@ description: The rapidly-developing field of finance focuses on the
 urls:
 - https://ua.princeton.edu/academic-units/program-finance
 contacts:
+- type: Director of Undergraduate Program
+  name: Yacine Aït-Sahalia
+  email: yacine@princeton.edu
 - type: Director
   name: Markus K. Brunnermeier
-  email: markus@princeton.edu
 req_list:
 - name: Prerequisites
   max_counted: 1
   min_needed: ALL
-  explanation:
+  explanation: |-
+    As economic theory, mathematics, and probability and statistics are
+    pervasive in modern financial analysis, completion of the finance 
+    minor requires mathematical ability and preparation. The following 
+    foundation courses are required for admission into the program and 
+    (except as noted) must be completed by the end of sophomore year. 
+    All courses require a letter grade (pass/D/fail not allowed). 
+    Students are required to take courses in mathematics, economics
+    and probability and statistics as specified below.
   double_counting_allowed: false
   pdfs_allowed: 0
   completed_by_semester: 4
@@ -27,39 +37,55 @@ req_list:
   - name: Mathematics
     max_counted: 1
     min_needed: 1
-    explanation:
+    explanation: |-
+      MAT 201 and MAT 202 are both strongly recommended, though only
+      the higher of the two grades is recorded for the purpose of 
+      fulfilling the entry requirements. Students who choose to fulfill
+      this requirement by taking the one-semester MAT 175 will be 
+      responsible for mastering the linear algebra part of the 
+      curriculum on their own.
     req_list:
-    - name: Mathematics Track 1
+    - name: MAT 175
       max_counted: 1
       min_needed: 1
-      explanation:
+      explanation: |-
+        Students who choose to fulfill this requirement by taking
+        the one-semester MAT 175 will be responsible for mastering the
+        linear algebra part of the curriculum on their own.
       course_list:
       - MAT 175
-    - name: Mathematics Track 2
+    - name: BSE Math Sequence
       max_counted: 1
       min_needed: 2
-      explanation:
+      explanation: |-
+        The standard BSE math sequence. Recommended for most
+        undergraduates pursuing a minor in Finance.
       course_list:
       - MAT 201
       - MAT 202
-    - name: Mathematics Track 3
+    - name: EGR Math Sequence
       max_counted: 1
       min_needed: 2
-      explanation:
+      explanation: |-
+        The EGR equivalent of the Mathematics department's offerings
+        of multivariable calculus and linear algebra.
       course_list:
       - EGR 154
       - EGR 156
-    - name: Mathematics Track 4
+    - name: Advanced Math Track
       max_counted: 1
       min_needed: 2
-      explanation:
+      explanation: |-
+        An accelerated, proof-based sequence for students with very
+        high mathematical maturity.
       course_list:
       - MAT 203
       - MAT 204
-  - name: Economics
+  - name: Microeconomics
     max_counted: 1
     min_needed: 1
-    explanation:
+    explanation: |-
+      Students must taken a 300-level microeconomics course.
     course_list:
     - ECO 300
     - ECO 310
@@ -74,9 +100,6 @@ req_list:
     - SOC 301
     - POL 345
     - SPI 200
-    - SPI 332
-    - PHY 301
-    - PHY 312
 - name: Core Courses
   max_counted: 1
   min_needed: 2
@@ -102,7 +125,10 @@ req_list:
   - name: Financial Applications
     max_counted: 3
     min_needed: 1
-    explanation:
+    explanation: |-
+      ECO and ORF students must take at least 2 of their 3 elective
+      courses from this list. Other concentrators must take at least 1
+      from this list.
     course_list:
     - COS 473
     - ECO 315
@@ -137,7 +163,10 @@ req_list:
   - name: General Methodology for Finance
     max_counted: 1
     min_needed: 1
-    explanation:
+    explanation: |-
+      ECO and ORF students must take at least 2 of their 3 elective
+      courses from the Financial Applications list. Other concentrators
+      must take at least 1 from the Financial Applications list.
     course_list:
     - APC 350
     - CEE 460

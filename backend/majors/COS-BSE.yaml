@@ -154,7 +154,7 @@ req_list:
     - COS 448
 - name: Electives
   max_counted: 1
-  min_needed: ALL
+  min_needed: 3
   explanation: |-
     Students must take three COS courses numbered 300 - 400 level. 
     Graduate courses do not count as electives.
@@ -165,7 +165,7 @@ req_list:
     MAE 345, MOL 437/NEU 437, NEU 330, and ECO 326 count as electives. 
     Graduate courses in other departments may not be used as electives. 
   req_list:
-  - name:
+  - name: Upperlevel Departmentals
     max_counted: 1
     min_needed: 1
     explanation:
@@ -177,13 +177,11 @@ req_list:
     - COS 398
     - COS 497
     - COS 498
-  - name:
-    max_counted: 1
-    min_needed: 2
+  - name: Approved Cognates
+    max_counted: 2
+    min_needed: 1
     explanation:
     course_list:
-    - COS 3**
-    - COS 4**
     - MAT 3**
     - MAT 4**
     - ECE 3**

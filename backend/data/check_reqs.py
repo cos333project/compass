@@ -179,7 +179,7 @@ def _init_req(req_inst):
         req['course_list'] = {
             course_inst.id for course_inst in req['inst'].course_list.all()
         }
-        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
         if len(req['course_list']) == 0:
             req.pop('course_list')
         # if len(req['exc_course_list']) == 0:

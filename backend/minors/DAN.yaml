@@ -20,13 +20,34 @@ req_list:
 - name: Prerequisites
   max_counted: 1
   min_needed: 2
-  explanation:
+  explanation: |-
+    There are pathways for all students regardless of previous exposure
+    to and experience in dance. Students interested in pursuing a minor
+    in dance should enroll in a minimum of two DAN courses in their
+    first and second years.
+
+    Students taking their first dance class or
+    expanding their experience in new directions are encouraged to
+    participate in two 200-level courses, such as DAN 213 Introduction
+    to Contemporary Dance; DAN 222 Introduction to Hip-Hop Dance; 
+    DAN 225 Introduction to Breaking: Deciphering Its Power; 
+    DAN 211 The American Experience and Dance Practices of the African
+    Diaspora; DAN 221 Stillness; or DAN 208 Body and Language.
+
+    For those entering Princeton with previous dance experience
+    performing and choreographing, we recommend  participation in 300-
+    or 400-level courses, such as Dance Performance Workshop courses
+    (319, 320 or 419) in the fall and a spring studio course, such as
+    DAN 432 Ballet as an Evolving Form, DAN 408 Approaches to 
+    Contemporary Dance (or DAN 401, 402, 431), as these provide 
+    prospective minors with rigorous, in-depth study of specific forms
+    and methods.
   double_counting_allowed: false
   max_common_with_major: 2
   pdfs_allowed: 2
   course_list:
   - DAN *
-  completed_by_semester: 3
+  completed_by_semester: 4
 - name: Studio Course
   max_counted: 1
   min_needed: 1
@@ -81,10 +102,13 @@ req_list:
     - DAN 348
     - DAN 393
     - DAN 406
-- name: Elective
+- name: Electives
   max_counted: 1
   min_needed: 1
-  explanation:
+  explanation: |-
+    In addition to the one studio course and the one seminar course in
+    dance studies, students must complete at least three other DAN
+    courses for a total of five DAN courses.
   double_counting_allowed: false
   max_common_with_major: 1
   pdfs_allowed: 1
