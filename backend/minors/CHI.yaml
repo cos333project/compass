@@ -78,7 +78,7 @@ req_list:
     the work must be on East Asia.
   completed_by_semester: 8
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     An East Asian Studies major specializing in Chinese may not earn a language minor in Chinese. 

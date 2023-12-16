@@ -57,7 +57,7 @@ req_list:
     women, gender and/or sexuality into one junior paper and their 
     senior thesis.
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     The thematic cluster electives must be from at least three of the five thematic clusters:

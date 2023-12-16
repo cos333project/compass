@@ -79,7 +79,7 @@ req_list:
   - COS 3*
   - COS 4*
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     Students may use at most one course taken on a pass/D/fail basis to satisfy the program requirements.

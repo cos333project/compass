@@ -61,7 +61,7 @@ req_list:
   explanation: |-
     Students must produce an original piece of fact-based journalism based on field reporting or exploring the challenges facing modern journalists and, near the end of their senior year, present this work to peers and a jury of current and former Princeton journalism instructors at an interdisciplinary year-end colloquium.
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     Each of the five courses must be completed with a grade of B or above.

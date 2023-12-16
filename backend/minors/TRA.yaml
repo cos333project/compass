@@ -66,7 +66,7 @@ req_list:
   explanation: Students pursuing the minor must engage either in a substantial (15-to-20-page or more) project of translation or interpretation, or a project in translation studies. 
     Students are encouraged to discuss their ideas with the program director before embarking on the project.
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     Before entering the minor, students should have satisfied the University’s language requirement or demonstrated proficiency in a language through the 107/108 sequence. 

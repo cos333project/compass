@@ -267,7 +267,7 @@ req_list:
       - ECE 497
       - ECE 498
     - name: Restrictions
-      max_counted: 1
+      max_counted: 0
       min_needed: 1
       explanation: |-
         ORF 309 can fulfill either the 300-level math requirement, or 
@@ -968,7 +968,7 @@ req_list:
     - PHY 3**
     - PHY 4**
   - name: Restrictions
-    max_counted: 1
+    max_counted: 0
     min_needed: 1
     explanation: |-
       Students must take at least two of eight courses towards this

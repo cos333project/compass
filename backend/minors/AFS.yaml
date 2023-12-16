@@ -141,7 +141,7 @@ req_list:
     or junior paper or another substantial piece of original research 
     that meets the same standards of relevance to Africa.
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     A maximum of two courses in total may be double-counted towards the student's major. 

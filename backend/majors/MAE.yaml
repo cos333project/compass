@@ -321,7 +321,7 @@ req_list:
         - MAE 416
         - CEE 477
     - name: Restrictions
-      max_counted: 1
+      max_counted: 0
       min_needed: 1
       explanation: |-
         CEE 477 is an acceptable substitute for the Design and Control

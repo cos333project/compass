@@ -59,7 +59,7 @@ req_list:
   - AMS 404
   - AMS 406
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     No more than one course taken in fulfillment of the student’s major may be counted toward the minor.

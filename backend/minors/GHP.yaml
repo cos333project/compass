@@ -238,7 +238,7 @@ req_list:
     This experience must be full-time and must be a minimum of eight weeks in duration. The internship may be remote. All internships must be approved in advance by the minor.
   completed_by_semester: 8
 - name: Restrictions
-  max_counted: 1
+  max_counted: 0
   min_needed: 1
   explanation: |-
     Applicants should also have maintained a cumulative 3.0 GPA through the time of application. 
