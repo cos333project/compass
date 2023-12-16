@@ -27,6 +27,27 @@ from compass.models import (
 )
 
 
+# Have a custom check_requirements recursive function for minors. Can
+# return a huge dict that says how close to completion each minor is
+
+# courses = [[{"inst" : something, "semester_number" : 1},
+# {"id" : 72967, "semester_number" : 1}, ...], [], [], [], [], [], [], []]
+# other fields: possible_reqs, reqs_satisfied, reqs_double_counted,
+# num_settleable
+
+# req is supposed to be the yaml data. Need a req dict to keep:
+# req instance
+# satisfied: whether the req is satisfied or not
+# settled: courses that were settled to this req (course ids)
+# unsettled: courses that were not settled to this req (course ids)
+# req_list
+
+# Is it better to keep reqs on the server (i.e. variable in this file)
+# or is it better to have a UserRequirements table?
+
+# Need a function that gets user id and creates courses matrix with
+# everything that _init_courses has
+
 # Django model instances are cached so this should be at least as
 # efficient as TigerPath code
 
@@ -78,7 +99,7 @@ def create_courses(net_id):
         user__net_id=net_id
     )
     for course_inst in course_insts:
-        course = {'inst': course_inst.course, 'id': course_inst.id, 'manually_settled': False}
+        course = {'inst': course_inst.course, 'id': course_inst.course.id, 'manually_settled': False}
         if course_inst.requirement_id is not None:
             course['settled'] = [course_inst.requirement_id]
             course['manually_settled'] = True
@@ -88,6 +109,19 @@ def create_courses(net_id):
 
 @cumulative_time
 def check_requirements(table, code, courses):
+    """
+    Returns information about the requirements satisfied by the courses
+    given in course_ids.
+
+    :param table: the table containing the root of the requirement tree
+    :param id: primary key in table
+    :type req_file: string
+    :type courses: 2D array of dictionaries.
+    :returns: Whether the requirements are satisfied
+    :returns: The list of courses with info about the requirements they satisfy
+    :returns: A simplified json with info about how much of each requirement is satisfied
+    :rtype: (bool, dict, dict)
+    """
     if table == 'Degree':
         req_inst = Degree.objects.prefetch_related(
             Prefetch('req_list',
@@ -130,6 +164,8 @@ def check_requirements(table, code, courses):
     return formatted_req
 
 
+# These fields could be in the UserCourses table by default
+# possible_reqs, reqs_satisfied, reqs_double_counted would be ManyToManyFields
 @cumulative_time
 def _init_courses(courses):
     if not courses:
@@ -182,9 +218,9 @@ def _init_req(req_inst):
 
         if len(req['course_list']) == 0:
             req.pop('course_list')
-        # req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
-        # if len(req['exc_course_list']) == 0:
-        #     req.pop('exc_course_list')
+        req['exc_course_list'] = {course_inst.id for course_inst in req["inst"].excluded_course_list.all()}
+        if len(req['exc_course_list']) == 0:
+            req.pop('exc_course_list')
         # req['completed_by_semester'] = req_inst.completed_by_semester
     return req
 
@@ -278,9 +314,9 @@ def mark_courses(req, courses):
         for course in sem:
             if req['id'] in course['possible_reqs']:  # already used
                 continue
-            # if 'exc_course_list' in req:
-            #     if course['inst'].id in req['exc_course_list']:
-            #         continue
+            if 'exc_course_list' in req:
+                if course['inst'].id in req['exc_course_list']:
+                    continue
             if req['inst'].dept_list:
                 for code in json.loads(req['inst'].dept_list):
                     if code == course['inst'].department.code:
@@ -393,15 +429,41 @@ def add_course_lists_to_req(req, courses):
                         break
 
 
+# @cumulative_time
+# def format_courses_output(courses):
+#     """
+#     Enforce the type and order of fields in the courses output
+#     """
+#     output = []
+#     for i, sem in enumerate(courses):
+#         output.append([])
+#         for j, course in enumerate(sem):
+#             output[i].append(collections.OrderedDict())
+#             for key in ['possible_reqs', 'reqs_satisfied']:
+#                 output[i][j][key] = course[key]
+#             output[i][j]['name'] = course['inst'].title
+#             if len(course['settled']) > 0:  # only show if non-empty
+#                 output[i][j]['settled'] = course['settled']
+#     return output
+
+
 @cumulative_time
 def format_req_output(req, courses):
     """
     Enforce the type and order of fields in the req output
     """
     output = collections.OrderedDict()
+    # if (req["inst"]._meta.db_table != 'Requirement') and req["inst"].name:
+    #     output['name'] = req["inst"].name
     if (req['inst']._meta.db_table != 'Requirement') and req[
         'inst'].code:
         output['code'] = req['inst'].code
+    # if (req["inst"]._meta.db_table == 'Major') and req["inst"].degree.exists():
+    #     output['degree'] = req['inst'].degree.all()[0]
+    # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].pdfs_allowed:
+    #     output['pdfs_allowed'] = str(req['inst'].pdfs_allowed)
+    # if (req["inst"]._meta.db_table == 'Requirement') and req['inst'].completed_by_semester:
+    #     output['completed_by_semester'] = str(req['inst'].completed_by_semester)
     if (req['inst']._meta.db_table == 'Requirement') and req[
         'inst'].name:
         output['name'] = req['inst'].name
@@ -540,6 +602,13 @@ def get_course_info(dept, num):
             ).first()
             if course.course_id:
                 co_id = course.course_id
+                # instructor = "None"
+                # try:
+                #    instructor = Section.objects.filter(course_id=13248).first()
+                #
+                #    print(instructor)
+                # except Section.DoesNotExist:
+                #    instructor = "Information Unavailable"
             # get relevant info and put it in a dictionary
             course_dict = {}
             if course.title:
