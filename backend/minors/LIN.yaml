@@ -28,60 +28,60 @@ contacts:
 - type: Director
   name: Adam N. Elga
   email: adame@princeton.edu
-- req_list:
-  - name: Prerequisite
-    max_counted: 1
-    min_needed:
-    explanation: Permission may be granted to substitute a different LIN 
-      course in place of 201; decisions will be made by the Director of 
-      Undergraduate Studies on a case-by-case basis.
+req_list:
+- name: Prerequisite
+  max_counted: 1
+  min_needed:
+  explanation: Permission may be granted to substitute a different LIN 
+    course in place of 201; decisions will be made by the Director of 
+    Undergraduate Studies on a case-by-case basis.
+  course_list:
+  - LIN 201
+- name: Coursework
+  max_counted: 1
+  min_needed: 4
+  max_common_with_major: 1
+  req_list:
+  - name: Core Courses
+    max_counted: 3
+    min_needed: 1
+    explanation: At least one course from the set of “core” courses 
+      (LIN 301, LIN 302, LIN 303, LIN 306; LIN 303 may be substituted 
+      with PHI/LIN 334)
+    pdfs_allowed: 1
     course_list:
-    - LIN 201
-  - name: Coursework
-    max_counted: 1
-    min_needed: 4
-    max_common_with_major: 1
-    req_list:
-    - name: Core Courses
-      max_counted: 3
-      min_needed: 1
-      explanation: At least one course from the set of “core” courses 
-        (LIN 301, LIN 302, LIN 303, LIN 306; LIN 303 may be substituted 
-        with PHI/LIN 334)
-      pdfs_allowed: 1
-      course_list:
-        - LIN 301
-        - LIN 302
-        - LIN 303
-        - LIN 306
-        - PHI 334 / LIN 334
-    - name: Methods Courses
-      max_counted: 3
-      min_needed: 1
-      explanation: At least one course from the set of “methods” courses 
-        (LIN 210, LIN 310, LIN 355, LIN 356.
-      pdfs_allowed: 1
-      course_list:
-      - LIN 210
-      - LIN 310
-      - LIN 355
-      - LIN 356
-    - name: Elective Courses
-      max_counted: 2
-      min_needed: 0
-      explanation: Any two other LIN-designated courses at the 200-level 
-        or above (which may be drawn from the sets above). 
-        Linguistics-related courses in other departments and programs 
-        that do not have the LIN designation may be approved by the 
-        director of undergraduate program on a case-by-case basis. No 
-        more than one of these elective courses may be taken 
-        pass/D/fail.
-      pdfs_allowed: 1
-      course_list:
-      - LIN 2*
-      - LIN 3*
-      - LIN 4*
-      - LIN 5*
+    - LIN 301
+    - LIN 302
+    - LIN 303
+    - LIN 306
+    - PHI 334 / LIN 334
+  - name: Methods Courses
+    max_counted: 3
+    min_needed: 1
+    explanation: At least one course from the set of “methods” courses 
+      (LIN 210, LIN 310, LIN 355, LIN 356.
+    pdfs_allowed: 1
+    course_list:
+    - LIN 210
+    - LIN 310
+    - LIN 355
+    - LIN 356
+  - name: Elective Courses
+    max_counted: 2
+    min_needed: 0
+    explanation: Any two other LIN-designated courses at the 200-level 
+      or above (which may be drawn from the sets above). 
+      Linguistics-related courses in other departments and programs 
+      that do not have the LIN designation may be approved by the 
+      director of undergraduate program on a case-by-case basis. No 
+      more than one of these elective courses may be taken 
+      pass/D/fail.
+    pdfs_allowed: 1
+    course_list:
+    - LIN 2*
+    - LIN 3*
+    - LIN 4*
+    - LIN 5*
 - name: Independent Work
   max_counted: 1
   min_needed: 1

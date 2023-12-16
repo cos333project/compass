@@ -35,7 +35,6 @@ req_list:
     Culture and Representation; Politics and Social Change; Historical 
     Perspectives)
   double_counting_allowed: false
-  max_common_with_major: 
   pdfs_allowed: 3
   course_list:
   - GSS *
@@ -43,7 +42,7 @@ req_list:
   max_counted: 1
   min_needed: 1
   explanation: One additional 300- or 400-level GSS course or
-  cross-listed with GSS.
+    cross-listed with GSS.
   double_counting_allowed: false
   max_common_with_major: 1
   pdfs_allowed: 1

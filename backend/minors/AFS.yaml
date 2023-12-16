@@ -46,7 +46,6 @@ req_list:
     min_needed: 1
     explanation: 
     double_counting_allowed: false
-    max_common_with_major: 
     pdfs_allowed: 0
     course_list:
     - AAS *
